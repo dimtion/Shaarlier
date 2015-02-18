@@ -76,17 +76,34 @@
         android:id="@+id/default_private"
         android:checked="true"
         android:layout_marginTop="26dp"
-        android:onClick="toogglePrivate" />
+        android:onClick="togglePrivate" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/test_connection"
-        android:id="@+id/button"
-        android:onClick="loginHandler"
-        android:layout_marginTop="20dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:baselineAligned="false">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/test_connection"
+            android:id="@+id/button"
+            android:onClick="loginHandler"
+            android:layout_weight="1" />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/isWorking"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"

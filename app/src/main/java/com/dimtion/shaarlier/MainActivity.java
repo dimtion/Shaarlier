@@ -20,16 +20,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity {
-    private Map<String, String> coockies;
-    private String token;
-    private String url_shaarli;
-    private String username;
-    private String password;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +90,7 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), R.string.error_internet_connection, Toast.LENGTH_LONG).show();
         } else {
             // Si il n'y a pas d'erreur d'input on vérifie que les crédits sont corrects :
+            findViewById(R.id.isWorking).setVisibility(View.VISIBLE);
             new CheckShaarli().execute(shaarliUrl, username, password);
             
             // On enregistre les crédits :
@@ -101,17 +98,17 @@ public class MainActivity extends ActionBarActivity {
             SharedPreferences.Editor editor = pref.edit();
             editor.putString(getString(R.string.p_url_shaarli), shaarliUrl)
                     .putString(getString(R.string.p_username), username)
-                    .putString(getString(R.string.p_password), password);
-            editor.apply();
+                    .putString(getString(R.string.p_password), password)
+                    .apply();
         }
     }
     
-    public void toogglePrivate(View view){
+    public void togglePrivate(View view){
         boolean isChecked = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean(getString(R.string.p_default_private), isChecked);
-        editor.apply();        
+        editor.putBoolean(getString(R.string.p_default_private), isChecked)
+                .apply();
     }
     
     
@@ -151,12 +148,50 @@ public class MainActivity extends ActionBarActivity {
         editor.apply();
     }
     
-    // TODO : compress CheckCredit and CheckShaarli in one class
-    private class CheckCredit extends AsyncTask<String, Void, Boolean> { 
+    // Envoie une requete au Shaarli pour vérifier que s'en est bien un.
+    private class CheckShaarli extends AsyncTask<String, Void, Boolean> {
+        
+        // Errors types :
+        // 0 : no error
+        // 1 : error connecting to shaarli
+        // 2 : error parsing token
+        // 3 : error login in
+        private int error;
         
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected Boolean doInBackground(String... urls) {
+            this.error = 0;
+            final String loginFormUrl = urls[0] + "?do=login";
+            // Get a token and check if the shaarli exists
+            Map<String, String> coockies;
+            String token;
+            String url_shaarli;
+            String username;
+            String password;
+            try {
+                // On récupère la page du formulaire :
+                Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
+                        .method(Connection.Method.GET)
+                        .execute();
+                Document loginPageDoc = loginFormPage.parse();
+                Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
+                
+                // On conserve les cookies et le token :
+                coockies = loginFormPage.cookies();
+                token = tokenElement.attr("value");
+                url_shaarli = urls[0];
+                username = urls[1];
+                password = urls[2];
+            } catch (IOException   e) {
+                this.error = 1;
+                return false;
+            } catch (NullPointerException e) {
+                this.error = 2;
+                return false;
+            }
+
             final String loginUrl = url_shaarli;
+            // Attempt login in :
             try {
                 Connection.Response loginPage = Jsoup.connect(loginUrl)
                         .method(Connection.Method.POST)
@@ -166,58 +201,15 @@ public class MainActivity extends ActionBarActivity {
                         .data("token", token)
                         .data("returnurl", url_shaarli)
                         .execute();
-                
+
                 Document document = loginPage.parse();
                 Element logoutElement = document.body().select("a[href=?do=logout]").first();
                 logoutElement.attr("href"); // If this fails, you're not connected
-                coockies = loginPage.cookies();
-            } catch (Exception e) {
+            } catch (IOException   e) {
+                this.error = 1;
                 return false;
-            }
-            return true;
-        }
-        
-        @Override
-        protected void onPostExecute(Boolean is_log_ok) {
-            if (is_log_ok) {
-                Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
-                
-                // On enregistre ce succès :
-                setValidated(true);
-
-            } else {
-                // TODO : préciser l'erreur pour l'utilisateur.
-                Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
-
-                setValidated(false);
-            }
-        }
-        
-    }
-    // Envoie une requete au Shaarli pour vérifier que s'en est bien un.
-    private class CheckShaarli extends AsyncTask<String, Void, Boolean> {
-        // private Exception exception;
-        
-        @Override
-        protected Boolean doInBackground(String... urls) {
-            final String loginFormUrl = urls[0] + "?do=login";
-            try {
-                // On récupère la page du formulaire :
-                Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
-                        .method(Connection.Method.GET)
-                        .execute();
-                
-                Document loginPageDoc = loginFormPage.parse();
-                Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
-
-                // On conserve les cookies et le token :
-                coockies = loginFormPage.cookies();
-                token = tokenElement.attr("value");
-                url_shaarli = urls[0];
-                username = urls[1];
-                password = urls[2];
-                
-            } catch (Exception e) {
+            } catch (NullPointerException e) {
+                this.error = 3;
                 return false;
             }
             return true;
@@ -226,17 +218,23 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Boolean is_log_ok) {
             if (is_log_ok) {
-                // Toast.makeText(getApplicationContext(), "Token : " + token, Toast.LENGTH_SHORT).show();
-                // Maintenant qu'on a le token on vérifie que mdp-pseudo est correct.
-                new CheckCredit().execute();
+                // print success
+                Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
+                // Save the success :
+                setValidated(true);
                 
             } else {
-                // TODO : préciser l'erreur pour l'utilisateur.
-                Toast.makeText(getApplicationContext(), R.string.login_error, Toast.LENGTH_LONG).show();
-                
+                if(this.error == 1) { // Error loading page
+                    Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
+                } else if(this.error == 2) { // Error parsing token
+                    Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
+                } else if (this.error == 3){ // Error login
+                    Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                }
                 setValidated(false);
                 
             }
+            findViewById(R.id.isWorking).setVisibility(View.GONE);
         }
         
     }
