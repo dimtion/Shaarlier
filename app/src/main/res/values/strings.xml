@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Shaarlier</string>
+    <string name="action_settings">Settings</string>
+    <string name="your_shaarli_url">Url de votre shaarli :</string>
+    <string name="user_name">Pseudo :</string>
+    <string name="user_password">Mot de passe :</string>
+    <string name="more">Plus à venir...</string>
+    <string name="test_connection">Enregistrer</string>
+    <string name="error">Erreur</string>
+    <string name="error_url">L\'url fournie n\'est pas valide.</string>
+    <string name="error_internet_connection">Vous n\'êtes pas connecté à internet.</string>
+    <string name="success_test">Vos réglages ont bien été pris en compte.</string>
+    <string name="success">Succès</string>
+    <string name="title_activity_add">Ajouter à Shaarli</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="add_success">Votre page a bien été ajoutée.</string>
+    <string name="login_error">Le triplet url - pseudo - mot de passe est incorrect, vérifiez qu\'il n\'y a pas d\'erreur. Si vous êtes sûr de vous, contactez le développeur.</string>
+    <string name="default_private">Liens privés par défaut</string>
+    
+    <string name="params">com.dimtion.shaarliposter.parms</string>
+    <string name="p_url_shaarli">com.dimtion.shaarliposter.p_url_shaarli</string>
+    <string name="p_username">com.dimtion.shaarliposter.p_username</string>
+    <string name="p_password">com.dimtion.shaarliposter.p_password</string>
+    <string name="add_not_handle">Ce contenu n\'est pas géré.</string>
+    <string name="p_validated">com.dimtion.shaarliposter.p_validated</string>
+    <string name="add_error">Une erreur est survenue lors du post.</string>
+    <string name="p_default_private">com.dimtion.shaarlier.p_default_private</string>
+</resources>
