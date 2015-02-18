@@ -7,7 +7,7 @@
     <string name="user_name">Pseudo :</string>
     <string name="user_password">Mot de passe :</string>
     <string name="more">Plus à venir...</string>
-    <string name="test_connection">Enregistrer</string>
+    <string name="test_connection">Tester les réglages</string>
     <string name="error">Erreur</string>
     <string name="error_url">L\'url fournie n\'est pas valide.</string>
     <string name="error_internet_connection">Vous n\'êtes pas connecté à internet.</string>
