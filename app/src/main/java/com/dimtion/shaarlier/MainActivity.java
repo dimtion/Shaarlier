@@ -1,6 +1,5 @@
 package com.dimtion.shaarlier;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -35,19 +34,19 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        // Retrieve user previous settings
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         String url = pref.getString(getString(R.string.p_url_shaarli), "http://");
         String usr = pref.getString(getString(R.string.p_username), "");
         String pwd = pref.getString(getString(R.string.p_password),"");
+        Boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
         
-        EditText text;
-        text = (EditText) findViewById(R.id.url_shaarli_input);
-        text.setText(url);
-        text = (EditText) findViewById(R.id.username_input);
-        text.setText(usr);
-        text = (EditText) findViewById(R.id.password_input);
-        text.setText(pwd);
-        
+        // Display user previous settings :
+        ((EditText) findViewById(R.id.url_shaarli_input)).setText(url);
+        ((EditText) findViewById(R.id.username_input)).setText(usr);
+        ((EditText) findViewById(R.id.password_input)).setText(pwd);
+        ((CheckBox) findViewById(R.id.default_private)).setChecked(prv);
     }
 
     public void loginHandler(View view){
@@ -72,15 +71,9 @@ public class MainActivity extends ActionBarActivity {
 
         // Is the URL possible ? :
         if (!URLUtil.isValidUrl(shaarliUrl)) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.error)
-                    .setMessage(R.string.error_url)
-                    .show();
-        } else if (networkInfo == null || !networkInfo.isConnected()) { // Sommes nous connecté à internet ?
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.error)
-                    .setMessage(R.string.error_internet_connection)
-                    .show();
+            Toast.makeText(getApplicationContext(), R.string.error_url, Toast.LENGTH_LONG).show();
+        } else if (networkInfo == null || !networkInfo.isConnected()) { // Are we connected to internet ?
+            Toast.makeText(getApplicationContext(), R.string.error_internet_connection, Toast.LENGTH_LONG).show();
         } else {
             // Si il n'y a pas d'erreur d'input on vérifie que les crédits sont corrects :
             new CheckShaarli().execute(shaarliUrl, username, password);
