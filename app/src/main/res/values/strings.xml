@@ -14,7 +14,6 @@
     <string name="success_test">Vos réglages ont bien été pris en compte.</string>
     <string name="success">Succès</string>
     <string name="title_activity_add">Ajouter à Shaarli</string>
-    <string name="hello_world">Hello world!</string>
     <string name="add_success">Votre page a bien été ajoutée.</string>
     <string name="login_error">Le triplet url - pseudo - mot de passe est incorrect, vérifiez qu\'il n\'y a pas d\'erreur. Si vous êtes sûr de vous, contactez le développeur.</string>
     <string name="default_private">Liens privés par défaut</string>

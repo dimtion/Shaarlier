@@ -42,15 +42,33 @@ public class MainActivity extends ActionBarActivity {
         String pwd = pref.getString(getString(R.string.p_password),"");
         Boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
         
+        // Retrieve interface : 
+        EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);        
+        EditText usernameEdit = (EditText) findViewById(R.id.username_input);        
+        EditText passwordEdit = (EditText) findViewById(R.id.password_input);        
+        CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
+        
         // Display user previous settings :
-        ((EditText) findViewById(R.id.url_shaarli_input)).setText(url);
-        ((EditText) findViewById(R.id.username_input)).setText(usr);
-        ((EditText) findViewById(R.id.password_input)).setText(pwd);
-        ((CheckBox) findViewById(R.id.default_private)).setChecked(prv);
+        urlEdit.setText(url);
+        usernameEdit.setText(usr);
+        passwordEdit.setText(pwd);
+        privateCheck.setChecked(prv);
+    }
+    
+    @Override
+   public void onPause(){
+        super.onPause();
+        // Save settings :
+        String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
+        saveStringPref(R.string.p_url_shaarli, url);
+        String usr = ((EditText) findViewById(R.id.username_input)).getText().toString();
+        saveStringPref(R.string.p_username, usr);
+        String pwd = ((EditText) findViewById(R.id.password_input)).getText().toString();
+        saveStringPref(R.string.p_password, pwd);
     }
 
     public void loginHandler(View view){
-
+        
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         EditText text;
@@ -88,16 +106,22 @@ public class MainActivity extends ActionBarActivity {
         }
     }
     
-    public void tooglePrivate(View view){
+    public void toogglePrivate(View view){
         boolean isChecked = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_default_private), isChecked);
-        editor.apply();
-        
-        
-        
+        editor.apply();        
     }
+    
+    
+    protected void saveStringPref(int key, String data){
+        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(getString(key), data);
+        editor.apply();        
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
