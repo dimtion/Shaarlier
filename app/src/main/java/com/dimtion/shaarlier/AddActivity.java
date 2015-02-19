@@ -39,21 +39,28 @@ public class AddActivity extends Activity {
         username    = pref.getString(getString(R.string.p_username), "");
         password    = pref.getString(getString(R.string.p_password),"");
         Boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
-        Boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
-        privateShare = prv;
+        privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
+
+        // convert urlShaarli into a real url :
+        if(!urlShaarli.endsWith("/")){
+            urlShaarli +='/';
+        }
+        if (!(urlShaarli.startsWith("http://") || urlShaarli.startsWith("https://"))){
+            urlShaarli = "http://" + urlShaarli;
+        }
         
-        if(urlShaarli.equals("") || username.equals("") || password.equals("") || !vld){
+        if(username.equals("") || password.equals("") || !vld){
             // If the is an error, launch the settings :
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
             startActivity(intentLaunchSettings);
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
-                if ("text/plain".equals(type)) {
-                    String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    new HandleAddUrl().execute(sharedUrl);
-                    
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
-                }
+            if ("text/plain".equals(type)) {
+                String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+                new HandleAddUrl().execute(sharedUrl);
+                
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
+            }
         }
         finish();
     }
@@ -169,7 +176,7 @@ public class AddActivity extends Activity {
                     .data("lf_title", title)
                     .data("lf_description", description);
             if (privateShare) postPageConn.data("lf_private","on");
-            Connection.Response postPage = postPageConn.execute(); // Then we post
+            postPageConn.execute(); // Then we post
 
             // String debug = postPage.body();
             

@@ -54,13 +54,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
    public void onPause(){
         super.onPause();
-        // Save settings :
-        String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
-        saveStringPref(R.string.p_url_shaarli, url);
-        String usr = ((EditText) findViewById(R.id.username_input)).getText().toString();
-        saveStringPref(R.string.p_username, usr);
-        String pwd = ((EditText) findViewById(R.id.password_input)).getText().toString();
-        saveStringPref(R.string.p_password, pwd);
+        saveSettings();
     }
 
     public void loginHandler(View view){
@@ -94,29 +88,30 @@ public class MainActivity extends ActionBarActivity {
             new CheckShaarli().execute(shaarliUrl, username, password);
             
             // On enregistre les crédits :
-            SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString(getString(R.string.p_url_shaarli), shaarliUrl)
-                    .putString(getString(R.string.p_username), username)
-                    .putString(getString(R.string.p_password), password)
-                    .apply();
+            saveSettings();
         }
     }
     
     public void togglePrivate(View view){
-        boolean isChecked = ((CheckBox) findViewById(R.id.default_private)).isChecked();
-        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean(getString(R.string.p_default_private), isChecked)
-                .apply();
+        saveSettings();
     }
-    
-    
-    protected void saveStringPref(int key, String data){
+
+    protected void saveSettings(){
+        // Get user inputs :
+        String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
+        String username = ((EditText) findViewById(R.id.username_input)).getText().toString();
+        String password = ((EditText) findViewById(R.id.password_input)).getText().toString();
+        boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
+
+        // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString(getString(key), data);
-        editor.apply();        
+        editor.putString(getString(R.string.p_url_shaarli), url)
+                .putString(getString(R.string.p_username), username)
+                .putString(getString(R.string.p_password), password)
+                .putBoolean(getString(R.string.p_default_private), isPrivate)
+                .apply();
+        
     }
     
     @Override

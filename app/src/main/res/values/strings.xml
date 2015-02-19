@@ -28,5 +28,5 @@
     <string name="p_default_private">com.dimtion.shaarlier.p_default_private</string>
     <string name="error_connecting">Le site donné ne semble pas fonctionner.</string>
     <string name="error_login">Le pseudo ou le mot de passe semble incorrect.</string>
-    <string name="error_parsing_token">Le site indiqué n\'est pas être un Shaarli. Du moins il n\'est pas géré.</string>
+    <string name="error_parsing_token">Le site indiqué n\'est pas un Shaarli compatible.</string>
 </resources>
