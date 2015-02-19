@@ -13,7 +13,8 @@
     android:paddingTop="20dp"
     android:paddingBottom="10dp"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingRight="10dp"
+    android:baselineAligned="false">
 
     <ImageView
         android:layout_width="fill_parent"
@@ -21,17 +22,17 @@
         android:id="@+id/imageView"
         android:src="@drawable/shaarli_icon"
         android:layout_gravity="top|center_horizontal"
-        android:contentDescription="Shaarli icon"
+        android:contentDescription="@string/logo_description"
         android:cropToPadding="false"
         android:maxHeight="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
         android:text="@string/your_shaarli_url"
         android:id="@+id/textView"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:layout_width="match_parent"
@@ -46,7 +47,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/user_name"
         android:id="@+id/textView"
-        android:layout_marginTop="25dp" />
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:layout_width="match_parent"
@@ -60,7 +61,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/user_password"
         android:id="@+id/textView"
-        android:layout_marginTop="26dp" />
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:layout_width="match_parent"
@@ -68,15 +69,6 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/password_input" />
-
-    <CheckBox
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/default_private"
-        android:id="@+id/default_private"
-        android:checked="true"
-        android:layout_marginTop="26dp"
-        android:onClick="togglePrivate" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -104,6 +96,29 @@
             android:indeterminate="true"
             android:visibility="gone" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/text_behaviour"
+        android:id="@+id/textView2" />
+
+    <CheckBox
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/default_private"
+        android:id="@+id/default_private"
+        android:checked="true"
+        android:layout_marginTop="10dp"
+        android:onClick="togglePrivate" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_show_share_dialog"
+        android:id="@+id/show_share_dialog"
+        android:checked="false" />
 
     <TextView
         android:layout_width="wrap_content"

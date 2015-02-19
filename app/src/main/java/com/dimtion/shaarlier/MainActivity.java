@@ -36,19 +36,22 @@ public class MainActivity extends ActionBarActivity {
         String url = pref.getString(getString(R.string.p_url_shaarli), "http://");
         String usr = pref.getString(getString(R.string.p_username), "");
         String pwd = pref.getString(getString(R.string.p_password),"");
-        Boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
+        boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
+        boolean shrDiag = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         
         // Retrieve interface : 
         EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);        
         EditText usernameEdit = (EditText) findViewById(R.id.username_input);        
         EditText passwordEdit = (EditText) findViewById(R.id.password_input);        
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
-        
+        CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
+
         // Display user previous settings :
         urlEdit.setText(url);
         usernameEdit.setText(usr);
         passwordEdit.setText(pwd);
         privateCheck.setChecked(prv);
+        shareDialogCheck.setChecked(shrDiag);
     }
     
     @Override
@@ -102,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
         String username = ((EditText) findViewById(R.id.username_input)).getText().toString();
         String password = ((EditText) findViewById(R.id.password_input)).getText().toString();
         boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
-
+        boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -110,6 +113,7 @@ public class MainActivity extends ActionBarActivity {
                 .putString(getString(R.string.p_username), username)
                 .putString(getString(R.string.p_password), password)
                 .putBoolean(getString(R.string.p_default_private), isPrivate)
+                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .apply();
         
     }
@@ -227,7 +231,6 @@ public class MainActivity extends ActionBarActivity {
                     Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
                 }
                 setValidated(false);
-                
             }
             findViewById(R.id.isWorking).setVisibility(View.GONE);
         }

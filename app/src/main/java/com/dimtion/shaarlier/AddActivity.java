@@ -1,10 +1,17 @@
 package com.dimtion.shaarlier;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.jsoup.Connection;
@@ -24,6 +31,7 @@ public class AddActivity extends Activity {
     private String username;
     private String password;
     private Boolean privateShare;
+    private boolean prefOpenDialog;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +46,10 @@ public class AddActivity extends Activity {
         urlShaarli  = pref.getString(getString(R.string.p_url_shaarli), "");
         username    = pref.getString(getString(R.string.p_username), "");
         password    = pref.getString(getString(R.string.p_password),"");
-        Boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
+        boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
-
+        prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
+        
         // convert urlShaarli into a real url :
         if(!urlShaarli.endsWith("/")){
             urlShaarli +='/';
@@ -56,13 +65,49 @@ public class AddActivity extends Activity {
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
-                new HandleAddUrl().execute(sharedUrl);
-                
+                // Show edit dialog if the users wants :
+                if(prefOpenDialog){
+                    handleDialog(sharedUrl);
+                } else {
+                    new HandleAddUrl().execute(sharedUrl, "", "", "");
+                }
+
             } else {
                 Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
             }
         }
-        finish();
+        
+    }
+    //
+    // Method made to handle the dialog box
+    //
+    private void handleDialog(final String sharedUrl){
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme));
+
+        LayoutInflater inflater = AddActivity.this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.share_dialog, null);
+        ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
+        
+        builder.setView(dialogView)
+                .setTitle("Partager")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Retrieve interface : 
+                        String title = ((EditText) dialogView.findViewById(R.id.title)).getText().toString();
+                        String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
+                        String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
+                        privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
+                        
+                        new HandleAddUrl().execute(sharedUrl, title, description, tags);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .show();
+
     }
     
     //
@@ -77,13 +122,8 @@ public class AddActivity extends Activity {
                 // Connect the user to the site :
                 connect();
                 
-                // TODO : Retrieve title, description...
-                String shareTitle = "";
-                String shareDescription = "";
-                String shareTags = "";
-                
                 // Post the shared url :
-                postLink(url[0], shareTitle, shareDescription, shareTags);
+                postLink(url[0], url[1], url[2], url[3]);
                 
             } catch (IOException | NullPointerException e){
                 return false;
@@ -98,6 +138,7 @@ public class AddActivity extends Activity {
             } else {
                 Toast.makeText(getApplicationContext(), R.string.add_error, Toast.LENGTH_LONG).show();
             }
+            finish();
             
         }
         
@@ -140,9 +181,6 @@ public class AddActivity extends Activity {
         private void postLink(String url, String title, String description, String tags) 
                 throws IOException {
             String encodedShareUrl = URLEncoder.encode(url, "UTF-8");
-            // String encodedShareTitle = URLEncoder.encode(title, "UTF-8");
-            // String encodedShareDescription = URLEncoder.encode(description, "UTF-8");
-            // String encodedShareTags = URLEncoder.encode(tags, "UTF-8");
             
             // Get a token and a date :
             final String postFormUrl = urlShaarli + "?post=" + encodedShareUrl;
