@@ -88,6 +88,7 @@ public class AddActivity extends Activity {
         final View dialogView = inflater.inflate(R.layout.share_dialog, null);
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
         
+        
         builder.setView(dialogView)
                 .setTitle("Partager")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
