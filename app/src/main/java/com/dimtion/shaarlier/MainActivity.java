@@ -7,12 +7,14 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jsoup.Connection;
@@ -30,7 +32,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+        // Make links clickable :
+        ((TextView) findViewById(R.id.about_details)).setMovementMethod(LinkMovementMethod.getInstance());
         // Retrieve user previous settings
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         String url = pref.getString(getString(R.string.p_url_shaarli), "http://");
@@ -38,11 +41,11 @@ public class MainActivity extends ActionBarActivity {
         String pwd = pref.getString(getString(R.string.p_password),"");
         boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
         boolean shrDiag = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
-        
-        // Retrieve interface : 
-        EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);        
-        EditText usernameEdit = (EditText) findViewById(R.id.username_input);        
-        EditText passwordEdit = (EditText) findViewById(R.id.password_input);        
+
+        // Retrieve interface :
+        EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);
+        EditText usernameEdit = (EditText) findViewById(R.id.username_input);
+        EditText passwordEdit = (EditText) findViewById(R.id.password_input);
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
         CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
 
@@ -53,7 +56,7 @@ public class MainActivity extends ActionBarActivity {
         privateCheck.setChecked(prv);
         shareDialogCheck.setChecked(shrDiag);
     }
-    
+
     @Override
    public void onPause(){
         super.onPause();
@@ -61,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void loginHandler(View view){
-        
+
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         EditText text;
@@ -71,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
         String username = text.getText().toString();
         text = (EditText) findViewById(R.id.password_input);
         String password = text.getText().toString();
-        
+
         if(!given_url.endsWith("/")){
             given_url +='/';
         }
@@ -89,17 +92,13 @@ public class MainActivity extends ActionBarActivity {
             // Si il n'y a pas d'erreur d'input on vérifie que les crédits sont corrects :
             findViewById(R.id.isWorking).setVisibility(View.VISIBLE);
             new CheckShaarli().execute(shaarliUrl, username, password);
-            
+
             // On enregistre les crédits :
             saveSettings();
         }
     }
-    
-    public void togglePrivate(View view){
-        saveSettings();
-    }
 
-    protected void saveSettings(){
+    void saveSettings(){
         // Get user inputs :
         String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
         String username = ((EditText) findViewById(R.id.username_input)).getText().toString();
@@ -115,9 +114,9 @@ public class MainActivity extends ActionBarActivity {
                 .putBoolean(getString(R.string.p_default_private), isPrivate)
                 .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .apply();
-        
+
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -139,24 +138,24 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    
+
     private void setValidated(Boolean value){
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_validated), value);
         editor.apply();
     }
-    
+
     // Envoie une requete au Shaarli pour vérifier que s'en est bien un.
     private class CheckShaarli extends AsyncTask<String, Void, Boolean> {
-        
+
         // Errors types :
         // 0 : no error
         // 1 : error connecting to shaarli
         // 2 : error parsing token
         // 3 : error login in
         private int error;
-        
+
         @Override
         protected Boolean doInBackground(String... urls) {
             this.error = 0;
@@ -170,11 +169,12 @@ public class MainActivity extends ActionBarActivity {
             try {
                 // On récupère la page du formulaire :
                 Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
+                        .followRedirects(true)
                         .method(Connection.Method.GET)
                         .execute();
                 Document loginPageDoc = loginFormPage.parse();
                 Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
-                
+
                 // On conserve les cookies et le token :
                 coockies = loginFormPage.cookies();
                 token = tokenElement.attr("value");
@@ -194,6 +194,7 @@ public class MainActivity extends ActionBarActivity {
             try {
                 Connection.Response loginPage = Jsoup.connect(loginUrl)
                         .method(Connection.Method.POST)
+                        .followRedirects(true)
                         .cookies(coockies)
                         .data("login", username)
                         .data("password", password)

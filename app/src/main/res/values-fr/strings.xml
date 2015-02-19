@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shaarlier</string>
+    <string name="action_settings">Réglages</string>
+    <string name="add_error">Une erreur s\'est produite lors du partage</string>
+    <string name="add_not_handle">Contenu non géré</string>
+    <string name="add_success">Votre lien a bien été partagé</string>
+    <string name="default_private">Liens privés par défaut</string>
+    <string name="description_hint">Description</string>
+    <string name="error_connecting">L\'url donnée ne semble pas fonctionner</string>
+    <string name="error_internet_connection">Vous n\'êtes pas connecté à internet</string>
+    <string name="error_login">Le pseudo ou le mot de passe est incorrect</string>
+    <string name="error_parsing_token">L\'url donné n\'est pas un Shaarli compatible</string>
+    <string name="error_url">L\'url donnée n\'est pas correcte</string>
+    <string name="logo_description">Logo de Shaarli</string>
+    <string name="more">Plus à venir...</string>
+    <string name="private_share">Privé</string>
+    <string name="share">Partager</string>
+    <string name="success_test">Les paramètres sont corrects</string>
+    <string name="tags_hint">tags (séparés par des espaces)</string>
+    <string name="test_connection">Tester les paramètres</string>
+    <string name="text_about">À propos</string>
+    <string name="text_behaviour">Comportement</string>
+    <string name="text_show_share_dialog">Afficher une boite de dialogue lors du partage</string>
+    <string name="title_activity_add">Ajouter à Shaarli</string>
+    <string name="title_hint">Titre (vide pour titre automatique)</string>
+    <string name="user_name">Pseudo :</string>
+    <string name="user_password">Mot de passe :</string>
+    <string name="your_shaarli_url">L\'url de votre Shaarli :</string>
+    <string name="text_about_details">Pour utiliser cette application vous avez besoin d\'un <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli" >Shaarli</a>, un clone minimaliste de delicious.
+Cette application est fièrement développée par dimtion, vous pouvez me trouver sur mon <a href="https://github.com/dimtion/Shaarlier">github </a> (et d\'autres recoins d\'internet).
+Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hesitez pas à publier sur le <a href="https://github.com/dimtion/Shaarlier/issues">bug tracker.</a></string>
+</resources>

@@ -82,7 +82,7 @@
         android:baselineAligned="false">
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/test_connection"
             android:id="@+id/button"
@@ -110,8 +110,7 @@
         android:text="@string/default_private"
         android:id="@+id/default_private"
         android:checked="true"
-        android:layout_marginTop="10dp"
-        android:onClick="togglePrivate" />
+        android:layout_marginTop="10dp" />
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -124,9 +123,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/text_about"
+        android:id="@+id/textView3"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/text_about_details"
+        android:id="@+id/about_details" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/more"
         android:id="@+id/textView"
-        android:layout_gravity="end|right"
+        android:layout_gravity="right"
         android:layout_marginTop="20dp" />
 </LinearLayout>
 
