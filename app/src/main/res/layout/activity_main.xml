@@ -34,12 +34,24 @@
         android:id="@+id/textView"
         android:layout_marginTop="10dp" />
 
-    <EditText
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:id="@+id/url_shaarli_input"
-        android:inputType="textUri"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/select_protocol"
+            android:spinnerMode="dropdown" />
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/url_shaarli_input"
+            android:inputType="textUri"
+            android:layout_weight="1" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"

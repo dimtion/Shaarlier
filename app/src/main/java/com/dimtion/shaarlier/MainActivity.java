@@ -12,8 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,27 +36,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         // Make links clickable :
         ((TextView) findViewById(R.id.about_details)).setMovementMethod(LinkMovementMethod.getInstance());
-        // Retrieve user previous settings
-        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-        String url = pref.getString(getString(R.string.p_url_shaarli), "http://");
-        String usr = pref.getString(getString(R.string.p_username), "");
-        String pwd = pref.getString(getString(R.string.p_password),"");
-        boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
-        boolean shrDiag = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
-
-        // Retrieve interface :
-        EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);
-        EditText usernameEdit = (EditText) findViewById(R.id.username_input);
-        EditText passwordEdit = (EditText) findViewById(R.id.password_input);
-        CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
-        CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
-
-        // Display user previous settings :
-        urlEdit.setText(url);
-        usernameEdit.setText(usr);
-        passwordEdit.setText(pwd);
-        privateCheck.setChecked(prv);
-        shareDialogCheck.setChecked(shrDiag);
+        setSettings();
+        
     }
 
     @Override
@@ -74,15 +57,14 @@ public class MainActivity extends ActionBarActivity {
         String username = text.getText().toString();
         text = (EditText) findViewById(R.id.password_input);
         String password = text.getText().toString();
-
+        String protocol = ((Spinner) findViewById(R.id.select_protocol)).getSelectedItem().toString();
         if(!given_url.endsWith("/")){
             given_url +='/';
         }
-        if (!(given_url.startsWith("http://") || given_url.startsWith("https://"))){
-            given_url = "http://" + given_url;
-        }
-        final String shaarliUrl = given_url;
-
+        given_url = given_url.replace("http://", "");
+        given_url = given_url.replace("https://", "");
+        final String shaarliUrl = protocol + given_url;
+        
         // Is the URL possible ? :
         if (!URLUtil.isValidUrl(shaarliUrl)) {
             Toast.makeText(getApplicationContext(), R.string.error_url, Toast.LENGTH_LONG).show();
@@ -103,18 +85,55 @@ public class MainActivity extends ActionBarActivity {
         String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
         String username = ((EditText) findViewById(R.id.username_input)).getText().toString();
         String password = ((EditText) findViewById(R.id.password_input)).getText().toString();
+        int protocol_id = ((Spinner) findViewById(R.id.select_protocol)).getSelectedItemPosition();
+        String protocol = ((Spinner) findViewById(R.id.select_protocol)).getSelectedItem().toString();
         boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
+        
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString(getString(R.string.p_url_shaarli), url)
+        editor.putString(getString(R.string.p_url_shaarli), protocol + url)
+                .putString(getString(R.string.p_user_url), url)
                 .putString(getString(R.string.p_username), username)
                 .putString(getString(R.string.p_password), password)
+                .putInt(getString(R.string.p_protocol), protocol_id)
                 .putBoolean(getString(R.string.p_default_private), isPrivate)
-                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
+                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)                
                 .apply();
 
+    }
+    
+    void setSettings(){
+        // Retrieve user previous settings
+        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+        String url = pref.getString(getString(R.string.p_user_url), "");
+        String usr = pref.getString(getString(R.string.p_username), "");
+        String pwd = pref.getString(getString(R.string.p_password),"");
+        int protocol = pref.getInt(getString(R.string.p_protocol), 0);
+        boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
+        boolean shrDiag = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
+
+        // Retrieve interface :
+        EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);
+        EditText usernameEdit = (EditText) findViewById(R.id.username_input);
+        EditText passwordEdit = (EditText) findViewById(R.id.password_input);
+        CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
+        CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
+        Spinner protocolSelectSpinner = (Spinner) findViewById(R.id.select_protocol);
+
+        // Init select_protocol spinner items :
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.select_protocol, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        protocolSelectSpinner.setAdapter(adapter);
+
+        // Display user previous settings :
+        urlEdit.setText(url);
+        usernameEdit.setText(usr);
+        passwordEdit.setText(pwd);
+        protocolSelectSpinner.setSelection(protocol);
+        privateCheck.setChecked(prv);
+        shareDialogCheck.setChecked(shrDiag);
     }
 
     @Override
