@@ -50,36 +50,59 @@ public class MainActivity extends ActionBarActivity {
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        EditText text;
-        text = (EditText) findViewById(R.id.url_shaarli_input);
-        String given_url = text.getText().toString();
-        text = (EditText) findViewById(R.id.username_input);
-        String username = text.getText().toString();
-        text = (EditText) findViewById(R.id.password_input);
-        String password = text.getText().toString();
-        String protocol = ((Spinner) findViewById(R.id.select_protocol)).getSelectedItem().toString();
-        if(!given_url.endsWith("/")){
-            given_url +='/';
-        }
-        given_url = given_url.replace("http://", "");
-        given_url = given_url.replace("https://", "");
-        final String shaarliUrl = protocol + given_url;
+        String[] userInput = loadShaarliInput();
         
         // Is the URL possible ? :
-        if (!URLUtil.isValidUrl(shaarliUrl)) {
+        if (!URLUtil.isValidUrl(userInput[0])) {
             Toast.makeText(getApplicationContext(), R.string.error_url, Toast.LENGTH_LONG).show();
         } else if (networkInfo == null || !networkInfo.isConnected()) { // Are we connected to internet ?
             Toast.makeText(getApplicationContext(), R.string.error_internet_connection, Toast.LENGTH_LONG).show();
         } else {
             // Si il n'y a pas d'erreur d'input on vérifie que les crédits sont corrects :
             findViewById(R.id.isWorking).setVisibility(View.VISIBLE);
-            new CheckShaarli().execute(shaarliUrl, username, password);
+            new CheckShaarli().execute(userInput[0], userInput[1], userInput[2]);
 
             // On enregistre les crédits :
             saveSettings();
         }
     }
+    String[] loadShaarliInput(){
+        EditText text;
+        EditText urlInput = (EditText) findViewById(R.id.url_shaarli_input);
+        String givenUrl = urlInput.getText().toString();
 
+        text = (EditText) findViewById(R.id.username_input);
+        String username = text.getText().toString();
+
+        text = (EditText) findViewById(R.id.password_input);
+        String password = text.getText().toString();
+
+        Spinner protocolInput = (Spinner) findViewById(R.id.select_protocol);
+        String protocol = protocolInput.getSelectedItem().toString();
+
+
+        // Edit the user url :
+        if(!givenUrl.endsWith("/")){
+            givenUrl +='/';
+        }
+
+        if(givenUrl.startsWith("http://")){
+            givenUrl = givenUrl.replace("http://", "");
+            protocolInput.setSelection(0, true); // Update protocol prompt
+            protocol = "http://";
+        } else if (givenUrl.startsWith("https://")) {
+            givenUrl = givenUrl.replace("https://", "");
+            protocolInput.setSelection(1, true); // Update protocol prompt
+            protocol = "https://";
+        }
+        // Update url prompt :
+        urlInput.setText(givenUrl);
+
+        final String shaarliUrl = protocol + givenUrl;
+        
+        return new String[]{shaarliUrl, username, password};
+        
+    }
     void saveSettings(){
         // Get user inputs :
         String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
@@ -241,6 +264,7 @@ public class MainActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
                 // Save the success :
                 setValidated(true);
+                saveSettings();
                 
             } else {
                 if(this.error == 1) { // Error loading page
