@@ -13,7 +13,7 @@
     <string name="error_parsing_token">L\'url donné n\'est pas un Shaarli compatible</string>
     <string name="error_url">L\'url donnée n\'est pas correcte</string>
     <string name="logo_description">Logo de Shaarli</string>
-    <string name="more">Plus à venir...</string>
+    <string name="more">Plus à venir…</string>
     <string name="private_share">Privé</string>
     <string name="share">Partager</string>
     <string name="success_test">Les paramètres sont corrects</string>
@@ -32,4 +32,5 @@ Cette application est fièrement développée par dimtion, vous pouvez me trouve
 Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez pas à publier sur le <a href="https://github.com/dimtion/Shaarlier/issues">bug tracker.</a></string>
     <string name="loading_title_hint">Chargement du title…</string>
     <string name="error_retrieving_title">Erreur chargement titre</string>
+    <string name="auto_load_title">Charger automatiquement le title de la page</string>
 </resources>

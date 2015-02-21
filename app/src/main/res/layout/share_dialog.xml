@@ -10,38 +10,40 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right">
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/title"
                 android:theme="@style/Widget.AppCompat.EditText"
                 android:inputType="textPersonName"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/title_hint"
-                android:layout_weight="1" />
+                android:hint="@string/title_hint" />
 
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/loading_title"
-                android:layout_weight="1"
                 android:visibility="gone"
-                android:indeterminate="true" />
-
-        </LinearLayout>
+                android:indeterminate="true"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_marginRight="10dp"
+                android:layout_alignTop="@+id/title"
+                android:layout_alignBottom="@+id/title"
+                android:layout_alignRight="@+id/title"/>
+        </RelativeLayout>
 
         <EditText
             android:id="@+id/description"
             android:inputType="textMultiLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="top|left"
             android:fontFamily="sans-serif"
-            android:hint="@string/description_hint"/>
+            android:hint="@string/description_hint"
+            android:minLines="2"/>
         <EditText
             android:id="@+id/tags"
             android:inputType="textPersonName"

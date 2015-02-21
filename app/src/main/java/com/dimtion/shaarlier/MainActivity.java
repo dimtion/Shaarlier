@@ -111,7 +111,7 @@ public class MainActivity extends ActionBarActivity {
         String protocol = ((Spinner) findViewById(R.id.select_protocol)).getSelectedItem().toString();
         boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
-        
+        boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -121,7 +121,8 @@ public class MainActivity extends ActionBarActivity {
                 .putString(getString(R.string.p_password), password)
                 .putInt(getString(R.string.p_protocol), protocol_id)
                 .putBoolean(getString(R.string.p_default_private), isPrivate)
-                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)                
+                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)   
+                .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
                 .apply();
 
     }
@@ -133,15 +134,17 @@ public class MainActivity extends ActionBarActivity {
         String usr = pref.getString(getString(R.string.p_username), "");
         String pwd = pref.getString(getString(R.string.p_password),"");
         int protocol = pref.getInt(getString(R.string.p_protocol), 0);
-        boolean prv = pref.getBoolean(getString(R.string.p_default_private), true);
+        boolean prv = pref.getBoolean(getString(R.string.p_default_private), false);
         boolean shrDiag = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
-
+        boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+        
         // Retrieve interface :
         EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);
         EditText usernameEdit = (EditText) findViewById(R.id.username_input);
         EditText passwordEdit = (EditText) findViewById(R.id.password_input);
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
         CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
+        CheckBox autoTitleCheck = (CheckBox) findViewById(R.id.auto_load_title);
         Spinner protocolSelectSpinner = (Spinner) findViewById(R.id.select_protocol);
 
         // Init select_protocol spinner items :
@@ -155,6 +158,7 @@ public class MainActivity extends ActionBarActivity {
         passwordEdit.setText(pwd);
         protocolSelectSpinner.setSelection(protocol);
         privateCheck.setChecked(prv);
+        autoTitleCheck.setChecked(isAutoTitle);
         shareDialogCheck.setChecked(shrDiag);
     }
 

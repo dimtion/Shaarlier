@@ -36,6 +36,7 @@ public class AddActivity extends Activity {
     private String password;
     private Boolean privateShare;
     private boolean prefOpenDialog;
+    private boolean autoTitle;
 
     private View a_dialogView;
     private AsyncTask a_TitleGetterExec;
@@ -56,6 +57,7 @@ public class AddActivity extends Activity {
         boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
         prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
+        autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
         
         // convert urlShaarli into a real url :
         if(!urlShaarli.endsWith("/")){
@@ -96,8 +98,9 @@ public class AddActivity extends Activity {
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
         this.a_dialogView = dialogView;
         
-        loadAutoTitle(sharedUrl);
-        
+        if(autoTitle) {
+            loadAutoTitle(sharedUrl);
+        }
         
         
         builder.setView(dialogView)
@@ -142,7 +145,6 @@ public class AddActivity extends Activity {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
 
             }
         });
@@ -172,11 +174,7 @@ public class AddActivity extends Activity {
             String loadedTitle;
             try {
                 loadedTitle = (String) a_TitleGetterExec.get();
-            } catch (InterruptedException e) {
-                loadedTitle = "";
-            } catch (ExecutionException e){
-                loadedTitle = "";
-            } catch (CancellationException e){
+            } catch (InterruptedException | NullPointerException | ExecutionException | CancellationException e) {
                 loadedTitle = "";
             }
             try {
