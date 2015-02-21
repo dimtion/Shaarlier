@@ -80,7 +80,6 @@ public class MainActivity extends ActionBarActivity {
         Spinner protocolInput = (Spinner) findViewById(R.id.select_protocol);
         String protocol = protocolInput.getSelectedItem().toString();
 
-
         // Edit the user url :
         if(!givenUrl.endsWith("/")){
             givenUrl +='/';
@@ -280,5 +279,4 @@ public class MainActivity extends ActionBarActivity {
         }
         
     }
-    
 }

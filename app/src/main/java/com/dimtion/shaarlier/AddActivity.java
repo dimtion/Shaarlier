@@ -32,6 +32,8 @@ public class AddActivity extends Activity {
     private String password;
     private Boolean privateShare;
     private boolean prefOpenDialog;
+
+    private View a_dialogView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +89,13 @@ public class AddActivity extends Activity {
         LayoutInflater inflater = AddActivity.this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.share_dialog, null);
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
+        this.a_dialogView = dialogView;
         
-        
+        // To get an automatic title :
+        new GetPageTitle().execute(sharedUrl);
+        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
         builder.setView(dialogView)
-                .setTitle("Partager")
+                .setTitle(R.string.share)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // Retrieve interface : 
@@ -109,6 +114,11 @@ public class AddActivity extends Activity {
                 })
                 .show();
 
+    }
+    
+    private void updateTitle(String title){
+        ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
+        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
     }
     
     //
@@ -221,4 +231,26 @@ public class AddActivity extends Activity {
             
         }
     }
+
+    private class GetPageTitle extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... url){
+            try {
+                Connection.Response pageResp = Jsoup.connect(url[0])
+                        .followRedirects(true)
+                        .execute();
+                Document pageDoc = pageResp.parse();
+                return pageDoc.title();
+            } catch (IOException | NullPointerException e) {
+                return "";
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String title){
+            updateTitle(title);
+        }
     }
+    }
+
+    

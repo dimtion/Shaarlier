@@ -9,13 +9,32 @@
         android:paddingTop="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
-        <EditText
-            android:id="@+id/title"
-            android:theme="@style/Widget.AppCompat.EditText"
-            android:inputType="textPersonName"
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/title_hint" />
+            android:layout_gravity="right">
+
+            <EditText
+                android:id="@+id/title"
+                android:theme="@style/Widget.AppCompat.EditText"
+                android:inputType="textPersonName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/title_hint"
+                android:layout_weight="1" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/loading_title"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:indeterminate="true" />
+
+        </LinearLayout>
+
         <EditText
             android:id="@+id/description"
             android:inputType="textMultiLine"

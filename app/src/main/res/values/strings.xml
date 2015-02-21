@@ -34,7 +34,7 @@
     <string name="p_default_private" translatable="false">com.dimtion.shaarlier.p_default_private</string>
     <string name="p_show_share_dialog" translatable="false">com.dimtion.shaarlier.p_show_share_dialog</string>
     <string name="p_protocol" translatable="false">com.dimtion.shaarlier.p_protocol</string>
-    <string name="p_user_url" trsnlatable="false">com.dimtion.shaarlier.p_urser_url</string>
+    <string name="p_user_url" trsnlatable="false" translatable="false">com.dimtion.shaarlier.p_urser_url</string>
     <string name="share">Share</string>
     <string name="text_about">About</string>
     <string name="text_about_details">To use this app your need a <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli" >Shaarli</a>, a minimalist delicious clone.
