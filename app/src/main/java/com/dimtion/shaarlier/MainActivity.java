@@ -36,7 +36,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         // Make links clickable :
         ((TextView) findViewById(R.id.about_details)).setMovementMethod(LinkMovementMethod.getInstance());
-        setSettings();
+        loadSettings();
         
     }
 
@@ -126,10 +126,36 @@ public class MainActivity extends ActionBarActivity {
                 .apply();
 
     }
-    
-    void setSettings(){
+    void updateSettingsFromUpdate(SharedPreferences pref){
+        int version = pref.getInt(getString(R.string.p_version),0);
+        int currentVersion;
+        try {
+            currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        } catch (Exception e){
+            currentVersion = 0;
+        }
+        if (version < currentVersion){
+            String url = pref.getString(getString(R.string.p_url_shaarli), "");
+            int protocol = 0;
+            if(url.startsWith("http://")){
+                url = url.replace("http://", "");
+                protocol = 0;
+            } else if (url.startsWith("https://")) {
+                url = url.replace("https://", "");
+                protocol = 1;
+            }
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString(getString(R.string.p_user_url), url)
+                    .putInt(getString(R.string.p_protocol), protocol)
+                    .commit();
+        }
+        
+    }
+    void loadSettings(){
         // Retrieve user previous settings
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+        updateSettingsFromUpdate(pref);
+        
         String url = pref.getString(getString(R.string.p_user_url), "");
         String usr = pref.getString(getString(R.string.p_username), "");
         String pwd = pref.getString(getString(R.string.p_password),"");
