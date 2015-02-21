@@ -21,7 +21,7 @@
     <string name="text_behaviour">Behaviour</string>
     <string name="text_show_share_dialog">Show dialog box when sharing</string>
     <string name="title_activity_add">Add to Shaarli</string>
-    <string name="title_hint">Title (empty for automatic title)</string>
+    <string name="title_hint">Title</string>
     <string name="user_name">Username :</string>
     <string name="user_password">Password :</string>
     <string name="your_shaarli_url">Your Shaarli url :</string>
@@ -44,4 +44,6 @@
         <item>http://</item>
         <item>https://</item>
     </string-array>
+    <string name="loading_title_hint">Loading title…</string>
+    <string name="error_retrieving_title">Title could not be loaded</string>
 </resources>

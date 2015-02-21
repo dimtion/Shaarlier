@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,8 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 
 public class AddActivity extends Activity {
@@ -34,6 +38,7 @@ public class AddActivity extends Activity {
     private boolean prefOpenDialog;
 
     private View a_dialogView;
+    private AsyncTask a_TitleGetterExec;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +96,10 @@ public class AddActivity extends Activity {
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
         this.a_dialogView = dialogView;
         
-        // To get an automatic title :
-        new GetPageTitle().execute(sharedUrl);
-        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
+        loadAutoTitle(sharedUrl);
+        
+        
+        
         builder.setView(dialogView)
                 .setTitle(R.string.share)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -113,12 +119,46 @@ public class AddActivity extends Activity {
                     }
                 })
                 .show();
-
     }
-    
-    private void updateTitle(String title){
-        ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
+
+    // To get an automatic title :
+    private void loadAutoTitle(String sharedUrl){
+        
+        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
+        ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
+
+        final GetPageTitle getter = new GetPageTitle();
+        a_TitleGetterExec = getter.execute(sharedUrl);
+        ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                getter.cancel(true);
+                a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        
+    }
+    private void updateTitle(String title, boolean isError){
+        ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.title_hint);
+        
+        if(isError){
+            ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
+        } else if(!title.equals("")) {
+            ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
+        }
+
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+        
     }
     
     //
@@ -128,13 +168,29 @@ public class AddActivity extends Activity {
         
         @Override
         protected Boolean doInBackground(String... url){
-            
+            // Wait for the title to be retrieved :
+            String loadedTitle;
+            try {
+                loadedTitle = (String) a_TitleGetterExec.get();
+            } catch (InterruptedException e) {
+                loadedTitle = "";
+            } catch (ExecutionException e){
+                loadedTitle = "";
+            } catch (CancellationException e){
+                loadedTitle = "";
+            }
             try {
                 // Connect the user to the site :
                 connect();
                 
+                String sharedTitle;
+                if(url[1].equals("")){
+                    sharedTitle = loadedTitle;
+                } else {
+                    sharedTitle = url[1];
+                }
                 // Post the shared url :
-                postLink(url[0], url[1], url[2], url[3]);
+                postLink(url[0], sharedTitle, url[2], url[3]);
                 
             } catch (IOException | NullPointerException e){
                 return false;
@@ -150,7 +206,6 @@ public class AddActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.add_error, Toast.LENGTH_LONG).show();
             }
             finish();
-            
         }
         
         private String getToken() throws IOException {            
@@ -236,6 +291,7 @@ public class AddActivity extends Activity {
         protected String doInBackground(String... url){
             try {
                 Connection.Response pageResp = Jsoup.connect(url[0])
+                        .maxBodySize(10240) // Hopefully we won't need more data
                         .followRedirects(true)
                         .execute();
                 Document pageDoc = pageResp.parse();
@@ -248,7 +304,16 @@ public class AddActivity extends Activity {
 
         @Override
         protected void onPostExecute(String title){
-            updateTitle(title);
+            if (title.equals("")) {
+                updateTitle(title, true);
+            } else {
+                updateTitle(title, false);
+            }
+        }
+        
+        @Override
+        protected void onCancelled(String title){
+            updateTitle("", false);
         }
     }
     }
