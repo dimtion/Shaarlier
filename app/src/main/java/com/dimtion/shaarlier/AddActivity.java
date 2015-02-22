@@ -26,8 +26,6 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 
 
 public class AddActivity extends Activity {
@@ -60,6 +58,8 @@ public class AddActivity extends Activity {
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
         prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+
+
         
         // convert urlShaarli into a real url :
         if(!urlShaarli.endsWith("/")){
@@ -78,11 +78,19 @@ public class AddActivity extends Activity {
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+                sharedUrl = sharedUrl.trim();
+                String sharedUrlTrimed = sharedUrl.substring(sharedUrl.lastIndexOf(" ")+1);
+                sharedUrlTrimed = sharedUrlTrimed.substring(sharedUrlTrimed.lastIndexOf("\n")+1);
+                String defaultTitle = "";
+                if (!sharedUrl.equals(sharedUrlTrimed)){
+                    defaultTitle = sharedUrl.replace(sharedUrlTrimed, "");
+                }
                 // Show edit dialog if the users wants :
                 if(prefOpenDialog){
-                    handleDialog(sharedUrl);
+                    handleDialog(sharedUrl, defaultTitle);
                 } else {
-                    new HandleAddUrl().execute(sharedUrl, "", "", "");
+                    
+                    new HandleAddUrl().execute(sharedUrl, defaultTitle, "", "");
                 }
 
             } else {
@@ -94,7 +102,7 @@ public class AddActivity extends Activity {
     //
     // Method made to handle the dialog box
     //
-    private void handleDialog(final String sharedUrl){
+    private void handleDialog(final String sharedUrl, String givenTitle){
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme));
 
         LayoutInflater inflater = AddActivity.this.getLayoutInflater();
@@ -102,8 +110,9 @@ public class AddActivity extends Activity {
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
         this.a_dialogView = dialogView;
         
+        // Load title :
         if(autoTitle) {
-            loadAutoTitle(sharedUrl);
+            loadAutoTitle(sharedUrl, givenTitle);
         }
 
         // Init tags :
@@ -133,13 +142,13 @@ public class AddActivity extends Activity {
     }
 
     // To get an automatic title :
-    private void loadAutoTitle(String sharedUrl){
+    private void loadAutoTitle(String sharedUrl, String defaultTitle){
         
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
 
         final GetPageTitle getter = new GetPageTitle();
-        a_TitleGetterExec = getter.execute(sharedUrl);
+        a_TitleGetterExec = getter.execute(sharedUrl, defaultTitle);
         ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -180,21 +189,24 @@ public class AddActivity extends Activity {
         protected Boolean doInBackground(String... url){
             // Wait for the title to be retrieved :
             String loadedTitle;
-            try {
-                loadedTitle = (String) a_TitleGetterExec.get();
-            } catch (InterruptedException | NullPointerException | ExecutionException | CancellationException e) {
-                loadedTitle = "";
+            
+            // If there is no url, try to load an url :
+            String sharedTitle;
+            if(url[1].equals("")){
+                try {
+                    loadedTitle = (String) a_TitleGetterExec.get();
+                } catch (Exception e) {
+                    loadedTitle = "";
+                }
+                sharedTitle = loadedTitle;
+            } else {
+                sharedTitle = url[1];
             }
+            
             try {
                 // Connect the user to the site :
-                connect();
+                connect();                
                 
-                String sharedTitle;
-                if(url[1].equals("")){
-                    sharedTitle = loadedTitle;
-                } else {
-                    sharedTitle = url[1];
-                }
                 // Post the shared url :
                 postLink(url[0], sharedTitle, url[2], url[3]);
                 
@@ -295,17 +307,20 @@ public class AddActivity extends Activity {
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... url){
-            try {
-                Connection.Response pageResp = Jsoup.connect(url[0])
-                        .maxBodySize(10240) // Hopefully we won't need more data
-                        .followRedirects(true)
-                        .execute();
-                Document pageDoc = pageResp.parse();
-                return pageDoc.title();
-            } catch (IOException | NullPointerException e) {
-                return "";
+            if (url[1].equals("")) {
+                try {
+                    Connection.Response pageResp = Jsoup.connect(url[0])
+                            .maxBodySize(10240) // Hopefully we won't need more data
+                            .followRedirects(true)
+                            .execute();
+                    Document pageDoc = pageResp.parse();
+                    return pageDoc.title();
+                } catch (Exception e) {
+                    return "";
+                }
+            } else {
+                return url[1];
             }
-
         }
 
         @Override
