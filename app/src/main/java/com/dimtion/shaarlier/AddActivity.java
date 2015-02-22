@@ -12,8 +12,10 @@ import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import org.jsoup.Connection;
@@ -67,6 +69,8 @@ public class AddActivity extends Activity {
             urlShaarli = "http://" + urlShaarli;
         }
         
+        
+        
         if(username.equals("") || password.equals("") || !vld){
             // If the is an error, launch the settings :
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
@@ -101,7 +105,11 @@ public class AddActivity extends Activity {
         if(autoTitle) {
             loadAutoTitle(sharedUrl);
         }
-        
+
+        // Init tags :
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.share_dialog);
+        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
+        new AutoCompleteWrapper(textView, adapter, urlShaarli, this);
         
         builder.setView(dialogView)
                 .setTitle(R.string.share)

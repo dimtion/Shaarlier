@@ -44,9 +44,9 @@
             android:fontFamily="sans-serif"
             android:hint="@string/description_hint"
             android:minLines="2"/>
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/tags"
-            android:inputType="textPersonName"
+            android:inputType="textAutoComplete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/tags_hint" />
