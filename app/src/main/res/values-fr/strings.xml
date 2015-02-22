@@ -26,11 +26,13 @@
     <string name="title_hint">Titre</string>
     <string name="user_name">Pseudo :</string>
     <string name="user_password">Mot de passe :</string>
-    <string name="your_shaarli_url">L\'url de votre Shaarli :</string>
+    <string name="your_shaarli_url">Url de votre Shaarli :</string>
     <string name="text_about_details">Pour utiliser cette application vous avez besoin d\'un <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli" >Shaarli</a>, un clone minimaliste de delicious.
 Cette application est fièrement développée par dimtion, vous pouvez me trouver sur mon <a href="https://github.com/dimtion/Shaarlier">github </a> (et d\'autres recoins d\'internet).
 Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez pas à publier sur le <a href="https://github.com/dimtion/Shaarlier/issues">bug tracker.</a></string>
     <string name="loading_title_hint">Chargement du title…</string>
     <string name="error_retrieving_title">Erreur chargement titre</string>
-    <string name="auto_load_title">Charger automatiquement le title de la page</string>
+    <string name="auto_load_title">Charger automatiquement le titre de la page</string>
+    <string name="url_hint">shaarli.monserveur.fr</string>
+    <string name="action_go_to_shaarli">Aller à mon Shaarli</string>
 </resources>

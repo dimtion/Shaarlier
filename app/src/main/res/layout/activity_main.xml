@@ -50,7 +50,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/url_shaarli_input"
             android:inputType="textUri"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="@string/url_hint" />
     </LinearLayout>
 
     <TextView
@@ -65,7 +66,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/username_input"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:hint="@string/username_hint" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -122,21 +124,25 @@
         android:text="@string/default_private"
         android:id="@+id/default_private"
         android:checked="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp" />
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/text_show_share_dialog"
         android:id="@+id/show_share_dialog"
-        android:checked="false" />
+        android:checked="false"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp" />
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/auto_load_title"
         android:id="@+id/auto_load_title"
-        android:checked="true" />
+        android:checked="true"
+        android:layout_marginTop="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -144,7 +150,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/text_about"
         android:id="@+id/textView4"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="35dp"
         android:layout_marginBottom="10dp" />
 
     <TextView
@@ -154,14 +160,6 @@
         android:text="@string/text_about_details"
         android:id="@+id/about_details" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/more"
-        android:id="@+id/textView5"
-        android:layout_gravity="right"
-        android:layout_marginTop="20dp" />
 </LinearLayout>
 
 </ScrollView>

@@ -49,4 +49,8 @@
     <string name="loading_title_hint">Loading title…</string>
     <string name="error_retrieving_title">Title could not be loaded</string>
     <string name="auto_load_title">Automatically load page title</string>
+    <string name="username_hint" translatable="false">Batman</string>
+    <string name="url_hint">shaarli.myserver.org</string>
+    <string name="action_go_to_shaarli">Open my Shaarli</string>
+    <string name="developer_shaarli" translatable="false">https://dimtion.taupincretin.com/shaarli</string>
 </resources>

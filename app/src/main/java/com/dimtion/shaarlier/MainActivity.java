@@ -1,9 +1,11 @@
 package com.dimtion.shaarlier;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -79,20 +81,22 @@ public class MainActivity extends ActionBarActivity {
 
         Spinner protocolInput = (Spinner) findViewById(R.id.select_protocol);
         String protocol = protocolInput.getSelectedItem().toString();
+        
+        if (!givenUrl.equals("")) {
+            // Edit the user url :
+            if (!givenUrl.endsWith("/")) {
+                givenUrl += '/';
+            }
 
-        // Edit the user url :
-        if(!givenUrl.endsWith("/")){
-            givenUrl +='/';
-        }
-
-        if(givenUrl.startsWith("http://")){
-            givenUrl = givenUrl.replace("http://", "");
-            protocolInput.setSelection(0, true); // Update protocol prompt
-            protocol = "http://";
-        } else if (givenUrl.startsWith("https://")) {
-            givenUrl = givenUrl.replace("https://", "");
-            protocolInput.setSelection(1, true); // Update protocol prompt
-            protocol = "https://";
+            if (givenUrl.startsWith("http://")) {
+                givenUrl = givenUrl.replace("http://", "");
+                protocolInput.setSelection(0, true); // Update protocol prompt
+                protocol = "http://";
+            } else if (givenUrl.startsWith("https://")) {
+                givenUrl = givenUrl.replace("https://", "");
+                protocolInput.setSelection(1, true); // Update protocol prompt
+                protocol = "https://";
+            }
         }
         // Update url prompt :
         urlInput.setText(givenUrl);
@@ -147,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
             SharedPreferences.Editor editor = pref.edit();
             editor.putString(getString(R.string.p_user_url), url)
                     .putInt(getString(R.string.p_protocol), protocol)
-                    .commit();
+                    .apply();
         }
         
     }
@@ -205,6 +209,14 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_go_to_shaarli) {
+            SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+            updateSettingsFromUpdate(pref);
+
+            String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
+            
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browserIntent);
         }
 
         return super.onOptionsItemSelected(item);
