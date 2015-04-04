@@ -1,11 +1,6 @@
 I know, a todo file is never a good practice
 
 ## To be done before any new feature :
-- Close keyboard immediatly after sending link
-- In description field, enable caps and autocomplete
-- Reduce font size in description field
-- Increase time-out when saving link
-- Description, title and tags fields deleted in landscape
 - Figure out bugs in tags : probably save tags one the device and perform offline search.
 
 ## To be done future releases
@@ -21,7 +16,7 @@ I know, a todo file is never a good practice
 
 ## Long term evolutions
 - See online Shaarli links
-- Multiple Shaarlis
+- Multiple Shaarli(s)
 - Save link later
 - notifications for shaarli.fr
 - But please, not too much : KISS

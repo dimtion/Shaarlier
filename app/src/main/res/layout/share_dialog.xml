@@ -17,7 +17,7 @@
             <EditText
                 android:id="@+id/title"
                 android:theme="@style/Widget.AppCompat.EditText"
-                android:inputType="textPersonName"
+                android:inputType="textCapSentences"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/title_hint" />
@@ -37,13 +37,15 @@
 
         <EditText
             android:id="@+id/description"
-            android:inputType="textMultiLine"
+            android:inputType="textMultiLine|textCapSentences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top|left"
             android:fontFamily="sans-serif"
             android:hint="@string/description_hint"
-            android:minLines="2"/>
+            android:minLines="2"
+            android:singleLine="false"
+            android:textSize="15sp"/>
         <MultiAutoCompleteTextView
             android:id="@+id/tags"
             android:inputType="textAutoComplete"

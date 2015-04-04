@@ -2,6 +2,7 @@ package com.dimtion.shaarlier;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -78,30 +80,57 @@ public class AddActivity extends Activity {
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
-                
-                // trim the url for annoying apps which send to much data :
-                sharedUrl = sharedUrl.trim();
-                String sharedUrlTrimed = sharedUrl.substring(sharedUrl.lastIndexOf(" ")+1);
-                sharedUrlTrimed = sharedUrlTrimed.substring(sharedUrlTrimed.lastIndexOf("\n")+1);
-                
-                // Then extract the title :
-                String defaultTitle = "";
-                if (!sharedUrl.equals(sharedUrlTrimed)){
-                    defaultTitle = sharedUrl.replace(sharedUrlTrimed, "");
-                }
+
+                String sharedUrlTrimmed = this.extractUrl(sharedUrl);
+                String defaultTitle = this.extractTitle(sharedUrl);
+
                 // Show edit dialog if the users wants :
                 if(prefOpenDialog){
-                    handleDialog(sharedUrlTrimed, defaultTitle);
+                    handleDialog(sharedUrlTrimmed, defaultTitle);
                 } else {
-                    
-                    new HandleAddUrl().execute(sharedUrlTrimed, defaultTitle, "", "");
+                    new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
                 }
 
             } else {
                 Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
             }
         }
-        
+    }
+
+    //
+    // Method to extract the url from shared data and delete trackers
+    //
+    private String extractUrl(String sharedUrl){
+        String finalUrl;
+        // trim the url because of annoying apps which send to much data :
+        finalUrl = sharedUrl.trim();
+        finalUrl = finalUrl.substring(finalUrl.lastIndexOf(" ")+1);
+        finalUrl = finalUrl.substring(finalUrl.lastIndexOf("\n")+1);
+
+        // Delete parameters added by trackers :
+        if(finalUrl.contains("&utm_source=")) {finalUrl = finalUrl.substring(0, finalUrl.indexOf("&utm_source="));}
+        if(finalUrl.contains("?utm_source=")) {finalUrl = finalUrl.substring(0, finalUrl.indexOf("?utm_source="));}
+        if(finalUrl.contains("#xtor=RSS-"))   {finalUrl = finalUrl.substring(0, finalUrl.indexOf("#xtor=RSS-"));}
+
+        return finalUrl;
+    }
+
+    //
+    // Method to extract the title from shared data
+    //
+    private String extractTitle(String sharedUrl){
+        String title;
+        title = sharedUrl.trim();
+        if (title.contains(" ")) {
+            title = title.substring(0, title.lastIndexOf(" "));
+        } else if (title.contains("\n")){
+            title = title.substring(0, title.lastIndexOf("\n"));
+        } else {
+            title = "";
+        }
+
+        return title;
+
     }
     //
     // Method made to handle the dialog box
@@ -123,17 +152,25 @@ public class AddActivity extends Activity {
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.share_dialog);
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
         new AutoCompleteWrapper(textView, adapter, urlShaarli, this);
-        
+
+        // Open the dialog :
         builder.setView(dialogView)
                 .setTitle(R.string.share)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // Retrieve interface : 
+                        // Retrieve interface :
                         String title = ((EditText) dialogView.findViewById(R.id.title)).getText().toString();
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
                         String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
-                        
+
+                        // In case sharing is too long, close keyboard:
+                        InputMethodManager imm = (InputMethodManager)getSystemService(
+                                Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
+
+
+                        // Finally send everything
                         new HandleAddUrl().execute(sharedUrl, title, description, tags);
                     }
                 })
@@ -275,6 +312,7 @@ public class AddActivity extends Activity {
             Connection.Response formPage = Jsoup.connect(postFormUrl)
                     .followRedirects(true)
                     .cookies(coockies)
+                    .timeout(10000)
                     .execute();
             // coockies = formPage.cookies();
             Document formPageDoc = formPage.parse();
@@ -294,6 +332,7 @@ public class AddActivity extends Activity {
             Connection postPageConn = Jsoup.connect(postUrl)
                     .method(Connection.Method.POST)
                     .cookies(coockies)
+                    .timeout(10000)
                     .data("save_edit", "Save")
                     .data("token", token)
                     .data("lf_tags", tags)

@@ -25,7 +25,8 @@
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
             android:taskAffinity="com.dimtion.Shaarlier.share"
-            android:theme="@android:style/Theme.NoDisplay" >
+            android:theme="@android:style/Theme.NoDisplay"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
