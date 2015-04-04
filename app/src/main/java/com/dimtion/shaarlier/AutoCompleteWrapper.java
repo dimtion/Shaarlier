@@ -9,11 +9,15 @@ import android.widget.MultiAutoCompleteTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,8 +61,13 @@ public class AutoCompleteWrapper {
                 // Format the url :
 //                String data = URLEncoder.encode(urls[0], "UTF-8");
                 final String requestUrl = siteUrl + "?ws=tags&term=+";
-                
-                String json = Jsoup.connect(requestUrl).ignoreContentType(true).execute().body();
+                Map<String, String> cookie = getCookie();
+
+                String json = Jsoup.connect(requestUrl)
+                        .cookies(cookie)
+                        .ignoreContentType(true)
+                        .execute()
+                        .body();
 
                 JSONArray ja = new JSONArray(json);
                 for (int i = 0; i < ja.length(); i++) {
@@ -72,6 +81,40 @@ public class AutoCompleteWrapper {
             return predictionsArr;
         }
 
+        private Map<String, String> getCookie() throws  IOException {
+
+            SharedPreferences pref = a_context.getSharedPreferences(a_context.getString(R.string.params), Context.MODE_PRIVATE);
+            String urlShaarli  = pref.getString(a_context.getString(R.string.p_url_shaarli), "");
+            String username    = pref.getString(a_context.getString(R.string.p_username), "");
+            String password    = pref.getString(a_context.getString(R.string.p_password),"");
+
+            // Before login we must retrieve a token :
+            final String loginFormUrl = urlShaarli.concat("?do=login");
+            Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
+                    .method(Connection.Method.GET)
+                    .execute();
+            Document loginPageDoc = loginFormPage.parse();
+
+
+            Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
+            Map<String, String> cookies = loginFormPage.cookies();
+
+            String token = tokenElement.attr("value");
+
+            // Now we have a token, we try to retrieve a valid cookie :
+
+            // The actual request
+            Connection.Response loginPage = Jsoup.connect(siteUrl)
+                    .followRedirects(true)
+                    .method(Connection.Method.POST)
+                    .cookies(cookies)
+                    .data("login", username)
+                    .data("password", password)
+                    .data("token", token)
+                    .data("returnurl", urlShaarli)
+                    .execute();
+            return loginPage.cookies();
+        }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(ArrayList<String> result) {

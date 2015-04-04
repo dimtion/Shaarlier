@@ -11,7 +11,7 @@
     <string name="error_internet_connection">Vous n\'êtes pas connecté à internet</string>
     <string name="error_login">Le pseudo ou le mot de passe est incorrect</string>
     <string name="error_parsing_token">L\'url donné n\'est pas un Shaarli compatible</string>
-    <string name="error_url">L\'url donnée n\'est pas correcte</string>
+    <string name="error_url">L\'url donnée n\'est pas valide</string>
     <string name="logo_description">Logo de Shaarli</string>
     <string name="more">Plus à venir…</string>
     <string name="private_share">Privé</string>

@@ -30,7 +30,7 @@ import java.util.Map;
 
 
 public class AddActivity extends Activity {
-    private Map<String, String> coockies;
+    private Map<String, String> cookies;
     private String token;
     private String urlShaarli;
     private String username;
@@ -275,7 +275,7 @@ public class AddActivity extends Activity {
 
             
             Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
-            coockies = loginFormPage.cookies();
+            cookies = loginFormPage.cookies();
             return tokenElement.attr("value");
         }
         
@@ -288,13 +288,13 @@ public class AddActivity extends Activity {
             Connection.Response loginPage = Jsoup.connect(loginUrl)
                     .followRedirects(true)
                     .method(Connection.Method.POST)
-                    .cookies(coockies)
+                    .cookies(cookies)
                     .data("login", username)
                     .data("password", password)
                     .data("token", token)
                     .data("returnurl", urlShaarli)
                     .execute();
-            coockies = loginPage.cookies();
+            cookies = loginPage.cookies();
             Document document = loginPage.parse();
             Element logoutElement = document.body().select("a[href=?do=logout]").first();
             logoutElement.attr("href"); // If this fails, you're not connected
@@ -309,10 +309,10 @@ public class AddActivity extends Activity {
             final String postFormUrl = urlShaarli + "?post=" + encodedShareUrl;
             Connection.Response formPage = Jsoup.connect(postFormUrl)
                     .followRedirects(true)
-                    .cookies(coockies)
+                    .cookies(cookies)
                     .timeout(10000)
                     .execute();
-            // coockies = formPage.cookies();
+            // cookies = formPage.cookies();
             Document formPageDoc = formPage.parse();
             // String debug = formPage.body();
             Element tokenElement = formPageDoc.body().select("input[name=token]").first();
@@ -329,7 +329,7 @@ public class AddActivity extends Activity {
             final String postUrl = urlShaarli + "?post=" + encodedShareUrl;
             Connection postPageConn = Jsoup.connect(postUrl)
                     .method(Connection.Method.POST)
-                    .cookies(coockies)
+                    .cookies(cookies)
                     .timeout(10000)
                     .data("save_edit", "Save")
                     .data("token", token)
