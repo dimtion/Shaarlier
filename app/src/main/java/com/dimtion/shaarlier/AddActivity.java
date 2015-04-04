@@ -78,19 +78,23 @@ public class AddActivity extends Activity {
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+                
+                // trim the url for annoying apps which send to much data :
                 sharedUrl = sharedUrl.trim();
                 String sharedUrlTrimed = sharedUrl.substring(sharedUrl.lastIndexOf(" ")+1);
                 sharedUrlTrimed = sharedUrlTrimed.substring(sharedUrlTrimed.lastIndexOf("\n")+1);
+                
+                // Then extract the title :
                 String defaultTitle = "";
                 if (!sharedUrl.equals(sharedUrlTrimed)){
                     defaultTitle = sharedUrl.replace(sharedUrlTrimed, "");
                 }
                 // Show edit dialog if the users wants :
                 if(prefOpenDialog){
-                    handleDialog(sharedUrl, defaultTitle);
+                    handleDialog(sharedUrlTrimed, defaultTitle);
                 } else {
                     
-                    new HandleAddUrl().execute(sharedUrl, defaultTitle, "", "");
+                    new HandleAddUrl().execute(sharedUrlTrimed, defaultTitle, "", "");
                 }
 
             } else {
@@ -310,7 +314,7 @@ public class AddActivity extends Activity {
             if (url[1].equals("")) {
                 try {
                     Connection.Response pageResp = Jsoup.connect(url[0])
-                            .maxBodySize(10240) // Hopefully we won't need more data
+                            .maxBodySize(50240) // Hopefully we won't need more data
                             .followRedirects(true)
                             .execute();
                     Document pageDoc = pageResp.parse();
