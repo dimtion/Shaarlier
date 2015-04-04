@@ -37,6 +37,7 @@
     <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
     <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
     <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
+    <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
     <string name="share">Share</string>
     <string name="text_about">About</string>
     <string name="text_about_details">To use this app your need a <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli" >Shaarli</a>, a minimalist delicious clone.

@@ -14,7 +14,6 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
@@ -123,9 +122,9 @@ public class AddActivity extends Activity {
         title = sharedUrl.trim();
         if (title.contains(" ")) {
             title = title.substring(0, title.lastIndexOf(" "));
-        } else if (title.contains("\n")){
+        } if (title.contains("\n")){
             title = title.substring(0, title.lastIndexOf("\n"));
-        } else {
+        } if (title.equals(sharedUrl.trim())){
             title = "";
         }
 
@@ -149,9 +148,8 @@ public class AddActivity extends Activity {
         }
 
         // Init tags :
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.share_dialog);
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
-        new AutoCompleteWrapper(textView, adapter, urlShaarli, this);
+        new AutoCompleteWrapper(textView, urlShaarli, this);
 
         // Open the dialog :
         builder.setView(dialogView)
