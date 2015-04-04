@@ -32,7 +32,6 @@ I made this app because the official one doesn't feels right to me, in some case
 - SebSauvage original project : https://github.com/sebsauvage/Shaarli/
 - Main fork of the project : https://github.com/shaarli/Shaarli/
 - [Play Store link](https://play.google.com/store/apps/details?id=com.dimtion.shaarlier)
-
 - Thanks Jonathan Hedley for [jsoup](http://jsoup.org/) | [license](http://jsoup.org/license)
 
 --------

@@ -1,13 +1,14 @@
 I know, a todo file is never a good practice
 
 ## To be done before any new feature
-- Handle redirection
+- Handle redirection (with some strange shaarlis)
 
 ## Planned for future releases
 - Save link from main menu
 - Create a post with no link
 - Save link in a draft in case of an error
 - Edit/Show link when sharing
+- Nicer UI
 
 ## Q&A
 - Try app on as many apps as possible
