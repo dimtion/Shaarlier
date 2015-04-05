@@ -14,9 +14,10 @@ A simple app for sharing links on your Shaarli.
 See [TODO file](https://github.com/dimtion/Shaarlier/blob/master/TODO.md) for a detailed roadmap.
 
 ## Downloads
-- From the [play store](https://play.google.com/store/apps/details?id=com.dimtion.shaarlier)
+- From the [Play Store](https://play.google.com/store/apps/details?id=com.dimtion.shaarlier)
 - From the [release tab](https://github.com/dimtion/Shaarlier/releases)
-- Soon : F-Droid, Aptoide
+- From the [Aptoide Store](http://dimtion.store.aptoide.com/app/market/com.dimtion.shaarlier/8/8917968/Shaarlier)
+- Soon : F-Droid 
 
 ## Use it !
 1. Download the app
