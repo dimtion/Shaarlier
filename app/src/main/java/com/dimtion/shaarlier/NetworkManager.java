@@ -17,20 +17,19 @@ import java.util.Map;
  * This class handle all the communications with shaarli and other web services
  */
 class NetworkManager {
-    private String m_shaarliUrl;
-    private String m_username;
-    private String m_password;
+    private final String m_shaarliUrl;
+    private final String m_username;
+    private final String m_password;
 
-    private Activity m_parentActivity;
+//    private Activity m_parentActivity;
 
     private Map<String, String> m_cookies;
     private String m_token;
 
-    NetworkManager(Activity parentActivity, String shaarliUrl, String username, String password) {
+    NetworkManager(String shaarliUrl, String username, String password) {
         this.m_shaarliUrl = shaarliUrl;
         this.m_username = username;
         this.m_password = password;
-        this.m_parentActivity = parentActivity;
     }
 
     //
@@ -41,10 +40,10 @@ class NetworkManager {
     }
 
     //
-    // Method to test the network connection
+    // Method to test the network connection (lighter version)
     //
-    public boolean testNetwork() {
-        ConnectivityManager connMgr = (ConnectivityManager) this.m_parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean testNetwork(Activity parentActivity) {
+        ConnectivityManager connMgr = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }

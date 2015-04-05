@@ -1,10 +1,7 @@
 package com.dimtion.shaarlier;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +10,6 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -21,13 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.io.IOException;
-import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -49,22 +39,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void loginHandler(View view){
-
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         String[] userInput = loadShaarliInput();
         
         // Is the URL possible ? :
-        if (!URLUtil.isValidUrl(userInput[0])) {
+        if (!NetworkManager.isUrl(userInput[0])) {
             Toast.makeText(getApplicationContext(), R.string.error_url, Toast.LENGTH_LONG).show();
-        } else if (networkInfo == null || !networkInfo.isConnected()) { // Are we connected to internet ?
+        } else if (!NetworkManager.testNetwork(this)) { // Are we connected to the Internet ?
             Toast.makeText(getApplicationContext(), R.string.error_internet_connection, Toast.LENGTH_LONG).show();
-        } else {
-            // Si il n'y a pas d'erreur d'input on vérifie que les crédits sont corrects :
+        } else { // Obvious things are ok, let's try login in
             findViewById(R.id.isWorking).setVisibility(View.VISIBLE);
             new CheckShaarli().execute(userInput[0], userInput[1], userInput[2]);
 
-            // On enregistre les crédits :
             saveSettings();
         }
     }
@@ -229,93 +214,48 @@ public class MainActivity extends ActionBarActivity {
         editor.apply();
     }
 
-    // Envoie une requete au Shaarli pour vérifier que s'en est bien un.
-    private class CheckShaarli extends AsyncTask<String, Void, Boolean> {
+    // Handle the test button
+    private class CheckShaarli extends AsyncTask<String, Void, Integer> {
 
-        // Errors types :
+        // Error types :
         // 0 : no error
         // 1 : error connecting to shaarli
         // 2 : error parsing token
         // 3 : error login in
-        private int error;
 
         @Override
-        protected Boolean doInBackground(String... urls) {
-            this.error = 0;
-            final String loginFormUrl = urls[0] + "?do=login";
-            // Get a token and check if the shaarli exists
-            Map<String, String> cookies;
-            String token;
-            String url_shaarli;
-            String username;
-            String password;
+        protected Integer doInBackground(String... urls) {
+            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2]);
             try {
-                // On récupère la page du formulaire :
-                Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
-                        .followRedirects(true)
-                        .method(Connection.Method.GET)
-                        .execute();
-                Document loginPageDoc = loginFormPage.parse();
-                Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
-
-                // On conserve les cookies et le token :
-                cookies = loginFormPage.cookies();
-                token = tokenElement.attr("value");
-                url_shaarli = urls[0];
-                username = urls[1];
-                password = urls[2];
-            } catch (IOException   e) {
-                this.error = 1;
-                return false;
-            } catch (NullPointerException e) {
-                this.error = 2;
-                return false;
+                if (!manager.retrieveLoginToken()) {
+                    return 2;
+                }
+                if (!manager.login()) {
+                    return 3;
+                }
+            } catch (IOException e) {
+                return 1;
             }
-
-            final String loginUrl = url_shaarli;
-            // Attempt login in :
-            try {
-                Connection.Response loginPage = Jsoup.connect(loginUrl)
-                        .method(Connection.Method.POST)
-                        .followRedirects(true)
-                        .cookies(cookies)
-                        .data("login", username)
-                        .data("password", password)
-                        .data("token", token)
-                        .data("returnurl", url_shaarli)
-                        .execute();
-
-                Document document = loginPage.parse();
-                Element logoutElement = document.body().select("a[href=?do=logout]").first();
-                logoutElement.attr("href"); // If this fails, you're not connected
-            } catch (IOException   e) {
-                this.error = 1;
-                return false;
-            } catch (NullPointerException e) {
-                this.error = 3;
-                return false;
-            }
-            return true;
+            return 0;
         }
     
         @Override
-        protected void onPostExecute(Boolean is_log_ok) {
-            if (is_log_ok) {
+        protected void onPostExecute(Integer loginOutput) {
+            if (loginOutput == 0) {
                 // print success
                 Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
-                // Save the success :
+                // Save only on success :
                 setValidated(true);
                 saveSettings();
-                
-            } else {
-                if(this.error == 1) { // Error loading page
-                    Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
-                } else if(this.error == 2) { // Error parsing token
-                    Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
-                } else if (this.error == 3){ // Error login
-                    Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
-                }
+            } else if (loginOutput == 1) { // Error loading page
                 setValidated(false);
+                Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
+            } else if (loginOutput == 2) { // Error parsing token
+                setValidated(false);
+                Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
+            } else if (loginOutput == 3) { // Error login
+                setValidated(false);
+                Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
             }
             findViewById(R.id.isWorking).setVisibility(View.GONE);
         }
