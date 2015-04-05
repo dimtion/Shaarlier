@@ -11,7 +11,7 @@ import android.widget.MultiAutoCompleteTextView;
  */
 
 
-public class SpaceTokenizer implements MultiAutoCompleteTextView.Tokenizer {
+class SpaceTokenizer implements MultiAutoCompleteTextView.Tokenizer {
 
     public int findTokenStart(CharSequence text, int cursor) {
         int i = cursor;

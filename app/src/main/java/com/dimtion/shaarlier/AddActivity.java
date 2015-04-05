@@ -36,7 +36,6 @@ public class AddActivity extends Activity {
     private String username;
     private String password;
     private Boolean privateShare;
-    private boolean prefOpenDialog;
     private boolean autoTitle;
 
     private View a_dialogView;
@@ -57,7 +56,7 @@ public class AddActivity extends Activity {
         password    = pref.getString(getString(R.string.p_password),"");
         boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
-        prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
+        boolean prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
 
 

@@ -7,8 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -244,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
             this.error = 0;
             final String loginFormUrl = urls[0] + "?do=login";
             // Get a token and check if the shaarli exists
-            Map<String, String> coockies;
+            Map<String, String> cookies;
             String token;
             String url_shaarli;
             String username;
@@ -259,7 +259,7 @@ public class MainActivity extends ActionBarActivity {
                 Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
 
                 // On conserve les cookies et le token :
-                coockies = loginFormPage.cookies();
+                cookies = loginFormPage.cookies();
                 token = tokenElement.attr("value");
                 url_shaarli = urls[0];
                 username = urls[1];
@@ -278,7 +278,7 @@ public class MainActivity extends ActionBarActivity {
                 Connection.Response loginPage = Jsoup.connect(loginUrl)
                         .method(Connection.Method.POST)
                         .followRedirects(true)
-                        .cookies(coockies)
+                        .cookies(cookies)
                         .data("login", username)
                         .data("password", password)
                         .data("token", token)

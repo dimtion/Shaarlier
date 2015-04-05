@@ -16,6 +16,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +26,11 @@ import java.util.Set;
  * Inspired from : http://stackoverflow.com/a/5051180
  * and : http://www.claytical.com/blog/android-dynamic-autocompletion-using-google-places-api
  */
-public class AutoCompleteWrapper {
-    String siteUrl;
+class AutoCompleteWrapper {
+    private String siteUrl;
 
-    MultiAutoCompleteTextView a_textView;
-    Context a_context;
+    private MultiAutoCompleteTextView a_textView;
+    private Context a_context;
     public AutoCompleteWrapper(final MultiAutoCompleteTextView textView, String url, Context context){
         siteUrl = url;
         a_textView = textView;
@@ -55,14 +56,24 @@ public class AutoCompleteWrapper {
         @Override
         protected ArrayList<String> doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
-            ArrayList<String> predictionsArr = new ArrayList<>();
-
+            ArrayList<String> tags = new ArrayList<>();
+            Map<String, String> cookies;
             try {
-                // Format the url :
-//                String data = URLEncoder.encode(urls[0], "UTF-8");
-                final String requestUrl = siteUrl + "?ws=tags&term=+";
-                Map<String, String> cookie = getCookie();
+                cookies = getCookie();
+            } catch (IOException e) {
+                return tags;
+            }
+            String[] awesompleteTags = retrieveTagsFromAwesomplete(siteUrl, cookies);
+            String[] wsTags = retrieveTagsFromWs(siteUrl, cookies);
+            Collections.addAll(tags, awesompleteTags);
+            Collections.addAll(tags, wsTags);
+            return tags;
+        }
 
+        private String[] retrieveTagsFromWs(String urlShaarli, Map<String, String> cookie) {
+            final String requestUrl = urlShaarli + "?ws=tags&term=+";
+            String[] predictionsArr = {};
+            try {
                 String json = Jsoup.connect(requestUrl)
                         .cookies(cookie)
                         .ignoreContentType(true)
@@ -70,17 +81,40 @@ public class AutoCompleteWrapper {
                         .body();
 
                 JSONArray ja = new JSONArray(json);
+                predictionsArr = new String[ja.length()];
                 for (int i = 0; i < ja.length(); i++) {
                     // add each entry to our array
-                    predictionsArr.add(ja.getString(i));
+                    predictionsArr[i] = ja.getString(i);
+//                    Log.d("Shaarlier, tag :", ja.getString(i));
                 }
-                
+
             } catch (IOException | JSONException e) {
-               Log.d("Shaarlier", e.getMessage());
+                Log.d("Shaarlier : ", e.getMessage());
             }
             return predictionsArr;
         }
 
+        private String[] retrieveTagsFromAwesomplete(String urlShaarli, Map<String, String> cookie) {
+            final String requestUrl = urlShaarli + "?post=";
+            String[] tags = {};
+            try {
+                Document postPage = Jsoup.connect(requestUrl)
+                        .cookies(cookie)
+                        .execute()
+                        .parse();
+
+                String tagsString = postPage.body()
+                        .select("input[name=lf_tags]")
+                        .first()
+                        .attr("data-list");
+                tags = tagsString.split(", ");
+
+
+            } catch (IOException e) {
+                Log.d("Shaarlier : ", e.getMessage());
+            }
+            return tags;
+        }
         private Map<String, String> getCookie() throws  IOException {
 
             SharedPreferences pref = a_context.getSharedPreferences(a_context.getString(R.string.params), Context.MODE_PRIVATE);
