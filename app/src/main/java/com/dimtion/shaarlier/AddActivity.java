@@ -19,19 +19,10 @@ import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 
 public class AddActivity extends Activity {
-    private Map<String, String> cookies;
-    private String token;
     private String urlShaarli;
     private String username;
     private String password;
@@ -58,8 +49,6 @@ public class AddActivity extends Activity {
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
         boolean prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
-
-
         
         // convert urlShaarli into a real url :
         if(!urlShaarli.endsWith("/")){
@@ -68,9 +57,7 @@ public class AddActivity extends Activity {
         if (!(urlShaarli.startsWith("http://") || urlShaarli.startsWith("https://"))){
             urlShaarli = "http://" + urlShaarli;
         }
-        
-        
-        
+
         if(username.equals("") || password.equals("") || !vld){
             // If the is an error, launch the settings :
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
@@ -225,15 +212,14 @@ public class AddActivity extends Activity {
         
         @Override
         protected Boolean doInBackground(String... url){
-            // Wait for the title to be retrieved :
+
+            // If there is no title, wait for title getter :
             String loadedTitle;
-            
-            // If there is no url, try to load an url :
             String sharedTitle;
             if(url[1].equals("")){
                 try {
                     loadedTitle = (String) a_TitleGetterExec.get();
-                } catch (Exception e) {
+                } catch (Exception e) { // could happen if the user didn't want to load titles.
                     loadedTitle = "";
                 }
                 sharedTitle = loadedTitle;
@@ -243,10 +229,10 @@ public class AddActivity extends Activity {
             
             try {
                 // Connect the user to the site :
-                connect();                
-                
-                // Post the shared url :
-                postLink(url[0], sharedTitle, url[2], url[3]);
+                NetworkManager manager = new NetworkManager(urlShaarli, username, password);
+                manager.retrieveLoginToken();
+                manager.login();
+                manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
                 
             } catch (IOException | NullPointerException e){
                 return false;
@@ -263,101 +249,12 @@ public class AddActivity extends Activity {
             }
             finish();
         }
-        
-        private String getToken() throws IOException {            
-            final String loginFormUrl = urlShaarli.concat("?do=login");
-
-            Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
-                    .method(Connection.Method.GET)
-                    .execute();
-            Document loginPageDoc = loginFormPage.parse();
-
-            
-            Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
-            cookies = loginFormPage.cookies();
-            return tokenElement.attr("value");
-        }
-        
-        
-        private void connect() throws IOException {
-            final String loginUrl = urlShaarli;
-            token = getToken();
-            
-            // The actual request
-            Connection.Response loginPage = Jsoup.connect(loginUrl)
-                    .followRedirects(true)
-                    .method(Connection.Method.POST)
-                    .cookies(cookies)
-                    .data("login", username)
-                    .data("password", password)
-                    .data("token", token)
-                    .data("returnurl", urlShaarli)
-                    .execute();
-            cookies = loginPage.cookies();
-            Document document = loginPage.parse();
-            Element logoutElement = document.body().select("a[href=?do=logout]").first();
-            logoutElement.attr("href"); // If this fails, you're not connected
-        }
-        
-        
-        private void postLink(String url, String title, String description, String tags) 
-                throws IOException {
-            String encodedShareUrl = URLEncoder.encode(url, "UTF-8");
-            
-            // Get a token and a date :
-            final String postFormUrl = urlShaarli + "?post=" + encodedShareUrl;
-            Connection.Response formPage = Jsoup.connect(postFormUrl)
-                    .followRedirects(true)
-                    .cookies(cookies)
-                    .timeout(10000)
-                    .execute();
-            // cookies = formPage.cookies();
-            Document formPageDoc = formPage.parse();
-            // String debug = formPage.body();
-            Element tokenElement = formPageDoc.body().select("input[name=token]").first();
-            token = tokenElement.attr("value");
-            
-            Element dateElement = formPageDoc.body().select("input[name=lf_linkdate]").first();
-            String date = dateElement.attr("value"); // The server date
-            
-            if(title.equals("")) {
-                Element titleElement = formPageDoc.body().select("input[name=lf_title]").first();
-                title = titleElement.attr("value"); // The title given by shaarli
-            }
-            // The post request :
-            final String postUrl = urlShaarli + "?post=" + encodedShareUrl;
-            Connection postPageConn = Jsoup.connect(postUrl)
-                    .method(Connection.Method.POST)
-                    .cookies(cookies)
-                    .timeout(10000)
-                    .data("save_edit", "Save")
-                    .data("token", token)
-                    .data("lf_tags", tags)
-                    .data("lf_linkdate", date)
-                    .data("lf_url", url)
-                    .data("lf_title", title)
-                    .data("lf_description", description);
-            if (privateShare) postPageConn.data("lf_private","on");
-            postPageConn.execute(); // Then we post
-
-            // String debug = postPage.body();
-            
-        }
     }
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... url){
             if (url[1].equals("")) {
-                try {
-                    Connection.Response pageResp = Jsoup.connect(url[0])
-                            .maxBodySize(50240) // Hopefully we won't need more data
-                            .followRedirects(true)
-                            .execute();
-                    Document pageDoc = pageResp.parse();
-                    return pageDoc.title();
-                } catch (Exception e) {
-                    return "";
-                }
+                return NetworkManager.loadTitle(url[0]);
             } else {
                 return url[1];
             }
