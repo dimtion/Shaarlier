@@ -19,19 +19,10 @@ import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 
 public class AddActivity extends Activity {
-    private Map<String, String> cookies;
-    private String token;
     private String urlShaarli;
     private String username;
     private String password;
@@ -40,7 +31,7 @@ public class AddActivity extends Activity {
 
     private View a_dialogView;
     private AsyncTask a_TitleGetterExec;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,16 +49,16 @@ public class AddActivity extends Activity {
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
         boolean prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
-
+        
         // convert urlShaarli into a real url :
-        if (!urlShaarli.endsWith("/")) {
-            urlShaarli += '/';
+        if(!urlShaarli.endsWith("/")){
+            urlShaarli +='/';
         }
-        if (!(urlShaarli.startsWith("http://") || urlShaarli.startsWith("https://"))) {
+        if (!(urlShaarli.startsWith("http://") || urlShaarli.startsWith("https://"))){
             urlShaarli = "http://" + urlShaarli;
         }
 
-        if (username.equals("") || password.equals("") || !vld) {
+        if(username.equals("") || password.equals("") || !vld){
             // If the is an error, launch the settings :
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
             startActivity(intentLaunchSettings);
@@ -79,7 +70,7 @@ public class AddActivity extends Activity {
                 String defaultTitle = this.extractTitle(sharedUrl);
 
                 // Show edit dialog if the users wants :
-                if (prefOpenDialog) {
+                if(prefOpenDialog){
                     handleDialog(sharedUrlTrimmed, defaultTitle);
                 } else {
                     new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
@@ -123,11 +114,9 @@ public class AddActivity extends Activity {
         title = sharedUrl.trim();
         if (title.contains(" ")) {
             title = title.substring(0, title.lastIndexOf(" "));
-        }
-        if (title.contains("\n")) {
+        } if (title.contains("\n")){
             title = title.substring(0, title.lastIndexOf("\n"));
-        }
-        if (title.equals(sharedUrl.trim())) {
+        } if (title.equals(sharedUrl.trim())){
             title = "";
         }
 
@@ -153,7 +142,7 @@ public class AddActivity extends Activity {
 
         // Init tags :
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
-        new AutoCompleteWrapper(textView, urlShaarli, this);
+        new AutoCompleteWrapper(textView, this);
 
         // Open the dialog :
         builder.setView(dialogView)
@@ -167,7 +156,7 @@ public class AddActivity extends Activity {
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
 
                         // In case sharing is too long, close keyboard:
-                        InputMethodManager imm = (InputMethodManager) getSystemService(
+                        InputMethodManager imm = (InputMethodManager)getSystemService(
                                 Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
 
@@ -185,8 +174,8 @@ public class AddActivity extends Activity {
     }
 
     // To get an automatic title :
-    private void loadAutoTitle(String sharedUrl, String defaultTitle) {
-
+    private void loadAutoTitle(String sharedUrl, String defaultTitle){
+        
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
 
@@ -197,66 +186,62 @@ public class AddActivity extends Activity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
-
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
                 getter.cancel(true);
                 a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
             }
-
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
-
+        
     }
-
-    private void updateTitle(String title, boolean isError) {
+    private void updateTitle(String title, boolean isError){
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.title_hint);
-
-        if (isError) {
+        
+        if(isError){
             ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
-        } else if (!title.equals("")) {
+        } else if(!title.equals("")) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
         }
 
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
-
+        
     }
-
+    
     //
     // Class which handle the arrival of a new share url, async
     //
     private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
-
+        
         @Override
-        protected Boolean doInBackground(String... url) {
-            // Wait for the title to be retrieved :
-            String loadedTitle;
+        protected Boolean doInBackground(String... url){
 
-            // If there is no url, try to load an url :
+            // If there is no title, wait for title getter :
+            String loadedTitle;
             String sharedTitle;
-            if (url[1].equals("")) {
+            if(url[1].equals("")){
                 try {
                     loadedTitle = (String) a_TitleGetterExec.get();
-                } catch (Exception e) {
+                } catch (Exception e) { // could happen if the user didn't want to load titles.
                     loadedTitle = "";
                 }
                 sharedTitle = loadedTitle;
             } else {
                 sharedTitle = url[1];
             }
-
+            
             try {
                 // Connect the user to the site :
-                connect();
-
-                // Post the shared url :
-                postLink(url[0], sharedTitle, url[2], url[3]);
-
-            } catch (IOException | NullPointerException e) {
+                NetworkManager manager = new NetworkManager(urlShaarli, username, password);
+                manager.retrieveLoginToken();
+                manager.login();
+                manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
+                
+            } catch (IOException | NullPointerException e){
                 return false;
             }
             return true;
@@ -271,120 +256,31 @@ public class AddActivity extends Activity {
             }
             finish();
         }
-
-        private String getToken() throws IOException {
-            final String loginFormUrl = urlShaarli.concat("?do=login");
-
-            Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
-                    .method(Connection.Method.GET)
-                    .execute();
-            Document loginPageDoc = loginFormPage.parse();
-
-
-            Element tokenElement = loginPageDoc.body().select("input[name=token]").first();
-            cookies = loginFormPage.cookies();
-            return tokenElement.attr("value");
-        }
-
-
-        private void connect() throws IOException {
-            final String loginUrl = urlShaarli;
-            token = getToken();
-
-            // The actual request
-            Connection.Response loginPage = Jsoup.connect(loginUrl)
-                    .followRedirects(true)
-                    .method(Connection.Method.POST)
-                    .cookies(cookies)
-                    .data("login", username)
-                    .data("password", password)
-                    .data("token", token)
-                    .data("returnurl", urlShaarli)
-                    .execute();
-            cookies = loginPage.cookies();
-            Document document = loginPage.parse();
-            Element logoutElement = document.body().select("a[href=?do=logout]").first();
-            logoutElement.attr("href"); // If this fails, you're not connected
-        }
-
-
-        private void postLink(String url, String title, String description, String tags)
-                throws IOException {
-            String encodedShareUrl = URLEncoder.encode(url, "UTF-8");
-
-            // Get a token and a date :
-            final String postFormUrl = urlShaarli + "?post=" + encodedShareUrl;
-            Connection.Response formPage = Jsoup.connect(postFormUrl)
-                    .followRedirects(true)
-                    .cookies(cookies)
-                    .timeout(10000)
-                    .execute();
-            // cookies = formPage.cookies();
-            Document formPageDoc = formPage.parse();
-            // String debug = formPage.body();
-            Element tokenElement = formPageDoc.body().select("input[name=token]").first();
-            token = tokenElement.attr("value");
-
-            Element dateElement = formPageDoc.body().select("input[name=lf_linkdate]").first();
-            String date = dateElement.attr("value"); // The server date
-
-            if (title.equals("")) {
-                Element titleElement = formPageDoc.body().select("input[name=lf_title]").first();
-                title = titleElement.attr("value"); // The title given by shaarli
-            }
-            // The post request :
-            final String postUrl = urlShaarli + "?post=" + encodedShareUrl;
-            Connection postPageConn = Jsoup.connect(postUrl)
-                    .method(Connection.Method.POST)
-                    .cookies(cookies)
-                    .timeout(10000)
-                    .data("save_edit", "Save")
-                    .data("token", token)
-                    .data("lf_tags", tags)
-                    .data("lf_linkdate", date)
-                    .data("lf_url", url)
-                    .data("lf_title", title)
-                    .data("lf_description", description);
-            if (privateShare) postPageConn.data("lf_private", "on");
-            postPageConn.execute(); // Then we post
-
-            // String debug = postPage.body();
-
-        }
     }
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... url) {
+        protected String doInBackground(String... url){
             if (url[1].equals("")) {
-                try {
-                    Connection.Response pageResp = Jsoup.connect(url[0])
-                            .maxBodySize(50240) // Hopefully we won't need more data
-                            .followRedirects(true)
-                            .execute();
-                    Document pageDoc = pageResp.parse();
-                    return pageDoc.title();
-                } catch (Exception e) {
-                    return "";
-                }
+                return NetworkManager.loadTitle(url[0]);
             } else {
                 return url[1];
             }
         }
 
         @Override
-        protected void onPostExecute(String title) {
+        protected void onPostExecute(String title){
             if (title.equals("")) {
                 updateTitle(title, true);
             } else {
                 updateTitle(title, false);
             }
         }
-
+        
         @Override
-        protected void onCancelled(String title) {
+        protected void onCancelled(String title){
             updateTitle("", false);
         }
     }
-}
+    }
 
     
