@@ -1,7 +1,6 @@
 package com.dimtion.shaarlier;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,18 +32,18 @@ public class MainActivity extends ActionBarActivity {
         // Make links clickable :
         ((TextView) findViewById(R.id.about_details)).setMovementMethod(LinkMovementMethod.getInstance());
         loadSettings();
-        
+
     }
 
     @Override
-   public void onPause(){
+    public void onPause() {
         super.onPause();
         saveSettings();
     }
 
-    public void loginHandler(View view){
+    public void loginHandler(View view) {
         String[] userInput = loadShaarliInput();
-        
+
         // Is the URL possible ? :
         if (!NetworkManager.isUrl(userInput[0])) {
             Toast.makeText(getApplicationContext(), R.string.error_url, Toast.LENGTH_LONG).show();
@@ -57,7 +56,8 @@ public class MainActivity extends ActionBarActivity {
             saveSettings();
         }
     }
-    String[] loadShaarliInput(){
+
+    String[] loadShaarliInput() {
         EditText text;
         EditText urlInput = (EditText) findViewById(R.id.url_shaarli_input);
         String givenUrl = urlInput.getText().toString();
@@ -70,7 +70,7 @@ public class MainActivity extends ActionBarActivity {
 
         Spinner protocolInput = (Spinner) findViewById(R.id.select_protocol);
         String protocol = protocolInput.getSelectedItem().toString();
-        
+
         if (!givenUrl.equals("")) {
             // Edit the user url :
             if (!givenUrl.endsWith("/")) {
@@ -91,11 +91,12 @@ public class MainActivity extends ActionBarActivity {
         urlInput.setText(givenUrl);
 
         final String shaarliUrl = protocol + givenUrl;
-        
+
         return new String[]{shaarliUrl, username, password};
-        
+
     }
-    void saveSettings(){
+
+    void saveSettings() {
         // Get user inputs :
         String url = ((EditText) findViewById(R.id.url_shaarli_input)).getText().toString();
         String username = ((EditText) findViewById(R.id.username_input)).getText().toString();
@@ -114,23 +115,24 @@ public class MainActivity extends ActionBarActivity {
                 .putString(getString(R.string.p_password), password)
                 .putInt(getString(R.string.p_protocol), protocol_id)
                 .putBoolean(getString(R.string.p_default_private), isPrivate)
-                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)   
+                .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
                 .apply();
 
     }
-    void updateSettingsFromUpdate(SharedPreferences pref){
-        int version = pref.getInt(getString(R.string.p_version),0);
+
+    void updateSettingsFromUpdate(SharedPreferences pref) {
+        int version = pref.getInt(getString(R.string.p_version), 0);
         int currentVersion;
         try {
             currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        } catch (Exception e){
+        } catch (Exception e) {
             currentVersion = 0;
         }
-        if (version < currentVersion){
+        if (version < currentVersion) {
             String url = pref.getString(getString(R.string.p_url_shaarli), "");
             int protocol = 0;
-            if(url.startsWith("http://")){
+            if (url.startsWith("http://")) {
                 url = url.replace("http://", "");
                 protocol = 0;
             } else if (url.startsWith("https://")) {
@@ -142,21 +144,22 @@ public class MainActivity extends ActionBarActivity {
                     .putInt(getString(R.string.p_protocol), protocol)
                     .apply();
         }
-        
+
     }
-    void loadSettings(){
+
+    void loadSettings() {
         // Retrieve user previous settings
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         updateSettingsFromUpdate(pref);
-        
+
         String url = pref.getString(getString(R.string.p_user_url), "");
         String usr = pref.getString(getString(R.string.p_username), "");
-        String pwd = pref.getString(getString(R.string.p_password),"");
+        String pwd = pref.getString(getString(R.string.p_password), "");
         int protocol = pref.getInt(getString(R.string.p_protocol), 0);
         boolean prv = pref.getBoolean(getString(R.string.p_default_private), false);
         boolean shrDiag = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
-        
+
         // Retrieve interface :
         EditText urlEdit = (EditText) findViewById(R.id.url_shaarli_input);
         EditText usernameEdit = (EditText) findViewById(R.id.username_input);
@@ -203,7 +206,7 @@ public class MainActivity extends ActionBarActivity {
             updateSettingsFromUpdate(pref);
 
             String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
-            
+
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(browserIntent);
         } else if (id == R.id.action_share) {
@@ -241,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setValidated(Boolean value){
+    private void setValidated(Boolean value) {
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_validated), value);
@@ -272,7 +275,7 @@ public class MainActivity extends ActionBarActivity {
             }
             return 0;
         }
-    
+
         @Override
         protected void onPostExecute(Integer loginOutput) {
             if (loginOutput == 0) {
@@ -293,6 +296,6 @@ public class MainActivity extends ActionBarActivity {
             }
             findViewById(R.id.isWorking).setVisibility(View.GONE);
         }
-        
+
     }
 }
