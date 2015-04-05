@@ -6,6 +6,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.webkit.URLUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -53,7 +55,7 @@ class NetworkManager {
     }
 
     //
-    // Method to load the title of a web page
+    // Static method to load the title of a web page
     //
     public static String loadTitle(String url) {
         try {
@@ -88,6 +90,7 @@ class NetworkManager {
 
     //
     // Method which retrieve the cookie saying that we are logged in
+    // (login in)
     //
     public boolean login() throws IOException {
         final String loginUrl = this.m_shaarliUrl;
@@ -115,6 +118,7 @@ class NetworkManager {
     //
     // Method which retrieve a token for posting links
     // Update the cookie, the token and the date
+    // Assume being logged in
     //
     public void retrievePostLinkToken(String encodedSharedLink) throws IOException {
         final String postFormUrl = this.m_shaarliUrl + "?post=" + encodedSharedLink;
@@ -132,6 +136,7 @@ class NetworkManager {
 
     //
     // Method which publishes a link to shaarli
+    // Assume being logged in
     //
     public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare)
             throws IOException {
@@ -152,5 +157,57 @@ class NetworkManager {
                 .data("lf_description", sharedDescription);
         if (privateShare) postPageConn.data("lf_private", "on");
         postPageConn.execute(); // Then we post
+    }
+
+    //
+    // Method which retrieve tags from the WS (old shaarli)
+    // Assume being logged in
+    //
+    public String[] retrieveTagsFromWs() {
+        final String requestUrl = this.m_shaarliUrl + "?ws=tags&term=+";
+        String[] predictionsArr = {};
+        try {
+            String json = Jsoup.connect(requestUrl)
+                    .cookies(this.m_cookies)
+                    .ignoreContentType(true)
+                    .execute()
+                    .body();
+
+            JSONArray ja = new JSONArray(json);
+            predictionsArr = new String[ja.length()];
+            for (int i = 0; i < ja.length(); i++) {
+                // add each entry to our array
+                predictionsArr[i] = ja.getString(i);
+//                    Log.d("Shaarlier, tag :", ja.getString(i));
+            }
+
+        } catch (IOException | JSONException e) {
+            return predictionsArr;
+        }
+        return predictionsArr;
+    }
+
+    //
+    // Method which retrieve tags from awesomplete (new shaarli)
+    // Assume being logged in
+    //
+    public String[] retrieveTagsFromAwesomplete() {
+        final String requestUrl = this.m_shaarliUrl + "?post=";
+        String[] tags = {};
+        try {
+            String tagsString = Jsoup.connect(requestUrl)
+                    .cookies(this.m_cookies)
+                    .execute()
+                    .parse()
+                    .body()
+                    .select("input[name=lf_tags]")
+                    .first()
+                    .attr("data-list");
+            tags = tagsString.split(", ");
+
+        } catch (IOException e) {
+            return tags;
+        }
+        return tags;
     }
 }

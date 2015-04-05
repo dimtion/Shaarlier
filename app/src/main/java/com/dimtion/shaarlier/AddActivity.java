@@ -135,7 +135,7 @@ public class AddActivity extends Activity {
 
         // Init tags :
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
-        new AutoCompleteWrapper(textView, urlShaarli, this);
+        new AutoCompleteWrapper(textView, this);
 
         // Open the dialog :
         builder.setView(dialogView)
