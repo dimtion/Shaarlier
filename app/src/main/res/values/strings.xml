@@ -41,10 +41,10 @@
 
     <string name="share">Share</string>
     <string name="text_about">About</string>
-    <string name="text_about_details">To use this app your need a <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli" >Shaarli</a>, a minimalist delicious clone.
+    <string name="text_about_details">To use this app your need a <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli">Shaarli</a>, a minimalist delicious clone.
     This app is proudly developed by dimtion, find me on my <a href="https://github.com/dimtion/Shaarlier">github account</a> (and on other places on the Internet).
     If you find any bug (which is quite impossible) or have a feature request don\'t hesitate to publish on the <a href="https://github.com/dimtion/Shaarlier/issues">issue tracker.</a></string>
-    <string-array  name="select_protocol" translatable="false">
+    <string-array name="select_protocol" translatable="false">
         <item>http://</item>
         <item>https://</item>
     </string-array>
@@ -55,4 +55,5 @@
     <string name="url_hint">shaarli.myserver.org</string>
     <string name="action_go_to_shaarli">Open my Shaarli</string>
     <string name="developer_shaarli" translatable="false">https://dimtion.taupincretin.com/shaarli</string>
+    <string name="action_share">Share a link</string>
 </resources>
