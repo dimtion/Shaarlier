@@ -217,7 +217,7 @@ public class MainActivity extends ActionBarActivity {
             // Set an EditText view to get user input
             final EditText input = new EditText(this);
             input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-            input.setHint("http://www.perdu.com/");
+            input.setHint("Url (keep empty for a new note)");
 
             alert.setView(input);
 

@@ -30,7 +30,9 @@ class NetworkManager {
     //    private Activity m_parentActivity;
     private Map<String, String> m_cookies;
     private String m_token;
+
     private String m_datePostLink;
+    private String m_sharedUrl;
 
     NetworkManager(String shaarliUrl, String username, String password) {
         this.m_shaarliUrl = shaarliUrl;
@@ -132,6 +134,7 @@ class NetworkManager {
         // Update our situation :
         this.m_token = postFormBody.select("input[name=token]").first().attr("value");
         this.m_datePostLink = postFormBody.select("input[name=lf_linkdate]").first().attr("value"); // Date choosen by the server
+        this.m_sharedUrl = postFormBody.select("input[name=lf_url]").first().attr("value");
     }
 
     //
@@ -142,6 +145,10 @@ class NetworkManager {
             throws IOException {
         String encodedShareUrl = URLEncoder.encode(sharedUrl, "UTF-8");
         retrievePostLinkToken(encodedShareUrl);
+
+        if (!isUrl(sharedUrl)) { // In case the url isn't really one, just post the one chosen by the server.
+            sharedUrl = this.m_sharedUrl;
+        }
 
         final String postUrl = this.m_shaarliUrl + "?post=" + encodedShareUrl;
         Connection postPageConn = Jsoup.connect(postUrl)

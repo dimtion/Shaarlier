@@ -92,6 +92,10 @@ public class AddActivity extends Activity {
         finalUrl = finalUrl.substring(finalUrl.lastIndexOf(" ") + 1);
         finalUrl = finalUrl.substring(finalUrl.lastIndexOf("\n") + 1);
 
+        // If the url is incomplete :
+        if (NetworkManager.isUrl("http://" + finalUrl) && !NetworkManager.isUrl(finalUrl)) {
+            finalUrl = "http://" + finalUrl;
+        }
         // Delete parameters added by trackers :
         if (finalUrl.contains("&utm_source=")) {
             finalUrl = finalUrl.substring(0, finalUrl.indexOf("&utm_source="));
@@ -136,7 +140,7 @@ public class AddActivity extends Activity {
         this.a_dialogView = dialogView;
 
         // Load title :
-        if (autoTitle) {
+        if (autoTitle && NetworkManager.isUrl(sharedUrl)) {
             loadAutoTitle(sharedUrl, givenTitle);
         }
 
@@ -175,7 +179,6 @@ public class AddActivity extends Activity {
 
     // To get an automatic title :
     private void loadAutoTitle(String sharedUrl, String defaultTitle){
-        
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
 
@@ -209,7 +212,6 @@ public class AddActivity extends Activity {
         }
 
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
-        
     }
     
     //
