@@ -5,12 +5,8 @@ A simple app for sharing links on your Shaarli.
 - Publish links on your Shaarli
 - Automatically add a title to your links (as Shaarli does)
 - Optional dialog box for editing title, description or tags
-- Fast publishing mode (just press share and your link is on your Shaarli)
 
 ## Planned features
-- Templates
-- Share links from main interface
-- Manage your Shaarli
 See [TODO file](https://github.com/dimtion/Shaarlier/blob/master/TODO.md) for a detailed roadmap.
 
 ## Downloads
@@ -27,13 +23,13 @@ See [TODO file](https://github.com/dimtion/Shaarlier/blob/master/TODO.md) for a 
 5. Profit.
 
 ## Why ?
-I made this app because the official one doesn't feels right to me, in some cases you just need to save a link for reading it later. So launching the browser for that only task is quite too long (you know, I like when things are fast).  
+I made this app because the official one doesn't feels right to me, in some cases you just need to save a link for reading it later. So launching the browser for that only task is quite too long (you know, I like when things are fast and easy).
 
 ## Links
 - SebSauvage original project : https://github.com/sebsauvage/Shaarli/
-- Main fork of the project : https://github.com/shaarli/Shaarli/
-- [Play Store link](https://play.google.com/store/apps/details?id=com.dimtion.shaarlier)
-- Thanks Jonathan Hedley for [jsoup](http://jsoup.org/) | [license](http://jsoup.org/license)
+- Main (and best) fork of the project : https://github.com/shaarli/Shaarli/
+- Thanks Jonathan Hedley for [jsoup](http://jsoup.org/) under [MIT Licence](http://jsoup.org/license)
+- My own [shaarli](https://dimtion.taupincretin.com/shaarli/)
 
 --------
 
