@@ -2,6 +2,8 @@ I know, a todo file is never a good practice
 
 ## To be done before any new feature
 - Handle redirection (with some strange shaarlis)
+- Look how to accept self-signed SSL certs
+- Speed up share when no dialog must be open
 
 ## Planned for future releases
 - Save link from main menu

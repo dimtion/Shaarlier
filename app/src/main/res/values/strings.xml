@@ -56,4 +56,7 @@
     <string name="action_go_to_shaarli">Open my Shaarli</string>
     <string name="developer_shaarli" translatable="false">https://dimtion.taupincretin.com/shaarli</string>
     <string name="action_share">Share a link</string>
+    <string name="text_version">Version : unknown</string>
+    <string name="hint_new_url">(empty for a new note)</string>
+    <string name="text_new_url">Link to share :</string>
 </resources>

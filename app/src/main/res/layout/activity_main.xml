@@ -4,162 +4,170 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-<LinearLayout 
+    <LinearLayout
+        android:id="@+id/activity_main"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="wrap_content"
-    tools:context=".MainActivity"
-    android:id="@+id/activity_main"
-    android:paddingTop="20dp"
+        android:baselineAligned="false"
+        android:orientation="vertical"
     android:paddingBottom="10dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:baselineAligned="false">
+        android:paddingTop="20dp"
+        tools:context=".MainActivity">
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        <ImageView
         android:id="@+id/imageView"
-        android:src="@drawable/shaarli_icon"
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
         android:layout_gravity="top|center_horizontal"
         android:contentDescription="@string/logo_description"
         android:cropToPadding="false"
-        android:maxHeight="10dp" />
+            android:maxHeight="10dp"
+            android:src="@drawable/shaarli_icon" />
 
-    <TextView
+        <TextView
+            android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_marginTop="10dp"
         android:text="@string/your_shaarli_url"
-        android:id="@+id/textView"
-        android:layout_marginTop="10dp" />
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+        <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Spinner
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
             android:id="@+id/select_protocol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
             android:spinnerMode="dropdown" />
 
         <EditText
+            android:id="@+id/url_shaarli_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/url_shaarli_input"
-            android:inputType="textUri"
             android:layout_weight="1"
-            android:hint="@string/url_hint" />
-    </LinearLayout>
+            android:hint="@string/url_hint"
+            android:inputType="textUri" />
+        </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/user_name"
         android:id="@+id/textView1"
-        android:layout_marginTop="10dp" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/username_input"
-        android:inputType="textPersonName"
-        android:hint="@string/username_hint" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/user_password"
-        android:id="@+id/textView2"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:text="@string/user_name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <EditText
+        <EditText
+        android:id="@+id/username_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/username_hint"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+        android:text="@string/user_password"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/password_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
         android:ems="10"
-        android:id="@+id/password_input" />
+            android:inputType="textPassword" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:baselineAligned="false">
+            android:baselineAligned="false"
+            android:orientation="horizontal">
 
-        <Button
+            <Button
+                android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/test_connection"
-            android:id="@+id/button"
+                android:layout_weight="1"
             android:onClick="loginHandler"
-            android:layout_weight="1" />
+                android:text="@string/test_connection" />
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <ProgressBar
             android:id="@+id/isWorking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="gone" />
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/text_behaviour"
-        android:id="@+id/textView3" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <CheckBox
+        <CheckBox
+            android:id="@+id/default_private"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/default_private"
-        android:id="@+id/default_private"
-        android:checked="true"
+            android:layout_marginBottom="5dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp" />
+            android:checked="true"
+            android:text="@string/default_private" />
 
-    <CheckBox
+        <CheckBox
+            android:id="@+id/show_share_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_show_share_dialog"
-        android:id="@+id/show_share_dialog"
-        android:checked="false"
+            android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp" />
+            android:checked="false"
+            android:text="@string/text_show_share_dialog" />
 
-    <CheckBox
+        <CheckBox
+            android:id="@+id/auto_load_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/auto_load_title"
-        android:id="@+id/auto_load_title"
+            android:layout_marginTop="5dp"
         android:checked="true"
-        android:layout_marginTop="5dp" />
+            android:text="@string/auto_load_title" />
 
-    <TextView
+        <TextView
+            android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="35dp"
         android:text="@string/text_about"
-        android:id="@+id/textView4"
-        android:layout_marginTop="35dp"
-        android:layout_marginBottom="10dp" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
+        <TextView
+            android:id="@+id/about_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/text_about_details"
-        android:id="@+id/about_details" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/text_version"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
 
 </ScrollView>

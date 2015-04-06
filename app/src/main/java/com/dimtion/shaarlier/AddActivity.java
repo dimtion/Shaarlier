@@ -28,6 +28,7 @@ public class AddActivity extends Activity {
     private String password;
     private Boolean privateShare;
     private boolean autoTitle;
+    private boolean m_prefOpenDialog;
 
     private View a_dialogView;
     private AsyncTask a_TitleGetterExec;
@@ -47,7 +48,7 @@ public class AddActivity extends Activity {
         password = pref.getString(getString(R.string.p_password), "");
         boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
-        boolean prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
+        m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
         
         // convert urlShaarli into a real url :
@@ -70,12 +71,15 @@ public class AddActivity extends Activity {
                 String defaultTitle = this.extractTitle(sharedUrl);
 
                 // Show edit dialog if the users wants :
-                if(prefOpenDialog){
+                if (m_prefOpenDialog) {
                     handleDialog(sharedUrlTrimmed, defaultTitle);
                 } else {
+                    if (autoTitle) {
+                        final GetPageTitle getter = new GetPageTitle();
+                        a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
+                    }
                     new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
                 }
-
             } else {
                 Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
             }
@@ -270,11 +274,13 @@ public class AddActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(String title){
-            if (title.equals("")) {
-                updateTitle(title, true);
-            } else {
-                updateTitle(title, false);
+        protected void onPostExecute(String title) {
+            if (m_prefOpenDialog) {
+                if (title.equals("")) {
+                    updateTitle(title, true);
+                } else {
+                    updateTitle(title, false);
+                }
             }
         }
         

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,16 @@ public class MainActivity extends ActionBarActivity {
         ((TextView) findViewById(R.id.about_details)).setMovementMethod(LinkMovementMethod.getInstance());
         loadSettings();
 
+        // Load custom design :
+        TextView textVersion = (TextView) findViewById(R.id.text_version);
+        try {
+            String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            textVersion.setText("Version : " + versionName + " (" + Integer.toString(versionCode) + ")");
+
+        } catch (PackageManager.NameNotFoundException e) {
+            textVersion.setText(getText(R.string.text_version));
+        }
     }
 
     @Override
@@ -214,12 +226,24 @@ public class MainActivity extends ActionBarActivity {
 
             alert.setTitle(getString(R.string.share));
 
+            // TODO : move this to a xml file :
+            final LinearLayout layout = new LinearLayout(this);
+
+            final TextView textView = new TextView(this);
+            textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+            textView.setText(getText(R.string.text_new_url));
+
             // Set an EditText view to get user input
             final EditText input = new EditText(this);
             input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-            input.setHint("Url (keep empty for a new note)");
+            input.setHint(getText(R.string.hint_new_url));
 
-            alert.setView(input);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.setPadding(10, 10, 20, 20);
+
+            layout.addView(textView);
+            layout.addView(input);
+            alert.setView(layout);
 
             alert.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {

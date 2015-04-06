@@ -42,9 +42,10 @@ class NetworkManager {
 
     //
     // Check if a string is an url
+    // TODO : unit test on this, I'm not quite sure it is perfect...
     //
     public static boolean isUrl(String url) {
-        return URLUtil.isValidUrl(url);
+        return URLUtil.isValidUrl(url) && !url.equals("http://");
     }
 
     //
