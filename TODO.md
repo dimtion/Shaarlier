@@ -1,15 +1,13 @@
 I know, a todo file is never a good practice
 
-## To be done before any new feature
-- Handle redirection (with some strange shaarlis)
-- Look how to accept self-signed SSL certs
+## To do ASAP
+- Handle redirection
+- Look how to accept self-signed SSL certs (see : https://github.com/dimtion/Shaarlier/issues/7)
 - Speed up share when no dialog must be open
 
 ## Planned for future releases
-- Save link from main menu
-- Create a post with no link
 - Save link in a draft in case of an error
-- Edit/Show link when sharing
+- Edit/Show link when sharing (perhaps useless if nobody asks)
 - Nicer UI
 
 ## Q&A
@@ -23,3 +21,5 @@ I know, a todo file is never a good practice
 - Save link later
 - Notifications for shaarli.fr
 - Try to stay KISS
+
+[Any idea ?](https://github.com/dimtion/Shaarlier/issues)
