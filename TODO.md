@@ -1,8 +1,10 @@
 I know, a todo file is never a good practice
 
 ## To do ASAP
-- Handle redirection
-- Look how to accept self-signed SSL certs (see : https://github.com/dimtion/Shaarlier/issues/7)
+- Feature : Handle redirection (E.g : shaarli.fr)
+- Feature : accept self-signed SSL certs (see : https://github.com/dimtion/Shaarlier/issues/7)
+- Bug : retrieve from intent title doesn't work as expected (see : https://github.com/dimtion/Shaarlier/issues/8)
+- Bug : app crash in low network conditions
 - Speed up share when no dialog must be open
 
 ## Planned for future releases
@@ -14,6 +16,7 @@ I know, a todo file is never a good practice
 - Try app on as many apps as possible
 - Try more device screen sizes
 - Try in low network conditions
+- Try on slow devices
 
 ## Long term evolutions
 - See online Shaarli links
