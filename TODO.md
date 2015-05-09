@@ -3,7 +3,6 @@ I know, a todo file is never a good practice
 ## To do ASAP
 - Feature : Handle redirection (E.g : shaarli.fr)
 - Feature : accept self-signed SSL certs (see : https://github.com/dimtion/Shaarlier/issues/7)
-- Bug : retrieve from intent title doesn't work as expected (see : https://github.com/dimtion/Shaarlier/issues/8)
 - Bug : app crash in low network conditions
 - Speed up share when no dialog must be open
 

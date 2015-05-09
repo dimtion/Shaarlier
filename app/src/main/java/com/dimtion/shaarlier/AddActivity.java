@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
@@ -60,15 +61,17 @@ public class AddActivity extends Activity {
         }
 
         if(username.equals("") || password.equals("") || !vld){
-            // If the is an error, launch the settings :
+            // If there is an error, launch the settings :
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
             startActivity(intentLaunchSettings);
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
-                String sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+                ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
+                String sharedUrl = reader.getText().toString();
 
                 String sharedUrlTrimmed = this.extractUrl(sharedUrl);
-                String defaultTitle = this.extractTitle(sharedUrl);
+                String defaultTitle = this.extractTitle(reader);
 
                 // Show edit dialog if the users wants :
                 if (m_prefOpenDialog) {
@@ -117,19 +120,16 @@ public class AddActivity extends Activity {
     //
     // Method to extract the title from shared data
     //
-    private String extractTitle(String sharedUrl) {
+    private String extractTitle(ShareCompat.IntentReader reader) {
         String title;
-        title = sharedUrl.trim();
+        title = reader.getSubject();
         if (title.contains(" ")) {
             title = title.substring(0, title.lastIndexOf(" "));
         } if (title.contains("\n")){
             title = title.substring(0, title.lastIndexOf("\n"));
-        } if (title.equals(sharedUrl.trim())){
-            title = "";
         }
 
         return title;
-
     }
 
     //
