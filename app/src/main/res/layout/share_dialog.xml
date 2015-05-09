@@ -6,11 +6,33 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="10dp"
         android:theme="@style/AppTheme">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_url"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_new_url"
+            android:inputType="textUri"
+            android:theme="@style/Widget.AppCompat.EditText" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -37,6 +59,13 @@
                 android:visibility="gone" />
         </RelativeLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/text_description"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <EditText
             android:id="@+id/description"
             android:layout_width="match_parent"
@@ -45,7 +74,7 @@
             android:gravity="top|left"
             android:hint="@string/description_hint"
             android:inputType="textMultiLine|textCapSentences"
-            android:maxLines="5"
+            android:maxLines="10"
             android:minLines="2"
             android:singleLine="false"
             android:textSize="15sp"/>
@@ -54,6 +83,7 @@
             android:id="@+id/tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:hint="@string/tags_hint"
             android:inputType="textAutoComplete" />
 
@@ -61,9 +91,11 @@
             android:id="@+id/private_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
             android:checked="false"
             android:text="@string/private_share" />
+
 
     </LinearLayout>
 </ScrollView>

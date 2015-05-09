@@ -148,6 +148,9 @@ public class AddActivity extends Activity {
             loadAutoTitle(sharedUrl, givenTitle);
         }
 
+        // Show url EditText :
+        ((EditText) dialogView.findViewById(R.id.url)).setText(sharedUrl);
+
         // Init tags :
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
         new AutoCompleteWrapper(textView, this);
@@ -158,6 +161,7 @@ public class AddActivity extends Activity {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // Retrieve interface :
+                        String url = ((EditText) dialogView.findViewById(R.id.url)).getText().toString();
                         String title = ((EditText) dialogView.findViewById(R.id.title)).getText().toString();
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
                         String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
@@ -170,7 +174,7 @@ public class AddActivity extends Activity {
 
 
                         // Finally send everything
-                        new HandleAddUrl().execute(sharedUrl, title, description, tags);
+                        new HandleAddUrl().execute(url, title, description, tags);
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

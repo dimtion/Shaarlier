@@ -6,7 +6,7 @@
     <string name="add_not_handle">Contenu non géré</string>
     <string name="add_success">Votre lien a bien été partagé</string>
     <string name="default_private">Liens privés par défaut</string>
-    <string name="description_hint">Description</string>
+    <string name="description_hint"> </string>
     <string name="error_connecting">L\'url donnée ne semble pas fonctionner</string>
     <string name="error_internet_connection">Vous n\'êtes pas connecté à internet</string>
     <string name="error_login">Le pseudo ou le mot de passe est incorrect</string>
@@ -15,7 +15,7 @@
     <string name="logo_description">Logo de Shaarli</string>
     <string name="more">Plus à venir…</string>
     <string name="private_share">Privé</string>
-    <string name="share">Partager</string>
+    <string name="share">Partager sur Shaarli</string>
     <string name="success_test">Les paramètres sont corrects</string>
     <string name="tags_hint">tags (séparés par des espaces)</string>
     <string name="test_connection">Tester les paramètres</string>
@@ -23,7 +23,7 @@
     <string name="text_behaviour">Comportement</string>
     <string name="text_show_share_dialog">Afficher une boite de dialogue lors du partage</string>
     <string name="title_activity_add">Ajouter à Shaarli</string>
-    <string name="title_hint">Titre</string>
+    <string name="title_hint"> </string>
     <string name="user_name">Pseudo :</string>
     <string name="user_password">Mot de passe :</string>
     <string name="your_shaarli_url">Url de votre Shaarli :</string>
@@ -39,4 +39,7 @@ Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez
     <string name="text_version">Version : inconnue</string>
     <string name="hint_new_url">(vide pour une nouvelle note)</string>
     <string name="text_new_url">Lien à partager :</string>
+    <string name="text_url_hint">(laisser vide pour une nouvelle note)</string>
+    <string name="title">Titre :</string>
+    <string name="text_description">Description :</string>
 </resources>

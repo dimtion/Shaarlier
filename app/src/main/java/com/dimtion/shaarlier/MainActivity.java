@@ -211,58 +211,61 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_go_to_shaarli) {
-            SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-            updateSettingsFromUpdate(pref);
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_go_to_shaarli:
+                SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+                updateSettingsFromUpdate(pref);
 
-            String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
+                String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
 
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(browserIntent);
-        } else if (id == R.id.action_share) {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(browserIntent);
+                break;
+            case R.id.action_share:
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-            alert.setTitle(getString(R.string.share));
+                alert.setTitle(getString(R.string.share));
 
-            // TODO : move this to a xml file :
-            final LinearLayout layout = new LinearLayout(this);
+                // TODO : move this to a xml file :
+                final LinearLayout layout = new LinearLayout(this);
 
-            final TextView textView = new TextView(this);
-            textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-            textView.setText(getText(R.string.text_new_url));
+                final TextView textView = new TextView(this);
+                textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+                textView.setText(getText(R.string.text_new_url));
 
-            // Set an EditText view to get user input
-            final EditText input = new EditText(this);
-            input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-            input.setHint(getText(R.string.hint_new_url));
+                // Set an EditText view to get user input
+                final EditText input = new EditText(this);
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+                input.setHint(getText(R.string.hint_new_url));
 
-            layout.setOrientation(LinearLayout.VERTICAL);
-            layout.setPadding(10, 10, 20, 20);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                layout.setPadding(10, 10, 20, 20);
 
-            layout.addView(textView);
-            layout.addView(input);
-            alert.setView(layout);
+                layout.addView(textView);
+                layout.addView(input);
+                alert.setView(layout);
 
-            alert.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String value = input.getText().toString();
-                    Intent intent = new Intent(getBaseContext(), AddActivity.class);
-                    intent.setAction(Intent.ACTION_SEND);
-                    intent.setType("text/plain");
-                    intent.putExtra(Intent.EXTRA_TEXT, value);
-                    startActivity(intent);
-                }
-            });
+                alert.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String value = input.getText().toString();
+                        Intent intent = new Intent(getBaseContext(), AddActivity.class);
+                        intent.setAction(Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_TEXT, value);
+                        startActivity(intent);
+                    }
+                });
 
-            alert.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // Canceled.
-                }
-            });
+                alert.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
 
-            alert.show();
+                alert.show();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
