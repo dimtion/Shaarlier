@@ -73,12 +73,20 @@ class NetworkManager {
     }
 
     //
+    // Set the default timeout
+    //
+    public void setTimeout(int timeout) {
+        this.m_timeout = timeout;
+    }
+
+    //
     // Check the website is a compatible shaarli, by downloading a token
     //
     public boolean retrieveLoginToken() throws IOException {
         final String loginFormUrl = this.m_shaarliUrl + "?do=login";
         try {
             Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
+                    .timeout(this.m_timeout)
                     .followRedirects(true)
                     .method(Connection.Method.GET)
                     .execute();
@@ -100,6 +108,7 @@ class NetworkManager {
         try {
             Connection.Response loginPage = Jsoup.connect(loginUrl)
                     .method(Connection.Method.POST)
+                    .timeout(this.m_timeout)
                     .followRedirects(true)
                     .cookies(this.m_cookies)
                     .data("login", this.m_username)
@@ -127,6 +136,7 @@ class NetworkManager {
         final String postFormUrl = this.m_shaarliUrl + "?post=" + encodedSharedLink;
         Connection.Response postFormPage = Jsoup.connect(postFormUrl)
                 .followRedirects(true)
+                .timeout(m_timeout)
                 .cookies(this.m_cookies)
                 .timeout(this.m_timeout)
                 .execute();
@@ -154,6 +164,7 @@ class NetworkManager {
         final String postUrl = this.m_shaarliUrl + "?post=" + encodedShareUrl;
         Connection postPageConn = Jsoup.connect(postUrl)
                 .method(Connection.Method.POST)
+                .timeout(this.m_timeout)
                 .cookies(this.m_cookies)
                 .timeout(10000)
                 .data("save_edit", "Save")
@@ -176,6 +187,7 @@ class NetworkManager {
         String[] predictionsArr = {};
         try {
             String json = Jsoup.connect(requestUrl)
+                    .timeout(this.m_timeout)
                     .cookies(this.m_cookies)
                     .ignoreContentType(true)
                     .execute()
@@ -204,6 +216,7 @@ class NetworkManager {
         String[] tags = {};
         try {
             String tagsString = Jsoup.connect(requestUrl)
+                    .timeout(this.m_timeout)
                     .cookies(this.m_cookies)
                     .execute()
                     .parse()

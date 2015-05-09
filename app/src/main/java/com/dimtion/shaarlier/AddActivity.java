@@ -219,7 +219,7 @@ public class AddActivity extends Activity {
     }
     
     //
-    // Class which handle the arrival of a new share url, async
+    // Class which handle the arrival of a new shared url, async
     //
     private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
         
@@ -243,11 +243,13 @@ public class AddActivity extends Activity {
             try {
                 // Connect the user to the site :
                 NetworkManager manager = new NetworkManager(urlShaarli, username, password);
+                manager.setTimeout(60000); // Long for slow networks
                 manager.retrieveLoginToken();
                 manager.login();
                 manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
                 
             } catch (IOException | NullPointerException e){
+
                 return false;
             }
             return true;
