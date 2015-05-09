@@ -20,14 +20,15 @@
         </activity>
         <activity
             android:name=".AddActivity"
+            android:autoRemoveFromRecents="true"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:excludeFromRecents="true"
             android:label="@string/title_activity_add"
             android:noHistory="true"
-            android:excludeFromRecents="true"
-            android:autoRemoveFromRecents="true"
             android:taskAffinity="com.dimtion.Shaarlier.share"
             android:theme="@android:style/Theme.NoDisplay"
-            android:configChanges="orientation|keyboardHidden|screenSize" >
-            <intent-filter>
+            android:windowSoftInputMode="adjustPan|adjustResize">
+        <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />

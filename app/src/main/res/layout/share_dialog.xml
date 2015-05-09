@@ -1,14 +1,16 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/share_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout 
-        android:theme="@style/AppTheme"
-        android:orientation="vertical"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
+        android:orientation="vertical"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:theme="@style/AppTheme">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -16,50 +18,52 @@
 
             <EditText
                 android:id="@+id/title"
-                android:theme="@style/Widget.AppCompat.EditText"
-                android:inputType="textCapSentences"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/title_hint" />
+                android:hint="@string/title_hint"
+                android:inputType="textCapSentences"
+                android:theme="@style/Widget.AppCompat.EditText" />
 
             <ProgressBar
+                android:id="@+id/loading_title"
+                style="?android:attr/progressBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/loading_title"
-                android:visibility="gone"
-                android:indeterminate="true"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_marginRight="10dp"
-                android:layout_alignTop="@+id/title"
                 android:layout_alignBottom="@+id/title"
-                android:layout_alignRight="@+id/title"/>
+                android:layout_alignRight="@+id/title"
+                android:layout_alignTop="@+id/title"
+                android:layout_marginRight="10dp"
+                android:indeterminate="true"
+                android:visibility="gone" />
         </RelativeLayout>
 
         <EditText
             android:id="@+id/description"
-            android:inputType="textMultiLine|textCapSentences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|left"
             android:fontFamily="sans-serif"
+            android:gravity="top|left"
             android:hint="@string/description_hint"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="5"
             android:minLines="2"
             android:singleLine="false"
             android:textSize="15sp"/>
+
         <MultiAutoCompleteTextView
             android:id="@+id/tags"
-            android:inputType="textAutoComplete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tags_hint" />
+            android:hint="@string/tags_hint"
+            android:inputType="textAutoComplete" />
 
         <CheckBox
+            android:id="@+id/private_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/private_share"
-            android:id="@+id/private_share"
+            android:layout_marginTop="15dp"
             android:checked="false"
-            android:layout_marginTop="15dp" />
+            android:text="@string/private_share" />
 
     </LinearLayout>
 </ScrollView>
