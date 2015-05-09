@@ -122,7 +122,7 @@ public class AddActivity extends Activity {
     //
     private String extractTitle(ShareCompat.IntentReader reader) {
         String title;
-        title = reader.getSubject();
+        title = reader.getSubject() != null ? reader.getSubject() : "";
         if (title.contains(" ")) {
             title = title.substring(0, title.lastIndexOf(" "));
         } if (title.contains("\n")){
