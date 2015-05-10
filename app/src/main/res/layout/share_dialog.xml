@@ -75,7 +75,7 @@
             android:hint="@string/description_hint"
             android:inputType="textMultiLine|textCapSentences"
             android:maxLines="10"
-            android:minLines="2"
+            android:minLines="3"
             android:singleLine="false"
             android:textSize="15sp"/>
 
@@ -91,8 +91,8 @@
             android:id="@+id/private_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
             android:checked="false"
             android:text="@string/private_share" />
 
