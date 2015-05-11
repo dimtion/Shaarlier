@@ -10,7 +10,6 @@ I know, a todo file is never a good practice
 
 ## Planned for future releases
 - Save link in a draft in case of an error
-- Edit/Show link when sharing (perhaps useless if nobody asks)
 - Nicer UI
 
 ## Q&A

@@ -19,8 +19,8 @@ import java.util.Set;
  */
 class AutoCompleteWrapper {
 
-    private MultiAutoCompleteTextView a_textView;
-    private Context a_context;
+    private final MultiAutoCompleteTextView a_textView;
+    private final Context a_context;
 
     public AutoCompleteWrapper(final MultiAutoCompleteTextView textView, Context context) {
         this.a_textView = textView;
@@ -41,8 +41,8 @@ class AutoCompleteWrapper {
         AutoCompleteRetriever task = new AutoCompleteRetriever();
         task.execute();
     }
-    
-    class AutoCompleteRetriever extends AsyncTask<String, Void, ArrayList<String>> {
+
+    private class AutoCompleteRetriever extends AsyncTask<String, Void, ArrayList<String>> {
         @Override
         protected ArrayList<String> doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.

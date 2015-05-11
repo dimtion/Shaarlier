@@ -132,7 +132,7 @@ class NetworkManager {
     // Update the cookie, the token and the date
     // Assume being logged in
     //
-    public void retrievePostLinkToken(String encodedSharedLink) throws IOException {
+    void retrievePostLinkToken(String encodedSharedLink) throws IOException {
         final String postFormUrl = this.m_shaarliUrl + "?post=" + encodedSharedLink;
         Connection.Response postFormPage = Jsoup.connect(postFormUrl)
                 .followRedirects(true)
