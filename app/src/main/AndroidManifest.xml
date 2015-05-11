@@ -26,7 +26,7 @@
             android:label="@string/title_activity_add"
             android:noHistory="true"
             android:taskAffinity="com.dimtion.Shaarlier.share"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:theme="@android:style/Theme.Holo.Dialog">
         <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

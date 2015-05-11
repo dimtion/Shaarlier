@@ -1,7 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/share_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:theme="@android:style/Theme.Holo.Dialog">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,8 +11,7 @@
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:theme="@style/AppTheme">
+        android:paddingTop="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -66,6 +66,11 @@
             android:text="@string/text_description"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <Space
+            android:id="@+id/dropDownAnchor"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+
         <EditText
             android:id="@+id/description"
             android:layout_width="match_parent"
@@ -79,13 +84,16 @@
             android:singleLine="false"
             android:textSize="15sp"/>
 
+
         <MultiAutoCompleteTextView
             android:id="@+id/tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:dropDownHeight="150dp"
             android:hint="@string/tags_hint"
             android:inputType="textAutoComplete" />
+
 
         <CheckBox
             android:id="@+id/private_share"
