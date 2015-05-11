@@ -26,92 +26,16 @@
             android:maxHeight="10dp"
             android:src="@drawable/shaarli_icon" />
 
-        <TextView
-            android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-        android:text="@string/your_shaarli_url"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
-        <LinearLayout
-        android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Spinner
-            android:id="@+id/select_protocol"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-            android:spinnerMode="dropdown" />
-
-        <EditText
-            android:id="@+id/url_shaarli_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/url_hint"
-            android:inputType="textUri" />
-        </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/user_name"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-        android:id="@+id/username_input"
+        <Button
+            android:id="@+id/button"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/username_hint"
-            android:inputType="textPersonName" />
+            android:layout_margin="10dp"
+            android:text="New Button" />
 
         <TextView
-            android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-        android:text="@string/user_password"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/password_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-            android:inputType="textPassword" />
-
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-                android:layout_weight="1"
-            android:onClick="loginHandler"
-                android:text="@string/test_connection" />
-
-            <ProgressBar
-            android:id="@+id/isWorking"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="gone" />
-    </LinearLayout>
-
-    <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
