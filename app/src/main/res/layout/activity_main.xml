@@ -33,7 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="New Button" />
+            android:onClick="openAccountsManager"
+            android:text="Manage accounts" />
 
         <TextView
         android:id="@+id/textView3"

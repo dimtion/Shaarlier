@@ -20,10 +20,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String CREATE_DATABASE = "create table "
             + TABLE_ACCOUNTS + " ("
             + ACCOUNTS_COLUMN_ID + " integer primary key autoincrement, "
-            + ACCOUNTS_COLUMN_URL_SHAARLI + " text not null "
-            + ACCOUNTS_COLUMN_USERNAME + " text not null "
-            + ACCOUNTS_COLUMN_PASSWORD_CYPHER + " text "
-            + ACCOUNTS_COLUMN_SHORT_NAME + " text;";
+            + ACCOUNTS_COLUMN_URL_SHAARLI + " text NOT NULL, "
+            + ACCOUNTS_COLUMN_USERNAME + " text NOT NULL, "
+            + ACCOUNTS_COLUMN_PASSWORD_CYPHER + " text, "
+            + ACCOUNTS_COLUMN_SHORT_NAME + " text DEFAULT '' ) ;";
     public static final String TABLE_TAGS = "tags";
     public static final String TAGS_COLUMN_ID = "_id";
     public static final String TAGS_COLUMN_ID_ACCOUNT = "account_id";

@@ -66,4 +66,5 @@
     <string name="title_activity_accounts_managment">AccountsManagmentActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_add_account">AddAccountActivity</string>
 </resources>
