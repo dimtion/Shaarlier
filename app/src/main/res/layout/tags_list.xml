@@ -7,4 +7,4 @@
     android:gravity="center_vertical"
     android:padding="10dp"
     android:textSize="@dimen/abc_text_size_title_material"
-    android:theme="@style/AppTheme" />
+    android:theme="@android:style/Theme.Holo.Dialog" />
