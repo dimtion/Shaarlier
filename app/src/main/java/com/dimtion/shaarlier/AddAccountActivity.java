@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ public class AddAccountActivity extends ActionBarActivity {
     private String password;
     private String shortName;
     private ShaarliAccount account;
+    private Boolean isDefaultAccount;
 
     private Boolean isEditing = false;
 
@@ -38,19 +41,35 @@ public class AddAccountActivity extends ActionBarActivity {
         if (accountId != -1) {
             isEditing = true;
             AccountsSource accountsSource = new AccountsSource(getApplicationContext());
-            accountsSource.rOpen();
             account = accountsSource.getShaarliAccountById(accountId);
-            accountsSource.close();
             fillFields();
+        } else {
+
+            AccountsSource source = new AccountsSource(getApplicationContext());
+            source.rOpen();
+            if (source.getAllAccounts().isEmpty()) {  // If it is the first account created
+                CheckBox defaultCheck = (CheckBox) findViewById(R.id.defaultAccountCheck);
+                defaultCheck.setChecked(true);
+                defaultCheck.setEnabled(false);
+            }
         }
     }
 
+
+    //
+    // Only when editing
+    //
     private void fillFields() {
         // Get the user inputs :
         ((EditText) findViewById(R.id.urlShaarliView)).setText(account.getUrlShaarli());
         ((EditText) findViewById(R.id.usernameView)).setText(account.getUsername());
         ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
         ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
+
+        // Is it the default account ?
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+        this.isDefaultAccount = (prefs.getLong(getString(R.string.p_default_account), -1) == account.getId());
+        ((CheckBox) findViewById(R.id.defaultAccountCheck)).setChecked(this.isDefaultAccount);
 
         findViewById(R.id.deleteAccountButton).setVisibility(View.VISIBLE);
     }
@@ -127,6 +146,7 @@ public class AddAccountActivity extends ActionBarActivity {
         this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
         this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
         this.shortName = ((EditText) findViewById(R.id.shortNameView)).getText().toString();
+        this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
 
         this.urlShaarli = NetworkManager.toUrl(urlShaarliInput);
 
@@ -150,14 +170,22 @@ public class AddAccountActivity extends ActionBarActivity {
             account.setShortName(this.shortName);
             accountsSource.editAccount(account);
         } else {
-            accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
+            this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
         }
         accountsSource.close();
+
+        // default account :
+        if (this.isDefaultAccount) {
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putLong(getString(R.string.p_default_account), this.account.getId());
+            editor.apply();
+        }
     }
 
     // Tries the configuration on the web async
     private class CheckShaarli extends AsyncTask<String, Void, Integer> {
-
         static final int NO_ERROR = 0;
         static final int NETWORK_ERROR = 1;
         static final int TOKEN_ERROR = 2;

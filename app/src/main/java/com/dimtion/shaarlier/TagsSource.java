@@ -54,11 +54,11 @@ class TagsSource {
     public Tag createTag(ShaarliAccount masterAccount, String value) {
         Tag tag = new Tag();
         tag.setMasterAccount(masterAccount);
-        tag.setValue(value);
+        tag.setValue(value.trim());
 
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.TAGS_COLUMN_ID_ACCOUNT, masterAccount.getId());
-        values.put(MySQLiteHelper.TAGS_COLUMN_TAG, value);
+        values.put(MySQLiteHelper.TAGS_COLUMN_TAG, tag.getValue());
 
         // If existing, do nothing :
         Cursor cursor = db.query(MySQLiteHelper.TABLE_TAGS, allColumns,
@@ -81,5 +81,9 @@ class TagsSource {
         tag.setMasterAccountId(cursor.getLong(1));
         tag.setValue(cursor.getString(2));
         return tag;
+    }
+
+    private void deleteAllTags() {
+        db.delete(MySQLiteHelper.TABLE_TAGS, null, null);
     }
 }

@@ -48,8 +48,9 @@
         <activity
             android:name=".AddAccountActivity"
             android:label="@string/title_activity_add_account"
-            android:parentActivityName=".AccountsManagementActivity">
-            <meta-data
+            android:parentActivityName=".AccountsManagementActivity"
+            android:windowSoftInputMode="stateHidden">
+        <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dimtion.shaarlier.AccountsManagementActivity" />
         </activity>

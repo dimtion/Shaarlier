@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -55,38 +56,50 @@ public class AddActivity extends Activity {
         if (this.allAccounts.isEmpty()) {
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
             startActivity(intentLaunchSettings);
-        } else if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
-                ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
-                String sharedUrl = reader.getText().toString();
+        } else if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
+            ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
+            String sharedUrl = reader.getText().toString();
 
-                String sharedUrlTrimmed = this.extractUrl(sharedUrl);
-                String defaultTitle = this.extractTitle(reader);
+            String sharedUrlTrimmed = this.extractUrl(sharedUrl);
+            String defaultTitle = this.extractTitle(reader);
 
-                // Show edit dialog if the users wants :
-                if (m_prefOpenDialog) {
-                    handleDialog(sharedUrlTrimmed, defaultTitle);
-                } else {
-                    if (autoTitle) {
-                        final GetPageTitle getter = new GetPageTitle();
-                        a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
-                    }
-                    new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
-                }
+
+            // Show edit dialog if the users wants :
+            if (m_prefOpenDialog) {
+                handleDialog(sharedUrlTrimmed, defaultTitle);
             } else {
-                Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
+                if (autoTitle) {
+                    final GetPageTitle getter = new GetPageTitle();
+                    a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
+                }
+
+                new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
             }
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
         }
     }
 
     //
-    //
+    // Default account first
     //
     private void getAllAccounts() {
-        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+        AccountsSource accountsSource = new AccountsSource(this);
         accountsSource.rOpen();
         this.allAccounts = accountsSource.getAllAccounts();
+        this.choosedAccount = accountsSource.getDefaultAccount();
         accountsSource.close();
+
+        if (this.choosedAccount != null) {
+            int indexChosenAccount = 0;
+            for (ShaarliAccount account : this.allAccounts) {
+                if (account.getId() == this.choosedAccount.getId()) {
+                    break;
+                }
+                indexChosenAccount++;
+            }
+            Collections.swap(this.allAccounts, indexChosenAccount, 0);
+        }
     }
 
     //
@@ -94,7 +107,7 @@ public class AddActivity extends Activity {
     //
     private void initAccountSpinner() {
         final Spinner accountSpinnerView = (Spinner) a_dialogView.findViewById(R.id.chooseAccount);
-        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.allAccounts);  // TODO make the spinner smaller
+        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);  // TODO make the spinner smaller
         accountSpinnerView.setAdapter(adapter);
     }
 

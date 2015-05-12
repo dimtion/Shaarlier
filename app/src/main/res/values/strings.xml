@@ -36,6 +36,7 @@
     <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
     <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
     <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
+    <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
     <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
 
     <string name="share">Share an Shaarli</string>

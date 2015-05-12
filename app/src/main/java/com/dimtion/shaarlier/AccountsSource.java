@@ -2,6 +2,7 @@ package com.dimtion.shaarlier;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,10 +21,12 @@ class AccountsSource {
             MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER,
             MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME};
     private final MySQLiteHelper dbHelper;
+    private final Context mContext;
     private SQLiteDatabase db;
 
     public AccountsSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
+        this.mContext = context;
     }
 
     public void rOpen() throws SQLException {
@@ -68,11 +71,16 @@ class AccountsSource {
     }
 
     public ShaarliAccount getShaarliAccountById(long id) {
+        rOpen();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_ACCOUNTS, allColumns, MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
+        if (cursor.isAfterLast())
+            return null;
+
         ShaarliAccount account = cursorToAccount(cursor);
         cursor.close();
+        close();
 
         return account;
     }
@@ -106,5 +114,21 @@ class AccountsSource {
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, account.getShortName());
 
         db.update(MySQLiteHelper.TABLE_ACCOUNTS, values, QUERY_WHERE, null);
+    }
+
+    public ShaarliAccount getDefaultAccount() {
+        SharedPreferences prefs = this.mContext.getSharedPreferences(this.mContext.getString(R.string.params), Context.MODE_PRIVATE);
+        long defaultAccountId = prefs.getLong(this.mContext.getString(R.string.p_default_account), -1);
+
+        ShaarliAccount defaultAccount = getShaarliAccountById(defaultAccountId);
+        if (defaultAccount == null) {
+            rOpen();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ACCOUNTS, allColumns, null, null, null, null, MySQLiteHelper.ACCOUNTS_COLUMN_ID, "1");
+            cursor.moveToFirst();
+            defaultAccount = cursorToAccount(cursor);
+            cursor.close();
+            close();
+        }
+        return defaultAccount;
     }
 }
