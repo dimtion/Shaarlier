@@ -12,7 +12,9 @@ public class ShaarliAccount {
 
     @Override
     public String toString() {
-        return username;
+        if (this.shortName.equals(""))
+            return username;
+        return shortName;
     }
 
     public long getId() {

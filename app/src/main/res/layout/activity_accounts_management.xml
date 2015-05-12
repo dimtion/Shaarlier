@@ -11,9 +11,10 @@
 
     <TextView
         android:id="@+id/noAccountToShow"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="There is no account created for the moment." />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="There is no account created for the moment."
+        android:visibility="gone" />
 
     <ListView
         android:id="@+id/accountListView"

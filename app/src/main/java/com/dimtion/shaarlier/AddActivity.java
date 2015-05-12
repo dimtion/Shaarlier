@@ -15,18 +15,19 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class AddActivity extends Activity {
-    private String urlShaarli;
-    private String username;
-    private String password;
+    private ShaarliAccount choosedAccount;
+    private List<ShaarliAccount> allAccounts;
     private Boolean privateShare;
     private boolean autoTitle;
     private boolean m_prefOpenDialog;
@@ -42,31 +43,19 @@ public class AddActivity extends Activity {
         String action = intent.getAction();
         String type = intent.getType();
 
-        // Check if the user had his data validated :
+        // Get the user preferences :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-        urlShaarli = pref.getString(getString(R.string.p_url_shaarli), "");
-        username = pref.getString(getString(R.string.p_username), "");
-        password = pref.getString(getString(R.string.p_password), "");
-        boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
-        m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
+        m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
-        
-        // convert urlShaarli into a real url :
-        if(!urlShaarli.endsWith("/")){
-            urlShaarli +='/';
-        }
-        if (!(urlShaarli.startsWith("http://") || urlShaarli.startsWith("https://"))){
-            urlShaarli = "http://" + urlShaarli;
-        }
 
-        if(username.equals("") || password.equals("") || !vld){
-            // If there is an error, launch the settings :
+        // Check if there is at least one account, then launch the settings :
+        getAllAccounts();
+        if (this.allAccounts.isEmpty()) {
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
             startActivity(intentLaunchSettings);
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
-
                 ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
                 String sharedUrl = reader.getText().toString();
 
@@ -87,6 +76,25 @@ public class AddActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    //
+    //
+    //
+    private void getAllAccounts() {
+        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+        accountsSource.rOpen();
+        this.allAccounts = accountsSource.getAllAccounts();
+        accountsSource.close();
+    }
+
+    //
+    // Load the spinner for choosing the account
+    //
+    private void initAccountSpinner() {
+        final Spinner accountSpinnerView = (Spinner) a_dialogView.findViewById(R.id.chooseAccount);
+        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.allAccounts);  // TODO make the spinner smaller
+        accountSpinnerView.setAdapter(adapter);
     }
 
     //
@@ -137,23 +145,25 @@ public class AddActivity extends Activity {
     //
     private void handleDialog(final String sharedUrl, String givenTitle) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme));
-
         LayoutInflater inflater = AddActivity.this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.share_dialog, null);
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
         this.a_dialogView = dialogView;
+
+        // Init accountSpinner
+        initAccountSpinner();
 
         // Load title :
         if (autoTitle && NetworkManager.isUrl(sharedUrl)) {
             loadAutoTitle(sharedUrl, givenTitle);
         }
 
-        // Show url EditText :
+        // Init url  :
         ((EditText) dialogView.findViewById(R.id.url)).setText(sharedUrl);
 
-        // Init tags :
-        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
-        new AutoCompleteWrapper(textView, this);
+        // Init tags : TODO !
+//        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
+//        new AutoCompleteWrapper(textView, this);
 
         // Open the dialog :
         builder.setView(dialogView)
@@ -166,6 +176,7 @@ public class AddActivity extends Activity {
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
                         String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
+                        choosedAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
 
                         // In case sharing is too long, close keyboard:
                         InputMethodManager imm = (InputMethodManager)getSystemService(
@@ -246,12 +257,15 @@ public class AddActivity extends Activity {
             
             try {
                 // Connect the user to the site :
-                NetworkManager manager = new NetworkManager(urlShaarli, username, password);
+                NetworkManager manager = new NetworkManager(
+                        choosedAccount.getUrlShaarli(),
+                        choosedAccount.getUsername(),
+                        choosedAccount.getPassword());
                 manager.setTimeout(60000); // Long for slow networks
                 manager.retrieveLoginToken();
                 manager.login();
                 manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
-                
+
             } catch (IOException | NullPointerException e){
 
                 return false;

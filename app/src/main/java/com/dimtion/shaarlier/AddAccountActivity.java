@@ -1,6 +1,9 @@
 package com.dimtion.shaarlier;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -20,13 +23,63 @@ public class AddAccountActivity extends ActionBarActivity {
     String username;
     String password;
     String shortName;
+    ShaarliAccount account;
+
+    Boolean isEditing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
+
+        Intent intent = getIntent();
+        long accountId = intent.getLongExtra("_id", -1);
+
+        if (accountId != -1) {
+            isEditing = true;
+            AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+            accountsSource.rOpen();
+            account = accountsSource.getShaarliAccountById(accountId);
+            accountsSource.close();
+            fillFields();
+        }
     }
 
+    private void fillFields() {
+        // Get the user inputs :
+        ((EditText) findViewById(R.id.urlShaarliView)).setText(account.getUrlShaarli());
+        ((EditText) findViewById(R.id.usernameView)).setText(account.getUsername());
+        ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
+        ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
+
+        findViewById(R.id.deleteAccountButton).setVisibility(View.VISIBLE);
+    }
+
+    public void deleteAccountAction(View view) {
+        // Show dialog to be sure :
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this account ?");
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteAccount();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    private void deleteAccount() {
+        AccountsSource source = new AccountsSource(getApplicationContext());
+        source.wOpen();
+        source.deleteAccount(this.account);
+        source.close();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -88,7 +141,18 @@ public class AddAccountActivity extends ActionBarActivity {
     // Create a new account, should be called only if the login test passed successfully.
     //
     private void saveAccount() {
-
+        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+        accountsSource.wOpen();
+        if (isEditing) {
+            account.setUrlShaarli(this.urlShaarli);
+            account.setUsername(this.username);
+            account.setPassword(this.password);
+            account.setShortName(this.shortName);
+            accountsSource.editAccount(account);
+        } else {
+            accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
+        }
+        accountsSource.close();
     }
 
     // Tries the configuration on the web async
@@ -117,10 +181,15 @@ public class AddAccountActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Integer loginOutput) {
+
+            findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
+
             switch (loginOutput) {
                 case NO_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
                     saveAccount();
+                    finish();
                     break;
                 case NETWORK_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
@@ -132,9 +201,6 @@ public class AddAccountActivity extends ActionBarActivity {
                     Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
                     break;
             }
-            findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
-
         }
     }
 }

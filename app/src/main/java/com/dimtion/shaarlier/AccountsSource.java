@@ -45,9 +45,7 @@ public class AccountsSource {
 
         String password_cipher = password;  // TODO ! Once everything is working, encrypt ! DO NOT PUSH IN RELEASE THAT!
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
-
-        if (!shortName.equals(""))
-            values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, shortName);
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, shortName);
 
         long insertId = db.insert(MySQLiteHelper.TABLE_ACCOUNTS, null, values);
 
@@ -88,8 +86,25 @@ public class AccountsSource {
         String password_cypher = cursor.getString(3);
         String password = password_cypher;  // TODO ! Once everything is working, encrypt ! DO NOT PUSH IN RELEASE THAT!
         account.setPassword(password);
-        account.setUrlShaarli(cursor.getString(4));
+        account.setShortName(cursor.getString(4));
 
         return account;
+    }
+
+    public void deleteAccount(ShaarliAccount account) {
+        db.delete(MySQLiteHelper.TABLE_ACCOUNTS, MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + account.getId(), null);
+    }
+
+    public void editAccount(ShaarliAccount account) {
+        String QUERY_WHERE = MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + account.getId();
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, account.getUrlShaarli());
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, account.getUsername());
+
+        String password_cipher = account.getPassword();  // TODO ! Once everything is working, encrypt ! DO NOT PUSH IN RELEASE THAT!
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, account.getShortName());
+
+        db.update(MySQLiteHelper.TABLE_ACCOUNTS, values, QUERY_WHERE, null);
     }
 }
