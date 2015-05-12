@@ -12,15 +12,15 @@ import java.util.List;
 /**
  * Created by dimtion on 11/05/2015.
  */
-public class AccountsSource {
+class AccountsSource {
 
     private final String[] allColumns = {MySQLiteHelper.ACCOUNTS_COLUMN_ID,
             MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI,
             MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME,
             MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER,
             MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME};
+    private final MySQLiteHelper dbHelper;
     private SQLiteDatabase db;
-    private MySQLiteHelper dbHelper;
 
     public AccountsSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -53,7 +53,7 @@ public class AccountsSource {
     }
 
     public List<ShaarliAccount> getAllAccounts() {
-        List<ShaarliAccount> accounts = new ArrayList<ShaarliAccount>();
+        List<ShaarliAccount> accounts = new ArrayList<>();
 
         Cursor cursor = db.query(MySQLiteHelper.TABLE_ACCOUNTS, allColumns, null, null, null, null, null);
         cursor.moveToFirst();

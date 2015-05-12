@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -161,9 +162,9 @@ public class AddActivity extends Activity {
         // Init url  :
         ((EditText) dialogView.findViewById(R.id.url)).setText(sharedUrl);
 
-        // Init tags : TODO !
-//        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
-//        new AutoCompleteWrapper(textView, this);
+        // Init tags :
+        MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
+        new AutoCompleteWrapper(textView, this);
 
         // Open the dialog :
         builder.setView(dialogView)

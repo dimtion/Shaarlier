@@ -3,13 +3,13 @@ package com.dimtion.shaarlier;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,58 +42,53 @@ class AutoCompleteWrapper {
         task.execute();
     }
 
-    private class AutoCompleteRetriever extends AsyncTask<String, Void, ArrayList<String>> {
+    private class AutoCompleteRetriever extends AsyncTask<String, Void, List<Tag>> {
         @Override
-        protected ArrayList<String> doInBackground(String... urls) {
-            // params comes from the execute() call: params[0] is the url.
-            ArrayList<String> tags = new ArrayList<>();
+        protected List<Tag> doInBackground(String... foo) {
+            AccountsSource accountsSource = new AccountsSource(a_context);
+            accountsSource.rOpen();
+            List<ShaarliAccount> accounts = accountsSource.getAllAccounts();
 
-            // Get login data :
-            SharedPreferences pref = a_context.getSharedPreferences(a_context.getString(R.string.params), Context.MODE_PRIVATE);
-            String urlShaarli = pref.getString(a_context.getString(R.string.p_url_shaarli), "");
-            String username = pref.getString(a_context.getString(R.string.p_username), "");
-            String password = pref.getString(a_context.getString(R.string.p_password), "");
-
-            // Download tags :
-            NetworkManager manager = new NetworkManager(urlShaarli, username, password);
-            try {
-                manager.retrieveLoginToken();
-                manager.login();
-                String[] awesompleteTags = manager.retrieveTagsFromAwesomplete();
-                String[] wsTags = manager.retrieveTagsFromWs();
-                Collections.addAll(tags, awesompleteTags);
-                Collections.addAll(tags, wsTags);
-            } catch (IOException e) {
-                return tags;
+            TagsSource tagsSource = new TagsSource(a_context);
+            tagsSource.wOpen();
+            /* For the moment we keep all the tags, if later somebody wants to have the tags
+            ** separated for each accounts, we will see
+            */
+            for (ShaarliAccount account : accounts) {
+                // Download tags :
+                NetworkManager manager = new NetworkManager(
+                        account.getUrlShaarli(),
+                        account.getUsername(),
+                        account.getPassword());
+                try {
+                    manager.retrieveLoginToken();
+                    manager.login();
+                    String[] awesompleteTags = manager.retrieveTagsFromAwesomplete();
+                    String[] wsTags = manager.retrieveTagsFromWs();  // Keep for compatibility
+                    for (String tagValue : awesompleteTags) {
+                        tagsSource.createTag(account, tagValue.trim());
+                    }
+                    for (String tagValue : wsTags) {
+                        tagsSource.createTag(account, tagValue);
+                    }
+                } catch (IOException e) {
+                    Log.e("ERROR", e.toString());
+                }
             }
+            List<Tag> tags = tagsSource.getAllTags();
+            tagsSource.close();
+            accountsSource.close();
             return tags;
         }
 
         // onPostExecute displays the results of the AsyncTask.
         @Override
-        protected void onPostExecute(ArrayList<String> result) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(a_context, R.layout.tags_list);
+        protected void onPostExecute(List<Tag> result) {
+            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(a_context, R.layout.tags_list, result);
             if (!result.isEmpty()){
-                Set<String> tagsSet = new HashSet<>();
-                for(String tag : result){
-                    tag = tag.trim();
-                    tagsSet.add(tag);
-                }
-
-                // If there is no in tags, no need to update the adapter :
-                SharedPreferences pref = a_context.getSharedPreferences(a_context.getString(R.string.params), Context.MODE_PRIVATE);
-                Set<String> savedTags = pref.getStringSet(a_context.getString(R.string.saved_tags), new HashSet<String>());
-                if (!tagsSet.equals(savedTags)) {
-                    // Show result :
-                    a_textView.setAdapter(adapter);
-                    adapter.addAll(tagsSet);
-                    adapter.notifyDataSetChanged();
-                }
-
-                // Anyway : save the tags for next time :
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putStringSet(a_context.getString(R.string.saved_tags), tagsSet);
-                editor.apply();
+                a_textView.setAdapter(adapter);
+                adapter.addAll(result);
+                adapter.notifyDataSetChanged();
             }
         }
     }

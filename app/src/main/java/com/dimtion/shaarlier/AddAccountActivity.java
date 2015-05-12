@@ -19,13 +19,13 @@ import java.io.IOException;
 
 public class AddAccountActivity extends ActionBarActivity {
 
-    String urlShaarli;
-    String username;
-    String password;
-    String shortName;
-    ShaarliAccount account;
+    private String urlShaarli;
+    private String username;
+    private String password;
+    private String shortName;
+    private ShaarliAccount account;
 
-    Boolean isEditing = false;
+    private Boolean isEditing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
