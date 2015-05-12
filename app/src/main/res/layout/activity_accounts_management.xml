@@ -13,7 +13,7 @@
         android:id="@+id/noAccountToShow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="There is no account created for the moment."
+        android:text="@string/text_no_account"
         android:visibility="gone" />
 
     <ListView

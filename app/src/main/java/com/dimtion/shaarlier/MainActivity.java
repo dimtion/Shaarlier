@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
@@ -18,9 +17,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.IOException;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -173,53 +169,5 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_validated), value);
         editor.apply();
-    }
-
-    // Handle the test button
-    private class CheckShaarli extends AsyncTask<String, Void, Integer> {
-
-        // Error types :
-        // 0 : no error
-        // 1 : error connecting to shaarli
-        // 2 : error parsing token
-        // 3 : error login in
-
-        @Override
-        protected Integer doInBackground(String... urls) {
-            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2]);
-            try {
-                if (!manager.retrieveLoginToken()) {
-                    return 2;
-                }
-                if (!manager.login()) {
-                    return 3;
-                }
-            } catch (IOException e) {
-                return 1;
-            }
-            return 0;
-        }
-
-        @Override
-        protected void onPostExecute(Integer loginOutput) {
-            if (loginOutput == 0) {
-                // print success
-                Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
-                // Save only on success :
-                setValidated(true);
-//                saveSettings();
-            } else if (loginOutput == 1) { // Error loading page
-                setValidated(false);
-                Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
-            } else if (loginOutput == 2) { // Error parsing token
-                setValidated(false);
-                Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
-            } else if (loginOutput == 3) { // Error login
-                setValidated(false);
-                Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
-            }
-//            findViewById(R.id.isWorking).setVisibility(View.GONE);
-        }
-
     }
 }

@@ -6,23 +6,23 @@
 
     <LinearLayout
         android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:paddingTop="20dp"
         tools:context=".MainActivity">
 
         <ImageView
-        android:id="@+id/imageView"
+            android:id="@+id/imageView"
             android:layout_width="fill_parent"
             android:layout_height="100dp"
-        android:layout_gravity="top|center_horizontal"
-        android:contentDescription="@string/logo_description"
-        android:cropToPadding="false"
+            android:layout_gravity="top|center_horizontal"
+            android:contentDescription="@string/logo_description"
+            android:cropToPadding="false"
             android:maxHeight="10dp"
             android:src="@drawable/shaarli_icon" />
 
@@ -34,55 +34,55 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:onClick="openAccountsManager"
-            android:text="Manage accounts" />
+            android:text="@string/button_manage_accounts" />
 
         <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_behaviour"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_behaviour"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <CheckBox
             android:id="@+id/default_private"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-        android:layout_marginTop="10dp"
+            android:layout_marginTop="10dp"
             android:checked="true"
             android:text="@string/default_private" />
 
         <CheckBox
             android:id="@+id/show_share_dialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
+            android:layout_marginTop="5dp"
             android:checked="false"
             android:text="@string/text_show_share_dialog" />
 
         <CheckBox
             android:id="@+id/auto_load_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-        android:checked="true"
+            android:checked="true"
             android:text="@string/auto_load_title" />
 
         <TextView
             android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="35dp"
-        android:text="@string/text_about"
+            android:text="@string/text_about"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/about_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_about_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_about_details"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView

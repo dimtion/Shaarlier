@@ -17,7 +17,7 @@
     <string name="private_share">Private</string>
     <string name="success_test">The settings are fine</string>
     <string name="tags_hint">tags (separated by spaces)</string>
-    <string name="test_connection">Try the settings</string>
+    <string name="test_connection">Try and save the settings</string>
     <string name="text_behaviour">Behaviour</string>
     <string name="text_show_share_dialog">Show dialog box when sharing</string>
     <string name="title_activity_add">Add to Shaarli</string>
@@ -64,8 +64,14 @@
     <string name="title">Title :</string>
     <string name="title_hint"> </string>
     <string name="text_description">Description :</string>
-    <string name="title_activity_accounts_managment">AccountsManagmentActivity</string>
+    <string name="title_activity_accounts_managment">Accounts</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_add_account">AddAccountActivity</string>
+    <string name="text_add">Add</string>
+    <string name="text_validate">Validate</string>
+    <string name="text_no_account">There is no account to show</string>
+    <string name="button_manage_accounts">Manage accounts</string>
+    <string name="text_account_name">Account name :</string>
+    <string name="check_default_account">Default account</string>
+    <string name="button_delete_account">DELETE ACCOUNT</string>
+    <string name="title_activity_add_account">New account</string>
 </resources>

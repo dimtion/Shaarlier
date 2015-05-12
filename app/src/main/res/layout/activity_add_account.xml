@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_url"
+            android:text="@string/your_shaarli_url"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="Account name :"
+            android:text="@string/text_account_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
@@ -71,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="Default account" />
+            android:text="@string/check_default_account" />
 
         <Space
             android:layout_width="match_parent"
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:onClick="tryAndSaveAction"
-            android:text="Try Configuration and save" />
+            android:text="@string/test_connection" />
 
         <ProgressBar
             android:id="@+id/tryingConfSpinner"
@@ -97,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:onClick="deleteAccountAction"
-            android:text="DELETE ACCOUNT"
+            android:text="@string/button_delete_account"
             android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

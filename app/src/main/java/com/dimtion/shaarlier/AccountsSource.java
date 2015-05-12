@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Created by dimtion on 11/05/2015.
+ * API for managing accounts
  */
 class AccountsSource {
 

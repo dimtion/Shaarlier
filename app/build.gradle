@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.dimtion.shaarlier"
         minSdkVersion 15
-        targetSdkVersion 21
-        versionCode 12
-        versionName "1.1.0b"
+        targetSdkVersion 22
+        versionCode 13
+        versionName "1.2.0"
     }
     buildTypes {
         release {

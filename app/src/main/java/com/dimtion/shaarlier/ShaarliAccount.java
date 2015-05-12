@@ -2,6 +2,7 @@ package com.dimtion.shaarlier;
 
 /**
  * Created by dimtion on 11/05/2015.
+ * A Shaarli Account
  */
 public class ShaarliAccount {
     private long id;

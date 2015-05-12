@@ -6,6 +6,6 @@
     <item
         android:id="@+id/action_validate"
         android:icon="@drawable/ic_action_accept"
-        android:title="Validate"
+        android:title="@string/text_validate"
         app:showAsAction="always" />
 </menu>

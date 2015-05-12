@@ -28,7 +28,7 @@ import java.util.List;
 
 
 public class AddActivity extends Activity {
-    private ShaarliAccount choosedAccount;
+    private ShaarliAccount chosenAccount;
     private List<ShaarliAccount> allAccounts;
     private Boolean privateShare;
     private boolean autoTitle;
@@ -36,7 +36,7 @@ public class AddActivity extends Activity {
 
     private View a_dialogView;
     private AsyncTask a_TitleGetterExec;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,13 +87,13 @@ public class AddActivity extends Activity {
         AccountsSource accountsSource = new AccountsSource(this);
         accountsSource.rOpen();
         this.allAccounts = accountsSource.getAllAccounts();
-        this.choosedAccount = accountsSource.getDefaultAccount();
+        this.chosenAccount = accountsSource.getDefaultAccount();
         accountsSource.close();
 
-        if (this.choosedAccount != null) {
+        if (this.chosenAccount != null) {
             int indexChosenAccount = 0;
             for (ShaarliAccount account : this.allAccounts) {
-                if (account.getId() == this.choosedAccount.getId()) {
+                if (account.getId() == this.chosenAccount.getId()) {
                     break;
                 }
                 indexChosenAccount++;
@@ -147,7 +147,8 @@ public class AddActivity extends Activity {
         title = reader.getSubject() != null ? reader.getSubject() : "";
         if (title.contains(" ")) {
             title = title.substring(0, title.lastIndexOf(" "));
-        } if (title.contains("\n")){
+        }
+        if (title.contains("\n")) {
             title = title.substring(0, title.lastIndexOf("\n"));
         }
 
@@ -190,10 +191,10 @@ public class AddActivity extends Activity {
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
                         String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
-                        choosedAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
+                        chosenAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
 
                         // In case sharing is too long, close keyboard:
-                        InputMethodManager imm = (InputMethodManager)getSystemService(
+                        InputMethodManager imm = (InputMethodManager) getSystemService(
                                 Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
 
@@ -211,7 +212,7 @@ public class AddActivity extends Activity {
     }
 
     // To get an automatic title :
-    private void loadAutoTitle(String sharedUrl, String defaultTitle){
+    private void loadAutoTitle(String sharedUrl, String defaultTitle) {
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
 
@@ -222,43 +223,46 @@ public class AddActivity extends Activity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
                 getter.cancel(true);
                 a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
             }
+
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
-        
+
     }
-    private void updateTitle(String title, boolean isError){
+
+    private void updateTitle(String title, boolean isError) {
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.title_hint);
-        
-        if(isError){
+
+        if (isError) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
-        } else if(!title.equals("")) {
+        } else if (!title.equals("")) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
         }
 
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
     }
-    
+
     //
     // Class which handle the arrival of a new shared url, async
     //
     private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
-        
+
         @Override
-        protected Boolean doInBackground(String... url){
+        protected Boolean doInBackground(String... url) {
 
             // If there is no title, wait for title getter :
             String loadedTitle;
             String sharedTitle;
-            if(url[1].equals("")){
+            if (url[1].equals("")) {
                 try {
                     loadedTitle = (String) a_TitleGetterExec.get();
                 } catch (Exception e) { // could happen if the user didn't want to load titles.
@@ -268,19 +272,19 @@ public class AddActivity extends Activity {
             } else {
                 sharedTitle = url[1];
             }
-            
+
             try {
                 // Connect the user to the site :
                 NetworkManager manager = new NetworkManager(
-                        choosedAccount.getUrlShaarli(),
-                        choosedAccount.getUsername(),
-                        choosedAccount.getPassword());
+                        chosenAccount.getUrlShaarli(),
+                        chosenAccount.getUsername(),
+                        chosenAccount.getPassword());
                 manager.setTimeout(60000); // Long for slow networks
                 manager.retrieveLoginToken();
                 manager.login();
                 manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
 
-            } catch (IOException | NullPointerException e){
+            } catch (IOException | NullPointerException e) {
 
                 return false;
             }
@@ -299,7 +303,7 @@ public class AddActivity extends Activity {
     }
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... url){
+        protected String doInBackground(String... url) {
             if (url[1].equals("")) {
                 return NetworkManager.loadTitle(url[0]);
             } else {
@@ -317,12 +321,12 @@ public class AddActivity extends Activity {
                 }
             }
         }
-        
+
         @Override
-        protected void onCancelled(String title){
+        protected void onCancelled(String title) {
             updateTitle("", false);
         }
     }
-    }
+}
 
     

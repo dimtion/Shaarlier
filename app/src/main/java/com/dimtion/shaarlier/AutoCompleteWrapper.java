@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by dimtion on 21/02/2015. 
+ * Created by dimtion on 21/02/2015.
  * Inspired from : http://stackoverflow.com/a/5051180
  * and : http://www.claytical.com/blog/android-dynamic-autocompletion-using-google-places-api
  */
@@ -18,7 +18,7 @@ class AutoCompleteWrapper {
 
     private final MultiAutoCompleteTextView a_textView;
     private final Context a_context;
-    private ArrayAdapter<Tag> adapter;
+    private final ArrayAdapter<Tag> adapter;
 
     public AutoCompleteWrapper(final MultiAutoCompleteTextView textView, Context context) {
         this.a_textView = textView;
