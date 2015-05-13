@@ -115,6 +115,9 @@ public class AddActivity extends Activity {
         final Spinner accountSpinnerView = (Spinner) a_dialogView.findViewById(R.id.chooseAccount);
         ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);
         accountSpinnerView.setAdapter(adapter);
+        if (accountSpinnerView.getCount() <= 1) {
+            accountSpinnerView.setVisibility(View.GONE);
+        }
     }
 
     //
