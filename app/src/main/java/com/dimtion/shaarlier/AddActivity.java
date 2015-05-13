@@ -149,16 +149,7 @@ public class AddActivity extends Activity {
     // Method to extract the title from shared data
     //
     private String extractTitle(ShareCompat.IntentReader reader) {
-        String title;
-        title = reader.getSubject() != null ? reader.getSubject() : "";
-        if (title.contains(" ")) {
-            title = title.substring(0, title.lastIndexOf(" "));
-        }
-        if (title.contains("\n")) {
-            title = title.substring(0, title.lastIndexOf("\n"));
-        }
-
-        return title;
+        return reader.getSubject() != null ? reader.getSubject() : "";
     }
 
     //
