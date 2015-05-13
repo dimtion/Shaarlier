@@ -10,6 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.SecretKey;
+
 /**
  * Created by dimtion on 11/05/2015.
  * API for managing accounts
@@ -20,7 +22,8 @@ class AccountsSource {
             MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI,
             MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME,
             MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER,
-            MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME};
+            MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME,
+            MySQLiteHelper.ACCOUNTS_COLUMN_IV};
     private final MySQLiteHelper dbHelper;
     private final Context mContext;
     private SQLiteDatabase db;
@@ -42,12 +45,18 @@ class AccountsSource {
         dbHelper.close();
     }
 
-    public ShaarliAccount createAccount(String urlShaarli, String username, String password, String shortName) {
+    public ShaarliAccount createAccount(String urlShaarli, String username, String password, String shortName) throws Exception {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, urlShaarli);
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, username);
 
-        String password_cipher = password;  // TODO ! Once everything is working, encrypt ! DO NOT PUSH IN RELEASE THAT!
+        // Generate the iv :
+        byte[] iv = EncryptionHelper.generateInitialVector();
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_IV, iv);
+
+        byte[] password_cipher = encryptPassword(password, iv);
+
+
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, shortName);
 
@@ -63,7 +72,8 @@ class AccountsSource {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             ShaarliAccount account = cursorToAccount(cursor);
-            accounts.add(account);
+            if (account != null)
+                accounts.add(account);
             cursor.moveToNext();
         }
 
@@ -71,13 +81,34 @@ class AccountsSource {
         return accounts;
     }
 
-    public ShaarliAccount getShaarliAccountById(long id) {
+    private SecretKey getSecretKey() {
+        String id = mContext.getString(R.string.params);
+        SharedPreferences prefs = this.mContext.getSharedPreferences(id, Context.MODE_PRIVATE);
+
+        String sKey = prefs.getString(this.mContext.getString(R.string.dbKey), "");
+        return EncryptionHelper.stringToSecretKey(sKey);
+    }
+
+    private byte[] encryptPassword(String clearPassword, byte[] initialVector) throws Exception {
+        SecretKey key = getSecretKey();
+        byte[] encoded = EncryptionHelper.stringToBase64(clearPassword);
+        return EncryptionHelper.encrypt(encoded, key, initialVector);
+    }
+
+    private String decryptPassword(byte[] cipherData, byte[] initialVector) throws Exception {
+        SecretKey key = getSecretKey();
+        byte[] encodedPassword = EncryptionHelper.decrypt(cipherData, key, initialVector);
+        return EncryptionHelper.Base64ToString(encodedPassword);
+    }
+
+    //
+    // Returns null if the account doesn't exist
+    //
+    public ShaarliAccount getShaarliAccountById(long id) throws Exception {
         rOpen();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_ACCOUNTS, allColumns, MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
-        if (cursor.isAfterLast())
-            return null;
 
         ShaarliAccount account = cursorToAccount(cursor);
         cursor.close();
@@ -87,13 +118,23 @@ class AccountsSource {
     }
 
     private ShaarliAccount cursorToAccount(Cursor cursor) {
+        if (cursor.isAfterLast())
+            return null;
+
         ShaarliAccount account = new ShaarliAccount();
         account.setId(cursor.getLong(0));
         account.setUrlShaarli(cursor.getString(1));
         account.setUsername(cursor.getString(2));
+        account.setInitialVector(cursor.getBlob(5));
 
-        String password_cypher = cursor.getString(3);
-        String password = password_cypher;  // TODO ! Once everything is working, encrypt ! DO NOT PUSH IN RELEASE THAT!
+        byte[] password_cypher = cursor.getBlob(3);
+        String password;
+        try {
+            password = decryptPassword(password_cypher, account.getInitialVector());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
         account.setPassword(password);
         account.setShortName(cursor.getString(4));
 
@@ -104,20 +145,26 @@ class AccountsSource {
         db.delete(MySQLiteHelper.TABLE_ACCOUNTS, MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + account.getId(), null);
     }
 
-    public void editAccount(ShaarliAccount account) {
+    public void editAccount(ShaarliAccount account) throws Exception {
         String QUERY_WHERE = MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + account.getId();
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, account.getUrlShaarli());
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, account.getUsername());
 
-        String password_cipher = account.getPassword();  // TODO ! Once everything is working, encrypt ! DO NOT PUSH IN RELEASE THAT!
+        // Generate a new iv :
+        account.setInitialVector(EncryptionHelper.generateInitialVector());
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_IV, account.getInitialVector());
+
+        byte[] password_cipher = encryptPassword(account.getPassword(), account.getInitialVector());
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
+
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, account.getShortName());
+
 
         db.update(MySQLiteHelper.TABLE_ACCOUNTS, values, QUERY_WHERE, null);
     }
 
-    public ShaarliAccount getDefaultAccount() {
+    public ShaarliAccount getDefaultAccount() throws Exception {
         SharedPreferences prefs = this.mContext.getSharedPreferences(this.mContext.getString(R.string.params), Context.MODE_PRIVATE);
         long defaultAccountId = prefs.getLong(this.mContext.getString(R.string.p_default_account), -1);
 

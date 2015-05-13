@@ -10,6 +10,7 @@ public class ShaarliAccount {
     private String username;
     private String password;
     private String shortName;
+    private byte[] initialVector;
 
     @Override
     public String toString() {
@@ -56,5 +57,13 @@ public class ShaarliAccount {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    public byte[] getInitialVector() {
+        return initialVector;
+    }
+
+    public void setInitialVector(byte[] initialVector) {
+        this.initialVector = initialVector;
     }
 }

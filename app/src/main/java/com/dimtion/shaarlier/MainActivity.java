@@ -41,6 +41,25 @@ public class MainActivity extends ActionBarActivity {
         } catch (PackageManager.NameNotFoundException e) {
             textVersion.setText(getText(R.string.text_version));
         }
+
+        ///////////
+        // DEBUG //
+        ///////////
+
+//        try {
+//            SecretKey key = EncryptionHelper.generateKey();
+//            String message = "Hé toi, à qui est ce & ?";
+//            byte[] encoded = message.getBytes("UTF-8");
+//            byte[] encrypted = EncryptionHelper.encrypt(encoded, key);
+//
+//            // On décode :
+//            byte[] decrypted = EncryptionHelper.decrypt(encrypted, key);
+//            String finale = new String(decrypted, "UTF-8");
+//            Log.d("YEAH", finale);
+//        } catch (Exception e){
+//            Log.e("HELLLO", e.getMessage());
+//        }
+
     }
 
     @Override
@@ -164,10 +183,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setValidated(Boolean value) {
-        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean(getString(R.string.p_validated), value);
-        editor.apply();
-    }
 }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,7 +88,12 @@ public class AddActivity extends Activity {
         AccountsSource accountsSource = new AccountsSource(this);
         accountsSource.rOpen();
         this.allAccounts = accountsSource.getAllAccounts();
-        this.chosenAccount = accountsSource.getDefaultAccount();
+        try {
+            this.chosenAccount = accountsSource.getDefaultAccount();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.chosenAccount = null;
+        }
         accountsSource.close();
 
         if (this.chosenAccount != null) {
@@ -107,7 +113,7 @@ public class AddActivity extends Activity {
     //
     private void initAccountSpinner() {
         final Spinner accountSpinnerView = (Spinner) a_dialogView.findViewById(R.id.chooseAccount);
-        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);  // TODO make the spinner smaller
+        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);
         accountSpinnerView.setAdapter(adapter);
     }
 
@@ -285,7 +291,7 @@ public class AddActivity extends Activity {
                 manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
 
             } catch (IOException | NullPointerException e) {
-
+                Log.e("ERROR", e.getMessage());
                 return false;
             }
             return true;

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class AddAccountActivity extends ActionBarActivity {
@@ -41,13 +43,18 @@ public class AddAccountActivity extends ActionBarActivity {
         if (accountId != -1) {
             isEditing = true;
             AccountsSource accountsSource = new AccountsSource(getApplicationContext());
-            account = accountsSource.getShaarliAccountById(accountId);
+            try {
+                account = accountsSource.getShaarliAccountById(accountId);
+            } catch (Exception e) {
+                account = null;
+            }
             fillFields();
         } else {
 
             AccountsSource source = new AccountsSource(getApplicationContext());
             source.rOpen();
-            if (source.getAllAccounts().isEmpty()) {  // If it is the first account created
+            List<ShaarliAccount> allAccounts = source.getAllAccounts();
+            if (allAccounts.isEmpty()) {  // If it is the first account created
                 CheckBox defaultCheck = (CheckBox) findViewById(R.id.defaultAccountCheck);
                 defaultCheck.setChecked(true);
                 defaultCheck.setEnabled(false);
@@ -77,7 +84,7 @@ public class AddAccountActivity extends ActionBarActivity {
     public void deleteAccountAction(View view) {
         // Show dialog to be sure :
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to delete this account ?");
+        builder.setMessage(getString(R.string.text_confirm_deletion_account));
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -163,15 +170,20 @@ public class AddAccountActivity extends ActionBarActivity {
     private void saveAccount() {
         AccountsSource accountsSource = new AccountsSource(getApplicationContext());
         accountsSource.wOpen();
-        if (isEditing) {
-            account.setUrlShaarli(this.urlShaarli);
-            account.setUsername(this.username);
-            account.setPassword(this.password);
-            account.setShortName(this.shortName);
-            accountsSource.editAccount(account);
-        } else {
-            this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
+        try {
+            if (isEditing) {
+                account.setUrlShaarli(this.urlShaarli);
+                account.setUsername(this.username);
+                account.setPassword(this.password);
+                account.setShortName(this.shortName);
+                accountsSource.editAccount(account);
+            } else {
+                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
+            }
+        } catch (Exception e) {
+            Log.e("ENCRYPTION ERROR", e.getMessage());
         }
+
         accountsSource.close();
 
         // default account :

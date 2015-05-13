@@ -52,7 +52,7 @@
     <string name="error_retrieving_title">Title could not be loaded</string>
     <string name="auto_load_title">Automatically load page title</string>
     <string name="username_hint" translatable="false">Batman</string>
-    <string name="url_hint">shaarli.myserver.org</string>
+    <string name="url_hint">http://shaarli.myserver.org</string>
     <string name="action_go_to_shaarli">Open my Shaarli</string>
     <string name="developer_shaarli" translatable="false">https://dimtion.taupincretin.com/shaarli</string>
     <string name="action_share">Share a link</string>
@@ -74,4 +74,6 @@
     <string name="check_default_account">Default account</string>
     <string name="button_delete_account">DELETE ACCOUNT</string>
     <string name="title_activity_add_account">New account</string>
+    <string name="text_confirm_deletion_account">Are you sure you want to delete this account ?</string>
+    <string name="dbKey">com.dimtion.shaarlier.database_key</string>
 </resources>

@@ -250,7 +250,7 @@ class NetworkManager {
                     .attr("data-list");
             tags = tagsString.split(", ");
 
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             return tags;
         }
         return tags;
