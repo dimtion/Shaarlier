@@ -1,5 +1,6 @@
 package com.dimtion.shaarlier;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -56,22 +57,51 @@ class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_ACCOUNTS);
         db.execSQL(CREATE_TABLE_TAGS);
 
-        // Create a secure key :
+        // Create a secret key :
         String id = mContext.getString(R.string.params);
         SharedPreferences prefs = this.mContext.getSharedPreferences(id, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
+        SecretKey key;
         try {
-            SecretKey key = EncryptionHelper.generateKey();
+            key = EncryptionHelper.generateKey();
             String sKey = EncryptionHelper.secretKeyToString(key);
 
             editor.putString(mContext.getString(R.string.dbKey), sKey);
             editor.apply();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            key = null;
             Log.e("SHAARLIER", e.getMessage());
         }
 
-        // TODO : add new account
+        // In case of an update :
+        String url = prefs.getString(mContext.getString(R.string.p_user_url), "");
+        String usr = prefs.getString(mContext.getString(R.string.p_username), "");
+        String pwd = prefs.getString(mContext.getString(R.string.p_password), "");
+        int protocol = prefs.getInt(mContext.getString(R.string.p_protocol), 0);
+        Boolean isValidated = prefs.getBoolean(mContext.getString(R.string.p_validated), false);
+
+        try {
+            if (isValidated) {
+                ContentValues values = new ContentValues();
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, protocol + url);
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, usr);
+
+                // Generate the iv :
+                byte[] iv = EncryptionHelper.generateInitialVector();
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_IV, iv);
+
+                byte[] encoded = EncryptionHelper.stringToBase64(pwd);
+                byte[] password_cipher = EncryptionHelper.encrypt(encoded, key, iv);
+
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, "Shaarli");
+
+                db.insert(MySQLiteHelper.TABLE_ACCOUNTS, null, values);
+            }
+        } catch (Exception e) {
+            Log.e("ERROR", e.getMessage());
+        }
     }
 
     @Override
