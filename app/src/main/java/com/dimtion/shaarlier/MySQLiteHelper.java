@@ -81,10 +81,11 @@ class MySQLiteHelper extends SQLiteOpenHelper {
         int protocol = prefs.getInt(mContext.getString(R.string.p_protocol), 0);
         Boolean isValidated = prefs.getBoolean(mContext.getString(R.string.p_validated), false);
 
+        String[] prot = {"http://", "https://"};
         try {
             if (isValidated) {
                 ContentValues values = new ContentValues();
-                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, protocol + url);
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, prot[protocol] + url);
                 values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, usr);
 
                 // Generate the iv :
