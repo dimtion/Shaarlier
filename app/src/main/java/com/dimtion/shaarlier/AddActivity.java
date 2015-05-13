@@ -11,29 +11,33 @@ import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 
 public class AddActivity extends Activity {
-    private String urlShaarli;
-    private String username;
-    private String password;
+    private ShaarliAccount chosenAccount;
+    private List<ShaarliAccount> allAccounts;
     private Boolean privateShare;
     private boolean autoTitle;
     private boolean m_prefOpenDialog;
 
     private View a_dialogView;
     private AsyncTask a_TitleGetterExec;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,51 +46,75 @@ public class AddActivity extends Activity {
         String action = intent.getAction();
         String type = intent.getType();
 
-        // Check if the user had his data validated :
+        // Get the user preferences :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-        urlShaarli = pref.getString(getString(R.string.p_url_shaarli), "");
-        username = pref.getString(getString(R.string.p_username), "");
-        password = pref.getString(getString(R.string.p_password), "");
-        boolean vld = pref.getBoolean(getString(R.string.p_validated), false);
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
-        m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), false);
+        m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
-        
-        // convert urlShaarli into a real url :
-        if(!urlShaarli.endsWith("/")){
-            urlShaarli +='/';
-        }
-        if (!(urlShaarli.startsWith("http://") || urlShaarli.startsWith("https://"))){
-            urlShaarli = "http://" + urlShaarli;
-        }
 
-        if(username.equals("") || password.equals("") || !vld){
-            // If there is an error, launch the settings :
+        // Check if there is at least one account, then launch the settings :
+        getAllAccounts();
+        if (this.allAccounts.isEmpty()) {
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
             startActivity(intentLaunchSettings);
-        } else if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
+        } else if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
+            ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
+            String sharedUrl = reader.getText().toString();
 
-                ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
-                String sharedUrl = reader.getText().toString();
+            String sharedUrlTrimmed = this.extractUrl(sharedUrl);
+            String defaultTitle = this.extractTitle(reader);
 
-                String sharedUrlTrimmed = this.extractUrl(sharedUrl);
-                String defaultTitle = this.extractTitle(reader);
 
-                // Show edit dialog if the users wants :
-                if (m_prefOpenDialog) {
-                    handleDialog(sharedUrlTrimmed, defaultTitle);
-                } else {
-                    if (autoTitle) {
-                        final GetPageTitle getter = new GetPageTitle();
-                        a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
-                    }
-                    new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
-                }
+            // Show edit dialog if the users wants :
+            if (m_prefOpenDialog) {
+                handleDialog(sharedUrlTrimmed, defaultTitle);
             } else {
-                Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
+                if (autoTitle) {
+                    final GetPageTitle getter = new GetPageTitle();
+                    a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
+                }
+
+                new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
             }
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    //
+    // Default account first
+    //
+    private void getAllAccounts() {
+        AccountsSource accountsSource = new AccountsSource(this);
+        accountsSource.rOpen();
+        this.allAccounts = accountsSource.getAllAccounts();
+        try {
+            this.chosenAccount = accountsSource.getDefaultAccount();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.chosenAccount = null;
+        }
+        accountsSource.close();
+
+        if (this.chosenAccount != null) {
+            int indexChosenAccount = 0;
+            for (ShaarliAccount account : this.allAccounts) {
+                if (account.getId() == this.chosenAccount.getId()) {
+                    break;
+                }
+                indexChosenAccount++;
+            }
+            Collections.swap(this.allAccounts, indexChosenAccount, 0);
+        }
+    }
+
+    //
+    // Load the spinner for choosing the account
+    //
+    private void initAccountSpinner() {
+        final Spinner accountSpinnerView = (Spinner) a_dialogView.findViewById(R.id.chooseAccount);
+        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);
+        accountSpinnerView.setAdapter(adapter);
     }
 
     //
@@ -125,7 +153,8 @@ public class AddActivity extends Activity {
         title = reader.getSubject() != null ? reader.getSubject() : "";
         if (title.contains(" ")) {
             title = title.substring(0, title.lastIndexOf(" "));
-        } if (title.contains("\n")){
+        }
+        if (title.contains("\n")) {
             title = title.substring(0, title.lastIndexOf("\n"));
         }
 
@@ -137,18 +166,20 @@ public class AddActivity extends Activity {
     //
     private void handleDialog(final String sharedUrl, String givenTitle) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme));
-
         LayoutInflater inflater = AddActivity.this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.share_dialog, null);
         ((CheckBox) dialogView.findViewById(R.id.private_share)).setChecked(privateShare);
         this.a_dialogView = dialogView;
+
+        // Init accountSpinner
+        initAccountSpinner();
 
         // Load title :
         if (autoTitle && NetworkManager.isUrl(sharedUrl)) {
             loadAutoTitle(sharedUrl, givenTitle);
         }
 
-        // Show url EditText :
+        // Init url  :
         ((EditText) dialogView.findViewById(R.id.url)).setText(sharedUrl);
 
         // Init tags :
@@ -166,9 +197,10 @@ public class AddActivity extends Activity {
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
                         String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
+                        chosenAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
 
                         // In case sharing is too long, close keyboard:
-                        InputMethodManager imm = (InputMethodManager)getSystemService(
+                        InputMethodManager imm = (InputMethodManager) getSystemService(
                                 Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
 
@@ -186,7 +218,7 @@ public class AddActivity extends Activity {
     }
 
     // To get an automatic title :
-    private void loadAutoTitle(String sharedUrl, String defaultTitle){
+    private void loadAutoTitle(String sharedUrl, String defaultTitle) {
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
 
@@ -197,43 +229,46 @@ public class AddActivity extends Activity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
                 getter.cancel(true);
                 a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
             }
+
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
-        
+
     }
-    private void updateTitle(String title, boolean isError){
+
+    private void updateTitle(String title, boolean isError) {
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.title_hint);
-        
-        if(isError){
+
+        if (isError) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
-        } else if(!title.equals("")) {
+        } else if (!title.equals("")) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
         }
 
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
     }
-    
+
     //
     // Class which handle the arrival of a new shared url, async
     //
     private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
-        
+
         @Override
-        protected Boolean doInBackground(String... url){
+        protected Boolean doInBackground(String... url) {
 
             // If there is no title, wait for title getter :
             String loadedTitle;
             String sharedTitle;
-            if(url[1].equals("")){
+            if (url[1].equals("")) {
                 try {
                     loadedTitle = (String) a_TitleGetterExec.get();
                 } catch (Exception e) { // could happen if the user didn't want to load titles.
@@ -243,17 +278,20 @@ public class AddActivity extends Activity {
             } else {
                 sharedTitle = url[1];
             }
-            
+
             try {
                 // Connect the user to the site :
-                NetworkManager manager = new NetworkManager(urlShaarli, username, password);
+                NetworkManager manager = new NetworkManager(
+                        chosenAccount.getUrlShaarli(),
+                        chosenAccount.getUsername(),
+                        chosenAccount.getPassword());
                 manager.setTimeout(60000); // Long for slow networks
                 manager.retrieveLoginToken();
                 manager.login();
                 manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
-                
-            } catch (IOException | NullPointerException e){
 
+            } catch (IOException | NullPointerException e) {
+                Log.e("ERROR", e.getMessage());
                 return false;
             }
             return true;
@@ -271,7 +309,7 @@ public class AddActivity extends Activity {
     }
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... url){
+        protected String doInBackground(String... url) {
             if (url[1].equals("")) {
                 return NetworkManager.loadTitle(url[0]);
             } else {
@@ -289,12 +327,12 @@ public class AddActivity extends Activity {
                 }
             }
         }
-        
+
         @Override
-        protected void onCancelled(String title){
+        protected void onCancelled(String title) {
             updateTitle("", false);
         }
     }
-    }
+}
 
     

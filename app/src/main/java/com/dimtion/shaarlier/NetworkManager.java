@@ -49,6 +49,30 @@ class NetworkManager {
     }
 
     //
+    // Change something which is close to a url to something that is really one
+    //
+    public static String toUrl(String givenUrl) {
+
+        String protocol = "http://";  // Default value
+        if (!givenUrl.equals("")) {
+
+            if (!givenUrl.endsWith("/")) {
+                givenUrl += '/';
+            }
+
+            if (givenUrl.startsWith("http://")) {
+                givenUrl = givenUrl.replace("http://", "");
+
+            } else if (givenUrl.startsWith("https://")) {
+                givenUrl = givenUrl.replace("https://", "");
+                protocol = "https://";
+            }
+        }
+
+        return protocol + givenUrl;
+    }
+
+    //
     // Method to test the network connection (lighter version)
     //
     public static boolean testNetwork(Activity parentActivity) {
@@ -226,7 +250,7 @@ class NetworkManager {
                     .attr("data-list");
             tags = tagsString.split(", ");
 
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             return tags;
         }
         return tags;

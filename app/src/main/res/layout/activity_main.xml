@@ -6,158 +6,83 @@
 
     <LinearLayout
         android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:paddingTop="20dp"
         tools:context=".MainActivity">
 
         <ImageView
-        android:id="@+id/imageView"
+            android:id="@+id/imageView"
             android:layout_width="fill_parent"
             android:layout_height="100dp"
-        android:layout_gravity="top|center_horizontal"
-        android:contentDescription="@string/logo_description"
-        android:cropToPadding="false"
+            android:layout_gravity="top|center_horizontal"
+            android:contentDescription="@string/logo_description"
+            android:cropToPadding="false"
             android:maxHeight="10dp"
             android:src="@drawable/shaarli_icon" />
 
-        <TextView
-            android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-        android:text="@string/your_shaarli_url"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
-        <LinearLayout
-        android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Spinner
-            android:id="@+id/select_protocol"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-            android:spinnerMode="dropdown" />
-
-        <EditText
-            android:id="@+id/url_shaarli_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/url_hint"
-            android:inputType="textUri" />
-        </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/user_name"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-        android:id="@+id/username_input"
+        <Button
+            android:id="@+id/button"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/username_hint"
-            android:inputType="textPersonName" />
+            android:layout_margin="10dp"
+            android:onClick="openAccountsManager"
+            android:text="@string/button_manage_accounts" />
 
         <TextView
-            android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-        android:text="@string/user_password"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/password_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-            android:inputType="textPassword" />
-
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/button"
-            android:layout_width="0dp"
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-                android:layout_weight="1"
-            android:onClick="loginHandler"
-                android:text="@string/test_connection" />
-
-            <ProgressBar
-            android:id="@+id/isWorking"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="gone" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_behaviour"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/text_behaviour"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <CheckBox
             android:id="@+id/default_private"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-        android:layout_marginTop="10dp"
+            android:layout_marginTop="10dp"
             android:checked="true"
             android:text="@string/default_private" />
 
         <CheckBox
             android:id="@+id/show_share_dialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
+            android:layout_marginTop="5dp"
             android:checked="false"
             android:text="@string/text_show_share_dialog" />
 
         <CheckBox
             android:id="@+id/auto_load_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-        android:checked="true"
+            android:checked="true"
             android:text="@string/auto_load_title" />
 
         <TextView
             android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="35dp"
-        android:text="@string/text_about"
+            android:text="@string/text_about"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/about_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_about_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_about_details"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView

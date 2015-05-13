@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.dimtion.shaarlier.AddAccountActivity">
+
+    <item
+        android:id="@+id/action_validate"
+        android:icon="@drawable/ic_action_accept"
+        android:title="@string/text_validate"
+        app:showAsAction="always" />
+</menu>
