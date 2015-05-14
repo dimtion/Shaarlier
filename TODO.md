@@ -3,7 +3,7 @@ I know, a todo file is never a good practice
 ## To do ASAP
 - Feature : Handle redirection (E.g : shaarli.fr)
 - Feature : accept self-signed SSL certs (see : https://github.com/dimtion/Shaarlier/issues/7)
-- Bug : app crash in low network conditions
+- Bug : app crashes in low network conditions
 - Speed up share when no dialog must be open
 
 - Bug : autocomplete field is hidden by keyboard when a description is too long (help needed!)
@@ -20,7 +20,6 @@ I know, a todo file is never a good practice
 
 ## Long term evolutions
 - See online Shaarli links
-- Multiple Shaarli(s)
 - Save link later
 - Notifications for shaarli.fr
 - Try to stay KISS
