@@ -14,7 +14,7 @@ See [TODO file](https://github.com/dimtion/Shaarlier/blob/master/TODO.md) for a 
 - From the [Play Store](https://play.google.com/store/apps/details?id=com.dimtion.shaarlier)
 - From the [release tab](https://github.com/dimtion/Shaarlier/releases)
 - From the [Aptoide Store](http://dimtion.store.aptoide.com/app/market/com.dimtion.shaarlier/8/8917968/Shaarlier)
-- Soon : F-Droid
+- From [F-Droid](https://f-droid.org/repository/browse/?fdfilter=shaarlier&fdid=com.dimtion.shaarlier)
 
 ## Why ?
 I made this app because the official one doesn't feels right to me, in some cases you just need to save a link for reading it later. So launching the browser for that only task is quite too long (you know, I like when things are fast and easy).
