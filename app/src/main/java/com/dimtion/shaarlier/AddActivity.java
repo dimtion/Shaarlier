@@ -256,6 +256,8 @@ public class AddActivity extends Activity {
     //
     private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
 
+        Exception mError;
+
         @Override
         protected Boolean doInBackground(String... url) {
 
@@ -285,6 +287,7 @@ public class AddActivity extends Activity {
                 manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
 
             } catch (IOException | NullPointerException e) {
+                mError = e;
                 Log.e("ERROR", e.getMessage());
                 return false;
             }
@@ -296,7 +299,7 @@ public class AddActivity extends Activity {
             if (posted) {
                 Toast.makeText(getApplicationContext(), R.string.add_success, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), R.string.add_error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
             }
             finish();
         }
