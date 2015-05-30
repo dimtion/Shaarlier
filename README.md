@@ -23,7 +23,7 @@ I made this app because the official one doesn't feels right to me, in some case
 - SebSauvage original project : https://github.com/sebsauvage/Shaarli/
 - Main (and best) fork of the project : https://github.com/shaarli/Shaarli/
 - Thanks Jonathan Hedley for [jsoup](http://jsoup.org/) under [MIT Licence](http://jsoup.org/license)
-- My own [shaarli](https://dimtion.taupincretin.com/shaarli/)
+- My own personnal [shaarli](https://shaarli.dimtion.fr)
 
 --------
 
