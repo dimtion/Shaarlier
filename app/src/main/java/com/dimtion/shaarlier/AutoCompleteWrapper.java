@@ -1,13 +1,15 @@
 package com.dimtion.shaarlier;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,20 +39,26 @@ class AutoCompleteWrapper {
     }
 
     private void updateTagsView() {
-        TagsSource tagsSource = new TagsSource(a_context);
-        tagsSource.rOpen();
-        List<Tag> tagList = tagsSource.getAllTags();
+        try {
+            TagsSource tagsSource = new TagsSource(a_context);
+            tagsSource.rOpen();
+            List<Tag> tagList = tagsSource.getAllTags();
+            tagsSource.close();
 
-        this.adapter.clear();
-        this.adapter.addAll(tagList);
-        this.adapter.notifyDataSetChanged();
+            this.adapter.clear();
+            this.adapter.addAll(tagList);
+            this.adapter.notifyDataSetChanged();
 
-        this.a_textView.setAdapter(this.adapter);
+            this.a_textView.setAdapter(this.adapter);
 
-        tagsSource.close();
+        } catch (Exception e){
+            sendReport(e);
+        }
+
     }
 
     private class AutoCompleteRetriever extends AsyncTask<String, Void, Boolean> {
+        Exception mError;
         @Override
         protected Boolean doInBackground(String... foo) {
             AccountsSource accountsSource = new AccountsSource(a_context);
@@ -58,8 +66,6 @@ class AutoCompleteWrapper {
             List<ShaarliAccount> accounts = accountsSource.getAllAccounts();
 
             Boolean success = true;
-            TagsSource tagsSource = new TagsSource(a_context);
-            tagsSource.wOpen();
             /* For the moment we keep all the tags, if later somebody wants to have the tags
             ** separated for each accounts, we will see
             */
@@ -69,25 +75,42 @@ class AutoCompleteWrapper {
                         account.getUrlShaarli(),
                         account.getUsername(),
                         account.getPassword());
+                TagsSource tagsSource = new TagsSource(a_context);
                 try {
                     if(manager.retrieveLoginToken() && manager.login()) {
                         String[] awesompleteTags = manager.retrieveTagsFromAwesomplete();
                         String[] wsTags = manager.retrieveTagsFromWs();  // Keep for compatibility
-                        for (String tagValue : awesompleteTags) {
-                            tagsSource.createTag(account, tagValue.trim());
-                        }
-                        for (String tagValue : wsTags) {
-                            tagsSource.createTag(account, tagValue);
+                        if (awesompleteTags == null && wsTags == null) {
+                            mError = manager.getLastError();
+                            success = false;
+                        } else {
+                            tagsSource.wOpen();
+                            if(awesompleteTags!= null) {
+                                for (String tagValue : awesompleteTags) {
+                                    tagsSource.createTag(account, tagValue.trim());
+                                }
+                            }
+                            if(wsTags != null) {
+                                for (String tagValue : wsTags) {
+                                    tagsSource.createTag(account, tagValue);
+                                }
+                            }
+                            tagsSource.close();
                         }
                     } else {
+                        mError = new Exception("Could not login");
                         success = false;
                     }
-                } catch (IOException e) {
+
+                } catch (Exception e) {
+                    mError = e;
                     success = false;
                     Log.e("ERROR", e.toString());
+                } finally {
+                    tagsSource.close();
                 }
             }
-            tagsSource.close();
+
             accountsSource.close();
             return success;
         }
@@ -95,10 +118,35 @@ class AutoCompleteWrapper {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(Boolean r) {
-            updateTagsView();
             if(!r) {
-                Toast.makeText(a_context, R.string.error_retrieving_tags, Toast.LENGTH_SHORT).show();
+                String Serror = (mError != null) ? mError.getMessage() : "";
+                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " -- " + Serror, Toast.LENGTH_LONG).show();
+            } else {
+                updateTagsView();
             }
         }
+    }
+
+    private void sendReport(final Exception error) {
+        final Activity activity = (Activity) a_context;
+        AlertDialog.Builder builder = new AlertDialog.Builder(a_context);
+
+        builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier: add link");
+
+
+        final String extra = ""; // "Url Shaarli: " + account.getUrlShaarli();
+
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                DebugHelper.sendMailDev(activity, "REPORT - Shaarlier: load tags", DebugHelper.generateReport(error, activity, extra));
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

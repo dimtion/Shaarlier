@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import android.webkit.URLUtil;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -33,6 +32,12 @@ class NetworkManager {
 
     private String m_datePostLink;
     private String m_sharedUrl;
+
+    public Exception getLastError() {
+        return mLastError;
+    }
+
+    private Exception mLastError;
 
     NetworkManager(String shaarliUrl, String username, String password) {
         this.m_shaarliUrl = shaarliUrl;
@@ -225,7 +230,8 @@ class NetworkManager {
 //                    Log.d("Shaarlier, tag :", ja.getString(i));
             }
 
-        } catch (IOException | JSONException e) {
+        } catch (Exception e) {
+            this.mLastError = e;
             return predictionsArr;
         }
         return predictionsArr;
@@ -250,9 +256,10 @@ class NetworkManager {
                     .attr("data-list");
             tags = tagsString.split(", ");
 
-        } catch (IOException | NullPointerException e) {
-            return tags;
+        } catch (Exception e) {
+            this.mLastError = e;
         }
+
         return tags;
     }
 }

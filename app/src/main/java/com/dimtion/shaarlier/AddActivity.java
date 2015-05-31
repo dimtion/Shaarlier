@@ -64,7 +64,6 @@ public class AddActivity extends Activity {
             String sharedUrlTrimmed = this.extractUrl(sharedUrl);
             String defaultTitle = this.extractTitle(reader);
 
-
             // Show edit dialog if the users wants :
             if (m_prefOpenDialog) {
                 handleDialog(sharedUrlTrimmed, defaultTitle);
