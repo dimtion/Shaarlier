@@ -17,7 +17,7 @@ import java.util.TimeZone;
  * A class to help debugging, should not be in production
  */
 public class DebugHelper {
-    public static final String DEVELOPER_MAIL = "zizou.xena@gmail.com";
+    public static final String DEVELOPER_MAIL = "shaarlier@dimtion.fr";
 
     public static void sendMailDev(Activity context, String subject, String content) {
         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
@@ -29,7 +29,15 @@ public class DebugHelper {
     }
 
     public static String generateReport(Exception e, Activity activity, String extra) {
-        String message = "-----BEGIN REPORT-----\n";
+        String[] errorMessage = {e.getMessage(), e.toString()};
+
+        return generateReport(errorMessage, activity, extra);
+    }
+
+    public static String generateReport(String[] errorMessage, Activity activity, String extra){
+        String message = "Feel free to add a little message : \n\n";
+
+        message += "-----BEGIN REPORT-----\n";
         message += "Report type: DEBUG \n";
         message += "Android version: " + " " + Build.VERSION.RELEASE + "\n";
         try {
@@ -38,6 +46,7 @@ public class DebugHelper {
         } catch (PackageManager.NameNotFoundException e1) {
             e1.printStackTrace();
         }
+        message += "Activity: " + activity.toString();
 
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
@@ -45,12 +54,15 @@ public class DebugHelper {
 
         message += df.format(new Date()) + "\n\n";
 
-        message += e.getMessage() + "\n\n";
-        message += e.toString() + "\n\n";
+        for (String m : errorMessage) {
+            message += m + "\n\n";
+        }
 
         message += "-----EXTRA-----\n" + extra + "\n";
 
-        message += "-----END REPORT-----\n";
+        message += "-----END REPORT-----\n\n";
+        message += "Thanks for the report, I'll try to answer as soon as possible !\n";
+
         return message;
     }
 }
