@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,13 +50,14 @@ class AutoCompleteWrapper {
         tagsSource.close();
     }
 
-    private class AutoCompleteRetriever extends AsyncTask<String, Void, Integer> {
+    private class AutoCompleteRetriever extends AsyncTask<String, Void, Boolean> {
         @Override
-        protected Integer doInBackground(String... foo) {
+        protected Boolean doInBackground(String... foo) {
             AccountsSource accountsSource = new AccountsSource(a_context);
             accountsSource.rOpen();
             List<ShaarliAccount> accounts = accountsSource.getAllAccounts();
 
+            Boolean success = true;
             TagsSource tagsSource = new TagsSource(a_context);
             tagsSource.wOpen();
             /* For the moment we keep all the tags, if later somebody wants to have the tags
@@ -68,29 +70,35 @@ class AutoCompleteWrapper {
                         account.getUsername(),
                         account.getPassword());
                 try {
-                    manager.retrieveLoginToken();
-                    manager.login();
-                    String[] awesompleteTags = manager.retrieveTagsFromAwesomplete();
-                    String[] wsTags = manager.retrieveTagsFromWs();  // Keep for compatibility
-                    for (String tagValue : awesompleteTags) {
-                        tagsSource.createTag(account, tagValue.trim());
-                    }
-                    for (String tagValue : wsTags) {
-                        tagsSource.createTag(account, tagValue);
+                    if(manager.retrieveLoginToken() && manager.login()) {
+                        String[] awesompleteTags = manager.retrieveTagsFromAwesomplete();
+                        String[] wsTags = manager.retrieveTagsFromWs();  // Keep for compatibility
+                        for (String tagValue : awesompleteTags) {
+                            tagsSource.createTag(account, tagValue.trim());
+                        }
+                        for (String tagValue : wsTags) {
+                            tagsSource.createTag(account, tagValue);
+                        }
+                    } else {
+                        success = false;
                     }
                 } catch (IOException e) {
+                    success = false;
                     Log.e("ERROR", e.toString());
                 }
             }
             tagsSource.close();
             accountsSource.close();
-            return 0;
+            return success;
         }
 
         // onPostExecute displays the results of the AsyncTask.
         @Override
-        protected void onPostExecute(Integer r) {
+        protected void onPostExecute(Boolean r) {
             updateTagsView();
+            if(!r) {
+                Toast.makeText(a_context, R.string.error_retrieving_tags, Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

@@ -12,6 +12,7 @@
     <string name="error_login">The username or the password is wrong</string>
     <string name="error_parsing_token">The given url is not a compatible Shaarli</string>
     <string name="error_url">The url is wrong</string>
+    <string name="error_retrieving_tags">Could not load tags</string>
     <string name="logo_description">Shaarli logo</string>
     <string name="more">More to come…</string>
     <string name="private_share">Private</string>

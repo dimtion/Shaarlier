@@ -52,4 +52,5 @@ Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez
     <string name="title_activity_accounts_managment">Comptes</string>
     <string name="title_activity_add_account">Nouveau compte</string>
     <string name="text_confirm_deletion_account">Êtes-vous sûr de vouloir supprimer ce compte ?</string>
+    <string name="error_retrieving_tags">Une erreur s\'est produite lors du chargement des tags</string>
 </resources>

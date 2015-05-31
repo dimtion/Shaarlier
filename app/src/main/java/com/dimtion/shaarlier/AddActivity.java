@@ -280,10 +280,11 @@ public class AddActivity extends Activity {
                         chosenAccount.getUsername(),
                         chosenAccount.getPassword());
                 manager.setTimeout(60000); // Long for slow networks
-                manager.retrieveLoginToken();
-                manager.login();
-                manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
-
+                if(manager.retrieveLoginToken() && manager.login()) {
+                    manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
+                } else {
+                    return false;
+                }
             } catch (IOException | NullPointerException e) {
                 Log.e("ERROR", e.getMessage());
                 return false;
