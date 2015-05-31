@@ -285,6 +285,7 @@ public class AddActivity extends Activity {
                 if(manager.retrieveLoginToken() && manager.login()) {
                     manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
                 } else {
+                    mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
                     return false;
                 }
             } catch (IOException | NullPointerException e) {
@@ -299,10 +300,12 @@ public class AddActivity extends Activity {
         protected void onPostExecute(Boolean posted) {
             if (posted) {
                 Toast.makeText(getApplicationContext(), R.string.add_success, Toast.LENGTH_SHORT).show();
+                finish();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
+                sendReport(mError, chosenAccount);
             }
-            finish();
+
         }
     }
 
@@ -330,6 +333,30 @@ public class AddActivity extends Activity {
         protected void onCancelled(String title) {
             updateTitle("", false);
         }
+    }
+
+    private void sendReport(final Exception error, final ShaarliAccount account) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier: add link");
+
+
+        final String extra = "Url Shaarli: " + account.getUrlShaarli();
+        final Activity activity = this;
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                DebugHelper.sendMailDev(activity, "REPORT - Shaarlier: add link", DebugHelper.generateReport(error, activity, extra));
+                finish();
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                finish();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
 

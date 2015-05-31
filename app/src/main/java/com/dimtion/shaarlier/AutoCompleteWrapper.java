@@ -97,7 +97,7 @@ class AutoCompleteWrapper {
         protected void onPostExecute(Boolean r) {
             updateTagsView();
             if(!r) {
-                Toast.makeText(a_context, R.string.error_retrieving_tags, Toast.LENGTH_LONG).show();
+                Toast.makeText(a_context, R.string.error_retrieving_tags, Toast.LENGTH_SHORT).show();
             }
         }
     }
