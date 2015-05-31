@@ -160,7 +160,7 @@ public class AddAccountActivity extends ActionBarActivity {
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
         // Try the configuration :
-        CheckShaarli checkShaarli = new CheckShaarli();
+        CheckShaarli checkShaarli = new CheckShaarli(this);
         checkShaarli.execute(this.urlShaarli, this.username, this.password);
     }
 
@@ -202,6 +202,14 @@ public class AddAccountActivity extends ActionBarActivity {
         static final int NETWORK_ERROR = 1;
         static final int TOKEN_ERROR = 2;
         static final int LOGIN_ERROR = 3;
+        AddAccountActivity mParent;
+        IOException mError;
+
+
+        public CheckShaarli(AddAccountActivity parent) {
+            super();
+            mParent = parent;
+        }
 
         @Override
         protected Integer doInBackground(String... urls) {
@@ -214,6 +222,7 @@ public class AddAccountActivity extends ActionBarActivity {
                     return LOGIN_ERROR;
                 }
             } catch (IOException e) {
+                this.mError = e;
                 return NETWORK_ERROR;
             }
             return NO_ERROR;
@@ -233,6 +242,7 @@ public class AddAccountActivity extends ActionBarActivity {
                     break;
                 case NETWORK_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    sendReport();
                     break;
                 case TOKEN_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
@@ -241,6 +251,29 @@ public class AddAccountActivity extends ActionBarActivity {
                     Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
                     break;
             }
+        }
+
+        private void sendReport() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
+
+            builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier");
+            String extrab = "Url Shaarli: " + urlShaarli;
+
+
+            final String extra = extrab;
+
+            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(mError, mParent, extra));
+                }
+            });
+            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 }
