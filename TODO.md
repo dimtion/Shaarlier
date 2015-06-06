@@ -5,8 +5,7 @@ I know, a todo file is never a good practice
 - Feature : accept self-signed SSL certs (see : https://github.com/dimtion/Shaarlier/issues/7)
 - Bug : app crashes in low network conditions
 - Speed up share when no dialog must be open
-
-- Bug : autocomplete field is hidden by keyboard when a description is too long (help needed!)
+- Bug : autocomplete field for tags is hidden by keyboard when a description is too long (help needed!)
 
 ## Planned for future releases
 - Save link in a draft in case of an error
@@ -21,7 +20,6 @@ I know, a todo file is never a good practice
 ## Long term evolutions
 - See online Shaarli links
 - Save link later
-- Notifications for shaarli.fr
 - Try to stay KISS
 
 [Any idea ?](https://github.com/dimtion/Shaarlier/issues)
