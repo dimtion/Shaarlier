@@ -257,10 +257,9 @@ public class AddAccountActivity extends ActionBarActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
 
             builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier");
-            String extrab = "Url Shaarli: " + urlShaarli;
 
 
-            final String extra = extrab;
+            final String extra = "Url Shaarli: " + urlShaarli;
 
             builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
