@@ -61,10 +61,12 @@ class TagsSource {
         values.put(MySQLiteHelper.TAGS_COLUMN_TAG, tag.getValue());
 
         // If existing, do nothing :
+        String[] getTagArgs = {String.valueOf(tag.getMasterAccountId()), tag.getValue()};
+
         Cursor cursor = db.query(MySQLiteHelper.TABLE_TAGS, allColumns,
-                MySQLiteHelper.TAGS_COLUMN_ID_ACCOUNT + " = " + tag.getMasterAccountId() + " AND " +
-                        MySQLiteHelper.TAGS_COLUMN_TAG + " = '" + tag.getValue() + "'",
-                null, null, null, null);
+                MySQLiteHelper.TAGS_COLUMN_ID_ACCOUNT + " = ? AND " +
+                        MySQLiteHelper.TAGS_COLUMN_TAG + " = ?",
+                getTagArgs, null, null, null);
         try {
             cursor.moveToFirst();
             if (cursor.isAfterLast()) {
