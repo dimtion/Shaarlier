@@ -17,11 +17,10 @@ import java.util.TimeZone;
  * A class to help debugging, should not be in production
  */
 public class DebugHelper {
-    public static final String DEVELOPER_MAIL = "shaarlier@dimtion.fr";
 
     public static void sendMailDev(Activity context, String subject, String content) {
         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", DEVELOPER_MAIL, null));
+                "mailto", context.getString(R.string.developer_mail), null));
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, content);
 
