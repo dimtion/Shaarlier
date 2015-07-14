@@ -92,7 +92,8 @@
             android:layout_marginTop="20dp"
             android:dropDownHeight="150dp"
             android:hint="@string/tags_hint"
-            android:inputType="textAutoComplete" />
+            android:inputType="textAutoComplete"
+            android:imeOptions="actionDone" />
 
         <CheckBox
             android:id="@+id/private_share"
