@@ -126,6 +126,16 @@ public class AddActivity extends Activity {
         String finalUrl;
         // trim the url because of annoying apps which send to much data :
         finalUrl = sharedUrl.trim();
+
+        String[] possible_urls = finalUrl.split(" ");
+
+        for (String url : possible_urls){
+            if(NetworkManager.isUrl(url)){
+                finalUrl = url;
+                break;
+            }
+        }
+
         finalUrl = finalUrl.substring(finalUrl.lastIndexOf(" ") + 1);
         finalUrl = finalUrl.substring(finalUrl.lastIndexOf("\n") + 1);
 
