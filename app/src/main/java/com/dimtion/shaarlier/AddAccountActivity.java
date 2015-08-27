@@ -1,12 +1,15 @@
 package com.dimtion.shaarlier;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,7 +20,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -31,6 +33,61 @@ public class AddAccountActivity extends ActionBarActivity {
     private Boolean isDefaultAccount;
 
     private Boolean isEditing = false;
+
+
+    private class networkHandler extends Handler{
+        Activity mParent;
+
+        public networkHandler(Activity parent){
+            this.mParent = parent;
+        }
+
+        @Override
+        public void handleMessage(Message msg){
+            findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
+
+            switch (msg.arg1) {
+                case NetworkService.NO_ERROR:
+                    Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
+                    saveAccount();
+                    finish();
+                    break;
+                case NetworkService.NETWORK_ERROR:
+                    Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    sendReport((Exception)msg.obj);
+                    break;
+                case NetworkService.TOKEN_ERROR:
+                    Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
+                    break;
+                case NetworkService.LOGIN_ERROR:
+                    Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+
+        private void sendReport(final Exception error) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
+
+            builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier");
+
+
+            final String extra = "Url Shaarli: " + urlShaarli;
+
+            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(error, mParent, extra));
+                }
+            });
+            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,8 +217,15 @@ public class AddAccountActivity extends ActionBarActivity {
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
         // Try the configuration :
-        CheckShaarli checkShaarli = new CheckShaarli(this);
-        checkShaarli.execute(this.urlShaarli, this.username, this.password);
+//        CheckShaarli checkShaarli = new CheckShaarli(this);
+//        checkShaarli.execute(this.urlShaarli, this.username, this.password);
+        Intent i = new Intent(this, NetworkService.class);
+        i.putExtra("action", "checkShaarli");
+        i.putExtra("urlShaarli", this.urlShaarli);
+        i.putExtra("username", this.username);
+        i.putExtra("password", this.password);
+        i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
+        startService(i);
     }
 
     //
@@ -197,82 +261,42 @@ public class AddAccountActivity extends ActionBarActivity {
     }
 
     // Tries the configuration on the web async
-    private class CheckShaarli extends AsyncTask<String, Void, Integer> {
-        static final int NO_ERROR = 0;
-        static final int NETWORK_ERROR = 1;
-        static final int TOKEN_ERROR = 2;
-        static final int LOGIN_ERROR = 3;
-        AddAccountActivity mParent;
-        IOException mError;
+//    private class CheckShaarli extends AsyncTask<String, Void, Integer> {
+//
+//        AddAccountActivity mParent;
+//        IOException mError;
+//
+//
+//        public CheckShaarli(AddAccountActivity parent) {
+//            super();
+//            mParent = parent;
+//        }
+//
+//        @Override
+//        protected Integer doInBackground(String... urls) {
+//            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2]);
+//            try {
+//                if (!manager.retrieveLoginToken()) {
+//                    return TOKEN_ERROR;
+//                }
+//                if (!manager.login()) {
+//                    return LOGIN_ERROR;
+//                }
+//            } catch (IOException e) {
+//                this.mError = e;
+//                return NETWORK_ERROR;
+//            }
+//            return NO_ERROR;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Integer loginOutput) {
+//
+//
+//        }
+//
+//
+//    }
 
-
-        public CheckShaarli(AddAccountActivity parent) {
-            super();
-            mParent = parent;
-        }
-
-        @Override
-        protected Integer doInBackground(String... urls) {
-            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2]);
-            try {
-                if (!manager.retrieveLoginToken()) {
-                    return TOKEN_ERROR;
-                }
-                if (!manager.login()) {
-                    return LOGIN_ERROR;
-                }
-            } catch (IOException e) {
-                this.mError = e;
-                return NETWORK_ERROR;
-            }
-            return NO_ERROR;
-        }
-
-        @Override
-        protected void onPostExecute(Integer loginOutput) {
-
-            findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
-
-            switch (loginOutput) {
-                case NO_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
-                    saveAccount();
-                    finish();
-                    break;
-                case NETWORK_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    sendReport();
-                    break;
-                case TOKEN_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
-                    break;
-                case LOGIN_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
-                    break;
-            }
-        }
-
-        private void sendReport() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
-
-            builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier");
-
-
-            final String extra = "Url Shaarli: " + urlShaarli;
-
-            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(mError, mParent, extra));
-                }
-            });
-            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User cancelled the dialog
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-    }
+    private Handler networkHandler;
 }

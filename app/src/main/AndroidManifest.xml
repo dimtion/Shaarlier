@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dimtion.shaarlier">
+    package="com.dimtion.shaarlier" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,11 +9,11 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,7 @@
             android:label="@string/title_activity_add"
             android:noHistory="true"
             android:taskAffinity="com.dimtion.Shaarlier.share"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -40,7 +40,7 @@
         <activity
             android:name=".AccountsManagementActivity"
             android:label="@string/title_activity_accounts_managment"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dimtion.shaarlier.MainActivity" />
@@ -49,11 +49,17 @@
             android:name=".AddAccountActivity"
             android:label="@string/title_activity_add_account"
             android:parentActivityName=".AccountsManagementActivity"
-            android:windowSoftInputMode="stateHidden">
-        <meta-data
+            android:windowSoftInputMode="stateHidden" >
+            <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dimtion.shaarlier.AccountsManagementActivity" />
         </activity>
+
+        <service
+            android:name=".NetworkService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
