@@ -52,7 +52,7 @@ public class AddActivity extends Activity {
         m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
 
-        // Check if there is at least one account, then launch the settings :
+        // Check if there is at least one account, if so launch the settings :
         getAllAccounts();
         if (this.allAccounts.isEmpty()) {
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
@@ -64,16 +64,19 @@ public class AddActivity extends Activity {
             String sharedUrlTrimmed = this.extractUrl(sharedUrl);
             String defaultTitle = this.extractTitle(reader);
 
+            String defaultDescription = intent.getStringExtra("description") != null ? intent.getStringExtra("description") : "";
+            String defaultTags = intent.getStringExtra("tags") != null ? intent.getStringExtra("tags") : "";
+
             // Show edit dialog if the users wants :
             if (m_prefOpenDialog) {
-                handleDialog(sharedUrlTrimmed, defaultTitle);
+                handleDialog(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags);
             } else {
                 if (autoTitle) {
                     final GetPageTitle getter = new GetPageTitle();
                     a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
                 }
-
-                new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
+                handleSendPost(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags, privateShare, this.chosenAccount);
+//                new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
             }
         } else {
             Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
@@ -167,7 +170,7 @@ public class AddActivity extends Activity {
     //
     // Method made to handle the dialog box
     //
-    private void handleDialog(final String sharedUrl, String givenTitle) {
+    private void handleDialog(final String sharedUrl, String givenTitle, String defaultDescription, String defaultTags) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme));
         LayoutInflater inflater = AddActivity.this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.share_dialog, null);
@@ -185,8 +188,12 @@ public class AddActivity extends Activity {
         // Init url  :
         ((EditText) dialogView.findViewById(R.id.url)).setText(sharedUrl);
 
+        // Init Description field :
+        ((EditText) dialogView.findViewById(R.id.description)).setText(defaultDescription);
+
         // Init tags :
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
+        ((EditText) dialogView.findViewById(R.id.tags)).setText(defaultTags);
         new AutoCompleteWrapper(textView, this);
 
         // Open the dialog :
@@ -209,7 +216,9 @@ public class AddActivity extends Activity {
 
 
                         // Finally send everything
-                        new HandleAddUrl().execute(url, title, description, tags);
+                        handleSendPost(url, title, description, tags, privateShare, chosenAccount);
+
+//                        new HandleAddUrl().execute(url, title, description, tags);
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -260,6 +269,28 @@ public class AddActivity extends Activity {
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
     }
 
+    /**
+     * Start the network service to send the link with all its data to Shaarli
+     * @param sharedUrl the one url
+     * @param title a chosen title by the user
+     * @param description user description
+     * @param tags user tags
+     * @param isPrivate true if the link is private
+     * @param account the account which the share operate
+     */
+    private void handleSendPost(String sharedUrl, String title, String description, String tags, boolean isPrivate, ShaarliAccount account){
+        Intent networkIntent = new Intent(this, NetworkService.class);
+        networkIntent.putExtra("action", "postLink");
+        networkIntent.putExtra("sharedUrl", sharedUrl);
+        networkIntent.putExtra("title", title);
+        networkIntent.putExtra("description", description);
+        networkIntent.putExtra("tags", tags);
+        networkIntent.putExtra("privateShare", isPrivate);
+        networkIntent.putExtra("chosenAccountId", account.getId());
+
+        startService(networkIntent);
+        finish();
+    }
     //
     // Class which handle the arrival of a new shared url, async
     //
