@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ public class AddAccountActivity extends ActionBarActivity {
     private String urlShaarli;
     private String username;
     private String password;
+    private String basicAuthUsername;
+    private String basicAuthPassword;
     private String shortName;
     private ShaarliAccount account;
     private Boolean isDefaultAccount;
@@ -72,6 +75,13 @@ public class AddAccountActivity extends ActionBarActivity {
         ((EditText) findViewById(R.id.usernameView)).setText(account.getUsername());
         ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
         ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
+
+        if (account.getBasicAuthUsername() != "") {
+            ((EditText) findViewById(R.id.basicUsernameView)).setText(account.getBasicAuthUsername());
+            ((EditText) findViewById(R.id.basicPasswordView)).setText(account.getBasicAuthPassword());
+            ((Switch) findViewById(R.id.basicAuthSwitch)).setChecked(true);
+            enableBasicAuth(findViewById(R.id.basicAuthSwitch));
+        }
 
         // Is it the default account ?
         SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
@@ -142,6 +152,14 @@ public class AddAccountActivity extends ActionBarActivity {
         }
     }
 
+    public void enableBasicAuth(View toggle) {
+        boolean checked = ((Switch) toggle).isChecked();
+        findViewById(R.id.basicUsernameView).setEnabled(checked);
+        findViewById(R.id.basicPasswordView).setEnabled(checked);
+        findViewById(R.id.basicUsernameTextView).setEnabled(checked);
+        findViewById(R.id.basicPasswordTextView).setEnabled(checked);
+    }
+
     public void tryAndSaveAction(View view) {
 
         hideKeyboard();
@@ -152,16 +170,23 @@ public class AddAccountActivity extends ActionBarActivity {
         final String urlShaarliInput = ((EditText) findViewById(R.id.urlShaarliView)).getText().toString();
         this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
         this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
+        if (((Switch)findViewById(R.id.basicAuthSwitch)).isChecked()) {
+            this.basicAuthUsername = ((EditText) findViewById(R.id.basicUsernameView)).getText().toString();
+            this.basicAuthPassword = ((EditText) findViewById(R.id.basicPasswordView)).getText().toString();
+        }
+        else {
+            this.basicAuthUsername = "";
+            this.basicAuthPassword = "";
+        }
         this.shortName = ((EditText) findViewById(R.id.shortNameView)).getText().toString();
         this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
 
         this.urlShaarli = NetworkManager.toUrl(urlShaarliInput);
-
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
         // Try the configuration :
         CheckShaarli checkShaarli = new CheckShaarli(this);
-        checkShaarli.execute(this.urlShaarli, this.username, this.password);
+        checkShaarli.execute(this.urlShaarli, this.username, this.password, this.basicAuthUsername, this.basicAuthPassword);
     }
 
     //
@@ -175,10 +200,12 @@ public class AddAccountActivity extends ActionBarActivity {
                 account.setUrlShaarli(this.urlShaarli);
                 account.setUsername(this.username);
                 account.setPassword(this.password);
+                account.setBasicAuthUsername(this.basicAuthUsername);
+                account.setBasicAuthPassword(this.basicAuthPassword);
                 account.setShortName(this.shortName);
                 accountsSource.editAccount(account);
             } else {
-                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
+                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.basicAuthUsername, this.basicAuthPassword, this.shortName);
             }
         } catch (Exception e) {
             Log.e("ENCRYPTION ERROR", e.getMessage());
@@ -213,7 +240,7 @@ public class AddAccountActivity extends ActionBarActivity {
 
         @Override
         protected Integer doInBackground(String... urls) {
-            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2]);
+            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2], urls[3], urls[4]);
             try {
                 if (!manager.retrieveLoginToken()) {
                     return TOKEN_ERROR;

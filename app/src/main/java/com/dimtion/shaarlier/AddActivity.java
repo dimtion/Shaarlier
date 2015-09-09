@@ -289,7 +289,9 @@ public class AddActivity extends Activity {
                 NetworkManager manager = new NetworkManager(
                         chosenAccount.getUrlShaarli(),
                         chosenAccount.getUsername(),
-                        chosenAccount.getPassword());
+                        chosenAccount.getPassword(),
+                        chosenAccount.getBasicAuthUsername(),
+                        chosenAccount.getBasicAuthPassword());
                 manager.setTimeout(60000); // Long for slow networks
                 if(manager.retrieveLoginToken() && manager.login()) {
                     manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);

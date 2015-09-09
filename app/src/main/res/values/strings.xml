@@ -24,12 +24,15 @@
     <string name="title_activity_add">Add to Shaarli</string>
     <string name="user_name">Username :</string>
     <string name="user_password">Password :</string>
+    <string name="basic_auth">HTTP Basic Authentication</string>
     <string name="your_shaarli_url">Your Shaarli url :</string>
 
     <string name="params" translatable="false">com.dimtion.shaarliposter.parms</string>
     <string name="p_url_shaarli" translatable="false">com.dimtion.shaarliposter.p_url_shaarli</string>
     <string name="p_username" translatable="false">com.dimtion.shaarliposter.p_username</string>
     <string name="p_password" translatable="false">com.dimtion.shaarliposter.p_password</string>
+    <string name="p_basic_username" translatable="false">com.dimtion.shaarliposter.p_basic_username</string>
+    <string name="p_basic_password" translatable="false">com.dimtion.shaarliposter.p_basic_password</string>
     <string name="p_validated" translatable="false">com.dimtion.shaarliposter.p_validated</string>
     <string name="p_default_private" translatable="false">com.dimtion.shaarlier.p_default_private</string>
     <string name="p_show_share_dialog" translatable="false">com.dimtion.shaarlier.p_show_share_dialog</string>

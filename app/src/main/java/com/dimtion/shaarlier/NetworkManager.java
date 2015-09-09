@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Base64;
 import android.webkit.URLUtil;
 
 import org.json.JSONArray;
@@ -23,6 +24,7 @@ class NetworkManager {
     private final String m_shaarliUrl;
     private final String m_username;
     private final String m_password;
+    private final String m_basicAuth;
     private Integer m_timeout = 10000;
 
 
@@ -39,10 +41,19 @@ class NetworkManager {
 
     private Exception mLastError;
 
-    NetworkManager(String shaarliUrl, String username, String password) {
+    NetworkManager(String shaarliUrl, String username, String password, String basicAuthUsername, String basicAuthPassword) {
         this.m_shaarliUrl = shaarliUrl;
         this.m_username = username;
         this.m_password = password;
+
+        if (basicAuthUsername != "" && basicAuthPassword != "") {
+            String login = basicAuthUsername + ":" + basicAuthPassword;
+            this.m_basicAuth = new String(Base64.encode(login.getBytes(), Base64.NO_WRAP));
+        }
+        else {
+            this.m_basicAuth = "";
+        }
+
     }
 
     //
@@ -114,8 +125,14 @@ class NetworkManager {
     public boolean retrieveLoginToken() throws IOException {
         final String loginFormUrl = this.m_shaarliUrl + "?do=login";
         try {
-            Connection.Response loginFormPage = Jsoup.connect(loginFormUrl)
-                    .timeout(this.m_timeout)
+
+            Connection jsoupConnection = Jsoup.connect(loginFormUrl);
+
+            if (this.m_basicAuth != "") {
+                jsoupConnection = jsoupConnection.header("Authorization", "Basic " + this.m_basicAuth);
+            }
+
+            Connection.Response loginFormPage = jsoupConnection.timeout(this.m_timeout)
                     .followRedirects(true)
                     .method(Connection.Method.GET)
                     .execute();
@@ -135,8 +152,13 @@ class NetworkManager {
     public boolean login() throws IOException {
         final String loginUrl = this.m_shaarliUrl;
         try {
-            Connection.Response loginPage = Jsoup.connect(loginUrl)
-                    .method(Connection.Method.POST)
+            Connection jsoupConnection = Jsoup.connect(loginUrl);
+
+            if (this.m_basicAuth != "") {
+                jsoupConnection = jsoupConnection.header("Authorization", "Basic " + this.m_basicAuth);
+            }
+
+            Connection.Response loginPage = jsoupConnection.method(Connection.Method.POST)
                     .timeout(this.m_timeout)
                     .followRedirects(true)
                     .cookies(this.m_cookies)
@@ -163,8 +185,13 @@ class NetworkManager {
     //
     void retrievePostLinkToken(String encodedSharedLink) throws IOException {
         final String postFormUrl = this.m_shaarliUrl + "?post=" + encodedSharedLink;
-        Connection.Response postFormPage = Jsoup.connect(postFormUrl)
-                .followRedirects(true)
+        Connection jsoupConnection = Jsoup.connect(postFormUrl);
+
+        if (this.m_basicAuth != "") {
+            jsoupConnection = jsoupConnection.header("Authorization", "Basic " + this.m_basicAuth);
+        }
+
+        Connection.Response postFormPage = jsoupConnection.followRedirects(true)
                 .timeout(m_timeout)
                 .cookies(this.m_cookies)
                 .timeout(this.m_timeout)
@@ -191,8 +218,13 @@ class NetworkManager {
         }
 
         final String postUrl = this.m_shaarliUrl + "?post=" + encodedShareUrl;
-        Connection postPageConn = Jsoup.connect(postUrl)
-                .method(Connection.Method.POST)
+        Connection jsoupConnection = Jsoup.connect(postUrl);
+
+        if (this.m_basicAuth != "") {
+            jsoupConnection = jsoupConnection.header("Authorization", "Basic " + this.m_basicAuth);
+        }
+
+        Connection postPageConn = jsoupConnection.method(Connection.Method.POST)
                 .timeout(this.m_timeout)
                 .cookies(this.m_cookies)
                 .timeout(10000)
@@ -215,8 +247,13 @@ class NetworkManager {
         final String requestUrl = this.m_shaarliUrl + "?ws=tags&term=+";
         String[] predictionsArr = {};
         try {
-            String json = Jsoup.connect(requestUrl)
-                    .timeout(this.m_timeout)
+            Connection jsoupConnection = Jsoup.connect(requestUrl);
+
+            if (this.m_basicAuth != "") {
+                jsoupConnection = jsoupConnection.header("Authorization", "Basic " + this.m_basicAuth);
+            }
+
+            String json = jsoupConnection.timeout(this.m_timeout)
                     .cookies(this.m_cookies)
                     .ignoreContentType(true)
                     .execute()
@@ -245,8 +282,13 @@ class NetworkManager {
         final String requestUrl = this.m_shaarliUrl + "?post=";
         String[] tags = {};
         try {
-            String tagsString = Jsoup.connect(requestUrl)
-                    .timeout(this.m_timeout)
+            Connection jsoupConnection = Jsoup.connect(requestUrl);
+
+            if (this.m_basicAuth != "") {
+                jsoupConnection = jsoupConnection.header("Authorization", "Basic " + this.m_basicAuth);
+            }
+
+            String tagsString = jsoupConnection.timeout(this.m_timeout)
                     .cookies(this.m_cookies)
                     .execute()
                     .parse()

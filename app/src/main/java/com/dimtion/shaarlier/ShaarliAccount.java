@@ -9,6 +9,8 @@ public class ShaarliAccount {
     private String urlShaarli;
     private String username;
     private String password;
+    private String basicAuthUsername;
+    private String basicAuthPassword;
     private String shortName;
     private byte[] initialVector;
 
@@ -49,6 +51,22 @@ public class ShaarliAccount {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getBasicAuthUsername() {
+        return basicAuthUsername;
+    }
+
+    public void setBasicAuthUsername(String basicAuthUsername) {
+        this.basicAuthUsername = basicAuthUsername;
+    }
+
+    public String getBasicAuthPassword() {
+        return basicAuthPassword;
+    }
+
+    public void setBasicAuthPassword(String basicAuthPassword) {
+        this.basicAuthPassword = basicAuthPassword;
     }
 
     public String getShortName() {

@@ -74,7 +74,9 @@ class AutoCompleteWrapper {
                 NetworkManager manager = new NetworkManager(
                         account.getUrlShaarli(),
                         account.getUsername(),
-                        account.getPassword());
+                        account.getPassword(),
+                        account.getBasicAuthUsername(),
+                        account.getBasicAuthPassword());
                 TagsSource tagsSource = new TagsSource(a_context);
                 try {
                     if(manager.retrieveLoginToken() && manager.login()) {

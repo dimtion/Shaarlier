@@ -23,6 +23,8 @@ class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String ACCOUNTS_COLUMN_URL_SHAARLI = "url_shaarli";
     public static final String ACCOUNTS_COLUMN_USERNAME = "username";
     public static final String ACCOUNTS_COLUMN_PASSWORD_CYPHER = "password_cypher";
+    public static final String ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME = "basic_auth_username";
+    public static final String ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER = "basic_auth_password_cypher";
     public static final String ACCOUNTS_COLUMN_SHORT_NAME = "short_name";
     public static final String ACCOUNTS_COLUMN_IV = "initial_vector";
     private static final String CREATE_TABLE_ACCOUNTS = "create table "
@@ -31,6 +33,8 @@ class MySQLiteHelper extends SQLiteOpenHelper {
             + ACCOUNTS_COLUMN_URL_SHAARLI + " text NOT NULL, "
             + ACCOUNTS_COLUMN_USERNAME + " text NOT NULL, "
             + ACCOUNTS_COLUMN_PASSWORD_CYPHER + " BLOB, "
+            + ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME + " text NOT NULL, "
+            + ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER + " BLOB, "
             + ACCOUNTS_COLUMN_SHORT_NAME + " text DEFAULT '', "
             + ACCOUNTS_COLUMN_IV + " BLOB ) ;";
     public static final String TABLE_TAGS = "tags";
@@ -78,6 +82,8 @@ class MySQLiteHelper extends SQLiteOpenHelper {
         String url = prefs.getString(mContext.getString(R.string.p_user_url), "");
         String usr = prefs.getString(mContext.getString(R.string.p_username), "");
         String pwd = prefs.getString(mContext.getString(R.string.p_password), "");
+        String busr = prefs.getString(mContext.getString(R.string.p_basic_username), "");
+        String bpwd = prefs.getString(mContext.getString(R.string.p_basic_password), "");
         int protocol = prefs.getInt(mContext.getString(R.string.p_protocol), 0);
         Boolean isValidated = prefs.getBoolean(mContext.getString(R.string.p_validated), false);
 
@@ -87,6 +93,7 @@ class MySQLiteHelper extends SQLiteOpenHelper {
                 ContentValues values = new ContentValues();
                 values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, prot[protocol] + url);
                 values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, usr);
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME, busr);
 
                 // Generate the iv :
                 byte[] iv = EncryptionHelper.generateInitialVector();
@@ -94,8 +101,12 @@ class MySQLiteHelper extends SQLiteOpenHelper {
 
                 byte[] encoded = EncryptionHelper.stringToBase64(pwd);
                 byte[] password_cipher = EncryptionHelper.encrypt(encoded, key, iv);
-
                 values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
+
+                byte[] basic_encoded = EncryptionHelper.stringToBase64(bpwd);
+                byte[] basic_password_cipher = EncryptionHelper.encrypt(basic_encoded, key, iv);
+                values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER, basic_password_cipher);
+
                 values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, "Shaarli");
 
                 db.insert(MySQLiteHelper.TABLE_ACCOUNTS, null, values);
