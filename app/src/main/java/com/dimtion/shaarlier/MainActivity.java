@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,25 +41,6 @@ public class MainActivity extends ActionBarActivity {
         } catch (PackageManager.NameNotFoundException e) {
             textVersion.setText(getText(R.string.text_version));
         }
-
-        ///////////
-        // DEBUG //
-        ///////////
-
-//        try {
-//            SecretKey key = EncryptionHelper.generateKey();
-//            String message = "Hé toi, à qui est ce & ?";
-//            byte[] encoded = message.getBytes("UTF-8");
-//            byte[] encrypted = EncryptionHelper.encrypt(encoded, key);
-//
-//            // On décode :
-//            byte[] decrypted = EncryptionHelper.decrypt(encrypted, key);
-//            String finale = new String(decrypted, "UTF-8");
-//            Log.d("YEAH", finale);
-//        } catch (Exception e){
-//            Log.e("HELLLO", e.getMessage());
-//        }
-
     }
 
     @Override
@@ -128,7 +109,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             case R.id.action_go_to_shaarli:
                 SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-//                updateSettingsFromUpdate(pref);
 
                 String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
 

@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,6 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -239,7 +237,7 @@ public class AddActivity extends Activity {
         ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    // Nothing should be done
             }
 
             @Override
@@ -251,7 +249,7 @@ public class AddActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                // Nothing should be done
             }
         });
 
@@ -291,63 +289,6 @@ public class AddActivity extends Activity {
         startService(networkIntent);
         finish();
     }
-    //
-    // Class which handle the arrival of a new shared url, async
-    //
-//    private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
-//
-//        Exception mError;
-//
-//        @Override
-//        protected Boolean doInBackground(String... url) {
-//
-//            // If there is no title, wait for title getter :
-//            String loadedTitle;
-//            String sharedTitle;
-//            if (url[1].equals("")) {
-//                try {
-//                    loadedTitle = (String) a_TitleGetterExec.get();
-//                } catch (Exception e) { // could happen if the user didn't want to load titles.
-//                    loadedTitle = "";
-//                }
-//                sharedTitle = loadedTitle;
-//            } else {
-//                sharedTitle = url[1];
-//            }
-//
-//            try {
-//                // Connect the user to the site :
-//                NetworkManager manager = new NetworkManager(
-//                        chosenAccount.getUrlShaarli(),
-//                        chosenAccount.getUsername(),
-//                        chosenAccount.getPassword());
-//                manager.setTimeout(60000); // Long for slow networks
-//                if(manager.retrieveLoginToken() && manager.login()) {
-//                    manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
-//                } else {
-//                    mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
-//                    return false;
-//                }
-//            } catch (IOException | NullPointerException e) {
-//                mError = e;
-//                Log.e("ERROR", e.getMessage());
-//                return false;
-//            }
-//            return true;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Boolean posted) {
-//            if (posted) {
-//                Toast.makeText(getApplicationContext(), R.string.add_success, Toast.LENGTH_SHORT).show();
-//                finish();
-//            } else {
-//                Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
-//                sendReport(mError, chosenAccount);
-//            }
-//
-//        }
-//    }
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... url) {

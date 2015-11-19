@@ -33,12 +33,11 @@ class NetworkManager {
 
     private String m_datePostLink;
     private String m_sharedUrl;
+    private Exception mLastError;
 
     public Exception getLastError() {
         return mLastError;
     }
-
-    private Exception mLastError;
 
     NetworkManager(String shaarliUrl, String username, String password, boolean validateCert) {
         this.m_shaarliUrl = shaarliUrl;

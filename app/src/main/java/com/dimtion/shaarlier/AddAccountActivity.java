@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -44,11 +43,16 @@ public class AddAccountActivity extends AppCompatActivity {
             this.mParent = parent;
         }
 
+        /**
+         * Handle the arrival of a message coming from the network service.
+         * @param msg the message given by the service
+         */
         @Override
         public void handleMessage(Message msg){
             findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
             findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
 
+            // Show the returned error
             switch (msg.arg1) {
                 case NetworkService.NO_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
@@ -57,7 +61,7 @@ public class AddAccountActivity extends AppCompatActivity {
                     break;
                 case NetworkService.NETWORK_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    sendReport((Exception)msg.obj);
+                    sendReport((Exception)msg.obj);  // TODO : ask the user if he want to disable SSL verification
                     break;
                 case NetworkService.TOKEN_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
@@ -65,6 +69,8 @@ public class AddAccountActivity extends AppCompatActivity {
                 case NetworkService.LOGIN_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
                     break;
+                default:
+                    Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
             }
         }
 
@@ -122,9 +128,9 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
 
-    //
-    // Only when editing
-    //
+    /**
+    * Fill the fields with the selected account when editing a new account
+    */
     private void fillFields() {
         // Get the user inputs :
         ((EditText) findViewById(R.id.urlShaarliView)).setText(account.getUrlShaarli());
@@ -141,8 +147,12 @@ public class AddAccountActivity extends AppCompatActivity {
         findViewById(R.id.deleteAccountButton).setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Handle the action of deletion : show a confirmation dialog then delete (if wanted)
+     * @param view : The view needed for handling interfce actions
+     */
     public void deleteAccountAction(View view) {
-        // Show dialog to be sure :
+        // Show dialog to confirm deletion
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.text_confirm_deletion_account));
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -155,11 +165,15 @@ public class AddAccountActivity extends AppCompatActivity {
 
         builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                // Just dismiss the dialog
             }
         });
         builder.show();
     }
 
+    /**
+     * Delete the selected account from the database
+     */
     private void deleteAccount() {
         AccountsSource source = new AccountsSource(getApplicationContext());
         source.wOpen();
@@ -189,10 +203,10 @@ public class AddAccountActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //
-    // Obviously hide the keyboard
-    // From : http://stackoverflow.com/a/7696791/1582589
-    //
+    /**
+    * Obviously hide the keyboard
+    * From : http://stackoverflow.com/a/7696791/1582589
+    */
     private void hideKeyboard() {
         // Check if no view has focus:
         View view = this.getCurrentFocus();
@@ -202,6 +216,11 @@ public class AddAccountActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Action which handle the press on the try and save button
+     * @param view : needed for binding with interface actions
+     */
     public void tryAndSaveAction(View view) {
 
         hideKeyboard();
@@ -231,14 +250,15 @@ public class AddAccountActivity extends AppCompatActivity {
         startService(i);
     }
 
-    //
-    // Create a new account, should be called only if the login test passed successfully.
-    //
+    /**
+     * Save a new account into the database,
+     * should be called only if the account was verified.
+     */
     private void saveAccount() {
         AccountsSource accountsSource = new AccountsSource(getApplicationContext());
         accountsSource.wOpen();
         try {
-            if (isEditing) {
+            if (isEditing) {  // Only update the database
                 account.setUrlShaarli(this.urlShaarli);
                 account.setUsername(this.username);
                 account.setPassword(this.password);
@@ -254,7 +274,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
         accountsSource.close();
 
-        // default account :
+        // Set the default account if needed
         if (this.isDefaultAccount) {
             SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
@@ -263,44 +283,4 @@ public class AddAccountActivity extends AppCompatActivity {
             editor.apply();
         }
     }
-
-    // Tries the configuration on the web async
-//    private class CheckShaarli extends AsyncTask<String, Void, Integer> {
-//
-//        AddAccountActivity mParent;
-//        IOException mError;
-//
-//
-//        public CheckShaarli(AddAccountActivity parent) {
-//            super();
-//            mParent = parent;
-//        }
-//
-//        @Override
-//        protected Integer doInBackground(String... urls) {
-//            NetworkManager manager = new NetworkManager(urls[0], urls[1], urls[2]);
-//            try {
-//                if (!manager.retrieveLoginToken()) {
-//                    return TOKEN_ERROR;
-//                }
-//                if (!manager.login()) {
-//                    return LOGIN_ERROR;
-//                }
-//            } catch (IOException e) {
-//                this.mError = e;
-//                return NETWORK_ERROR;
-//            }
-//            return NO_ERROR;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Integer loginOutput) {
-//
-//
-//        }
-//
-//
-//    }
-
-    private Handler networkHandler;
 }

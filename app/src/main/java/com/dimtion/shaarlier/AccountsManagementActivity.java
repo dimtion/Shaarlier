@@ -3,7 +3,7 @@ package com.dimtion.shaarlier;
 import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +15,7 @@ import android.widget.ListView;
 import java.util.List;
 
 
-public class AccountsManagementActivity extends ActionBarActivity {
+public class AccountsManagementActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +50,12 @@ public class AccountsManagementActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 ShaarliAccount clickedAccount = (ShaarliAccount) accountsListView.getItemAtPosition(position);
 
-                AddOrEditAccount(clickedAccount);
+                addOrEditAccount(clickedAccount);
             }
         });
     }
 
-    private void AddOrEditAccount(ShaarliAccount account) {
+    private void addOrEditAccount(ShaarliAccount account) {
         Intent intent = new Intent(this, AddAccountActivity.class);
         if (account != null) {
             intent.putExtra("_id", account.getId());
@@ -79,7 +79,7 @@ public class AccountsManagementActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            AddOrEditAccount(null);
+            addOrEditAccount(null);
         }
 
         return super.onOptionsItemSelected(item);

@@ -79,4 +79,5 @@
     <string name="text_confirm_deletion_account">Are you sure you want to delete this account ?</string>
     <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
     <string name="check_disable_cert_validation">Disable certificate validation (unsecure)</string>
+    <string name="error_unknown">An unknown error has occured</string>
 </resources>
