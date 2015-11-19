@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +24,7 @@ import android.widget.Toast;
 import java.util.List;
 
 
-public class AddAccountActivity extends ActionBarActivity {
+public class AddAccountActivity extends AppCompatActivity {
 
     private String urlShaarli;
     private String username;
@@ -31,6 +32,7 @@ public class AddAccountActivity extends ActionBarActivity {
     private String shortName;
     private ShaarliAccount account;
     private Boolean isDefaultAccount;
+    private Boolean isValidateCert;
 
     private Boolean isEditing = false;
 
@@ -129,6 +131,7 @@ public class AddAccountActivity extends ActionBarActivity {
         ((EditText) findViewById(R.id.usernameView)).setText(account.getUsername());
         ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
         ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
+        ((CheckBox) findViewById(R.id.disableCertValidation)).setChecked(!account.isValidateCert());
 
         // Is it the default account ?
         SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
@@ -211,19 +214,19 @@ public class AddAccountActivity extends ActionBarActivity {
         this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
         this.shortName = ((EditText) findViewById(R.id.shortNameView)).getText().toString();
         this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
+        this.isValidateCert = !((CheckBox) findViewById(R.id.disableCertValidation)).isChecked();
 
         this.urlShaarli = NetworkManager.toUrl(urlShaarliInput);
 
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
         // Try the configuration :
-//        CheckShaarli checkShaarli = new CheckShaarli(this);
-//        checkShaarli.execute(this.urlShaarli, this.username, this.password);
         Intent i = new Intent(this, NetworkService.class);
         i.putExtra("action", "checkShaarli");
         i.putExtra("urlShaarli", this.urlShaarli);
         i.putExtra("username", this.username);
         i.putExtra("password", this.password);
+        i.putExtra("validateCert", this.isValidateCert);
         i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
         startService(i);
     }
@@ -240,9 +243,10 @@ public class AddAccountActivity extends ActionBarActivity {
                 account.setUsername(this.username);
                 account.setPassword(this.password);
                 account.setShortName(this.shortName);
+                account.setValidateCert(this.isValidateCert);
                 accountsSource.editAccount(account);
             } else {
-                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName);
+                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName, this.isValidateCert);
             }
         } catch (Exception e) {
             Log.e("ENCRYPTION ERROR", e.getMessage());

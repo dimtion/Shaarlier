@@ -54,7 +54,6 @@ class AutoCompleteWrapper {
         } catch (Exception e){
             sendReport(e);
         }
-
     }
 
     private class AutoCompleteRetriever extends AsyncTask<String, Void, Boolean> {
@@ -74,7 +73,8 @@ class AutoCompleteWrapper {
                 NetworkManager manager = new NetworkManager(
                         account.getUrlShaarli(),
                         account.getUsername(),
-                        account.getPassword());
+                        account.getPassword(),
+                        account.isValidateCert());
                 TagsSource tagsSource = new TagsSource(a_context);
                 try {
                     if(manager.retrieveLoginToken() && manager.login()) {

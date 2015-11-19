@@ -294,60 +294,60 @@ public class AddActivity extends Activity {
     //
     // Class which handle the arrival of a new shared url, async
     //
-    private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
-
-        Exception mError;
-
-        @Override
-        protected Boolean doInBackground(String... url) {
-
-            // If there is no title, wait for title getter :
-            String loadedTitle;
-            String sharedTitle;
-            if (url[1].equals("")) {
-                try {
-                    loadedTitle = (String) a_TitleGetterExec.get();
-                } catch (Exception e) { // could happen if the user didn't want to load titles.
-                    loadedTitle = "";
-                }
-                sharedTitle = loadedTitle;
-            } else {
-                sharedTitle = url[1];
-            }
-
-            try {
-                // Connect the user to the site :
-                NetworkManager manager = new NetworkManager(
-                        chosenAccount.getUrlShaarli(),
-                        chosenAccount.getUsername(),
-                        chosenAccount.getPassword());
-                manager.setTimeout(60000); // Long for slow networks
-                if(manager.retrieveLoginToken() && manager.login()) {
-                    manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
-                } else {
-                    mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
-                    return false;
-                }
-            } catch (IOException | NullPointerException e) {
-                mError = e;
-                Log.e("ERROR", e.getMessage());
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean posted) {
-            if (posted) {
-                Toast.makeText(getApplicationContext(), R.string.add_success, Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
-                sendReport(mError, chosenAccount);
-            }
-
-        }
-    }
+//    private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
+//
+//        Exception mError;
+//
+//        @Override
+//        protected Boolean doInBackground(String... url) {
+//
+//            // If there is no title, wait for title getter :
+//            String loadedTitle;
+//            String sharedTitle;
+//            if (url[1].equals("")) {
+//                try {
+//                    loadedTitle = (String) a_TitleGetterExec.get();
+//                } catch (Exception e) { // could happen if the user didn't want to load titles.
+//                    loadedTitle = "";
+//                }
+//                sharedTitle = loadedTitle;
+//            } else {
+//                sharedTitle = url[1];
+//            }
+//
+//            try {
+//                // Connect the user to the site :
+//                NetworkManager manager = new NetworkManager(
+//                        chosenAccount.getUrlShaarli(),
+//                        chosenAccount.getUsername(),
+//                        chosenAccount.getPassword());
+//                manager.setTimeout(60000); // Long for slow networks
+//                if(manager.retrieveLoginToken() && manager.login()) {
+//                    manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
+//                } else {
+//                    mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
+//                    return false;
+//                }
+//            } catch (IOException | NullPointerException e) {
+//                mError = e;
+//                Log.e("ERROR", e.getMessage());
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean posted) {
+//            if (posted) {
+//                Toast.makeText(getApplicationContext(), R.string.add_success, Toast.LENGTH_SHORT).show();
+//                finish();
+//            } else {
+//                Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
+//                sendReport(mError, chosenAccount);
+//            }
+//
+//        }
+//    }
 
     private class GetPageTitle extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... url) {

@@ -38,7 +38,9 @@ public class NetworkService extends IntentService {
             String urlShaarli = intent.getStringExtra("urlShaarli");
             String username = intent.getStringExtra("username");
             String password = intent.getStringExtra("password");
-            msg.arg1 = checkShaarli(urlShaarli, username, password);
+            Boolean validateCert = intent.getBooleanExtra("validateCert", true);
+
+            msg.arg1 = checkShaarli(urlShaarli, username, password, validateCert);
             if(msg.arg1 == NETWORK_ERROR){
                 msg.obj = mError;
             }
@@ -77,8 +79,8 @@ public class NetworkService extends IntentService {
         stopSelf();
     }
 
-    private int checkShaarli(String urlShaarli, String username, String password){
-        NetworkManager manager = new NetworkManager(urlShaarli, username, password);
+    private int checkShaarli(String urlShaarli, String username, String password, boolean validateCert){
+        NetworkManager manager = new NetworkManager(urlShaarli, username, password, validateCert);
         try {
             if (!manager.retrieveLoginToken()) {
                 return TOKEN_ERROR;
@@ -101,7 +103,8 @@ public class NetworkService extends IntentService {
             NetworkManager manager = new NetworkManager(
                     mShaarliAccount.getUrlShaarli(),
                     mShaarliAccount.getUsername(),
-                    mShaarliAccount.getPassword());
+                    mShaarliAccount.getPassword(),
+                    mShaarliAccount.isValidateCert());
             manager.setTimeout(60000); // Long for slow networks
             if(manager.retrieveLoginToken() && manager.login()) {
                 manager.postLink(sharedUrl, title, description, tags, privateShare);

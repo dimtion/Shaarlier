@@ -18,6 +18,7 @@ import javax.crypto.SecretKey;
 class MySQLiteHelper extends SQLiteOpenHelper {
 
 
+    // Table : accounts
     public static final String TABLE_ACCOUNTS = "accounts";
     public static final String ACCOUNTS_COLUMN_ID = "_id";
     public static final String ACCOUNTS_COLUMN_URL_SHAARLI = "url_shaarli";
@@ -25,6 +26,8 @@ class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String ACCOUNTS_COLUMN_PASSWORD_CYPHER = "password_cypher";
     public static final String ACCOUNTS_COLUMN_SHORT_NAME = "short_name";
     public static final String ACCOUNTS_COLUMN_IV = "initial_vector";
+    public static final String ACCOUNTS_COLUMN_VALIDATE_CERT = "validate_cert";
+
     private static final String CREATE_TABLE_ACCOUNTS = "create table "
             + TABLE_ACCOUNTS + " ("
             + ACCOUNTS_COLUMN_ID + " integer primary key autoincrement, "
@@ -32,7 +35,10 @@ class MySQLiteHelper extends SQLiteOpenHelper {
             + ACCOUNTS_COLUMN_USERNAME + " text NOT NULL, "
             + ACCOUNTS_COLUMN_PASSWORD_CYPHER + " BLOB, "
             + ACCOUNTS_COLUMN_SHORT_NAME + " text DEFAULT '', "
-            + ACCOUNTS_COLUMN_IV + " BLOB ) ;";
+            + ACCOUNTS_COLUMN_IV + " BLOB,"
+            + ACCOUNTS_COLUMN_VALIDATE_CERT + " integer DEFAULT 1) ;";
+
+    // Table : tags
     public static final String TABLE_TAGS = "tags";
     public static final String TAGS_COLUMN_ID = "_id";
     public static final String TAGS_COLUMN_ID_ACCOUNT = "account_id";
@@ -43,9 +49,14 @@ class MySQLiteHelper extends SQLiteOpenHelper {
             + TAGS_COLUMN_ID_ACCOUNT + " integer NOT NULL, "
             + TAGS_COLUMN_TAG + " text NOT NULL ) ;";
     private static final String DATABASE_NAME = "shaarlier.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
+    // Database updates
+    private static final String UPDATE_DB_1_TO_2 = "ALTER TABLE " + TABLE_ACCOUNTS +
+            " ADD " + ACCOUNTS_COLUMN_VALIDATE_CERT + " integer NOT NULL DEFAULT 1;";
     private final Context mContext;
+
+
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,5 +121,8 @@ class MySQLiteHelper extends SQLiteOpenHelper {
         Log.w(MySQLiteHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
+        if (newVersion == 2 && oldVersion == 1) {
+            db.execSQL(UPDATE_DB_1_TO_2);
+        }
     }
 }

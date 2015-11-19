@@ -72,6 +72,13 @@
             android:layout_marginTop="10dp"
             android:text="@string/check_default_account" />
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/check_disable_cert_validation"
+            android:id="@+id/disableCertValidation"
+            android:checked="false" />
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="20dp" />

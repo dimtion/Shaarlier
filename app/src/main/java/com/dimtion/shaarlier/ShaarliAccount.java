@@ -11,6 +11,7 @@ public class ShaarliAccount {
     private String password;
     private String shortName;
     private byte[] initialVector;
+    private boolean validateCert;
 
     @Override
     public String toString() {
@@ -65,5 +66,13 @@ public class ShaarliAccount {
 
     public void setInitialVector(byte[] initialVector) {
         this.initialVector = initialVector;
+    }
+
+    public boolean isValidateCert() {
+        return validateCert;
+    }
+
+    public void setValidateCert(boolean validateCert) {
+        this.validateCert = validateCert;
     }
 }
