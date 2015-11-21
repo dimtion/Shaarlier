@@ -13,13 +13,17 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
+    private boolean m_isNoAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,22 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (PackageManager.NameNotFoundException e) {
             textVersion.setText(getText(R.string.text_version));
+        }
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+        accountsSource.rOpen();
+        m_isNoAccount = accountsSource.getAllAccounts().isEmpty();
+
+        Button manageAccountsButton = (Button) findViewById(R.id.button_manage_accounts);
+        if(m_isNoAccount){
+            manageAccountsButton.setText(R.string.add_account);
+        } else {
+            manageAccountsButton.setText(R.string.button_manage_accounts);
         }
     }
 
@@ -65,8 +85,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openAccountsManager(View view) {
-        Intent intent = new Intent(this, AccountsManagementActivity.class);
+        Intent intent;
+        if(m_isNoAccount){
+            intent = new Intent(this, AddAccountActivity.class);
+        } else {
+            intent = new Intent(this, AccountsManagementActivity.class);
+
+        }
         startActivity(intent);
+
     }
 
     private void loadSettings() {

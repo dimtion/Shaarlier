@@ -80,4 +80,5 @@
     <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
     <string name="check_disable_cert_validation">Disable certificate validation (unsecured)</string>
     <string name="error_unknown">An unknown error has occurred</string>
+    <string name="add_account">Add account</string>
 </resources>
