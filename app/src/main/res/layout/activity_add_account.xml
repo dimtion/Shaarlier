@@ -105,5 +105,15 @@
             android:onClick="deleteAccountAction"
             android:text="@string/button_delete_account"
             android:visibility="gone" />
+
+
+        <Button
+            android:id="@+id/sendReportButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="deleteAccountAction"
+            android:text="@string/send_report"
+            android:layout_marginTop="10dp"
+            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

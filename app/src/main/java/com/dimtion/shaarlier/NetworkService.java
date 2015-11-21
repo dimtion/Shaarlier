@@ -73,7 +73,6 @@ public class NetworkService extends IntentService {
                     e.printStackTrace();
                     sendNotificationShareError(sharedUrl, title, description, tags, isPrivate);
                 }
-                // TODO : wait for title to be retrieved.
                 postLink(sharedUrl, title, description, tags, isPrivate);
                 break;
             case "retrieveTitle":

@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,39 +62,49 @@ public class AddAccountActivity extends AppCompatActivity {
                     break;
                 case NetworkService.NETWORK_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    sendReport((Exception)msg.obj);  // TODO : ask the user if he want to disable SSL verification
+                    enableSendReport((Exception) msg.obj);
                     break;
                 case NetworkService.TOKEN_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
+                    enableSendReport(new Exception("TOKEN ERROR"));
                     break;
                 case NetworkService.LOGIN_ERROR:
                     Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                    enableSendReport(new Exception("LOGIN ERROR"));
                     break;
                 default:
                     Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+                    enableSendReport(new Exception("UNKNOWN ERROR"));
             }
         }
 
-        private void sendReport(final Exception error) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
+        private void enableSendReport(final Exception error) {
+            Button reportButton = (Button) findViewById(R.id.sendReportButton);
+            reportButton.setVisibility(View.VISIBLE);
+            reportButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
 
-            builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier");
+                    builder.setMessage(R.string.report_issue).setTitle("REPORT - Shaarlier");
 
+                    final String extra = "Url Shaarli: " + urlShaarli;
 
-            final String extra = "Url Shaarli: " + urlShaarli;
-
-            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(error, mParent, extra));
+                    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(error, mParent, extra));
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
             });
-            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User cancelled the dialog
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+
         }
     }
 

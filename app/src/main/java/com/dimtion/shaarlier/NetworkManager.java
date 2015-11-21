@@ -59,19 +59,20 @@ class NetworkManager {
     //
     public static String toUrl(String givenUrl) {
         String protocol = "http://";  // Default value
-        if (!givenUrl.equals("")) {
+        if (givenUrl.equals("")) {
+            return givenUrl;
+        }
 
-            if (!givenUrl.endsWith("/")) {
-                givenUrl += '/';
-            }
+        if (!givenUrl.endsWith("/")) {
+            givenUrl += '/';
+        }
 
-            if (givenUrl.startsWith("http://")) {
-                givenUrl = givenUrl.replace("http://", "");
+        if (givenUrl.startsWith("http://")) {
+            givenUrl = givenUrl.replace("http://", "");
 
-            } else if (givenUrl.startsWith("https://")) {
-                givenUrl = givenUrl.replace("https://", "");
-                protocol = "https://";
-            }
+        } else if (givenUrl.startsWith("https://")) {
+            givenUrl = givenUrl.replace("https://", "");
+            protocol = "https://";
         }
 
         return protocol + givenUrl;
@@ -125,7 +126,7 @@ class NetworkManager {
             this.m_cookies = loginFormPage.cookies();
             this.m_token = loginFormPage.parse().body().select("input[name=token]").first().attr("value");
 
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             return false;
         }
         return true;
@@ -168,8 +169,8 @@ class NetworkManager {
     void retrievePostLinkToken(String encodedSharedLink) throws IOException {
         final String postFormUrl = this.m_shaarliUrl + "?post=" + encodedSharedLink;
         Connection.Response postFormPage = Jsoup.connect(postFormUrl)
-                .validateTLSCertificates(this.m_validateCert)
                 .followRedirects(true)
+                .validateTLSCertificates(this.m_validateCert)
                 .timeout(m_timeout)
                 .cookies(this.m_cookies)
                 .timeout(this.m_timeout)
@@ -198,6 +199,7 @@ class NetworkManager {
         final String postUrl = this.m_shaarliUrl + "?post=" + encodedShareUrl;
         Connection postPageConn = Jsoup.connect(postUrl)
                 .method(Connection.Method.POST)
+                .followRedirects(true)
                 .validateTLSCertificates(this.m_validateCert)
                 .timeout(this.m_timeout)
                 .cookies(this.m_cookies)
@@ -222,6 +224,7 @@ class NetworkManager {
         String[] predictionsArr = {};
         try {
             String json = Jsoup.connect(requestUrl)
+                    .followRedirects(true)
                     .validateTLSCertificates(this.m_validateCert)
                     .timeout(this.m_timeout)
                     .cookies(this.m_cookies)
@@ -253,6 +256,7 @@ class NetworkManager {
         String[] tags = {};
         try {
             String tagsString = Jsoup.connect(requestUrl)
+                    .followRedirects(true)
                     .validateTLSCertificates(this.m_validateCert)
                     .timeout(this.m_timeout)
                     .cookies(this.m_cookies)

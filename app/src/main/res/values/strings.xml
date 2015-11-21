@@ -81,4 +81,6 @@
     <string name="check_disable_cert_validation">Disable certificate validation (unsecured)</string>
     <string name="error_unknown">An unknown error has occurred</string>
     <string name="add_account">Add account</string>
+    <string name="send_report">You think this is a bug ?</string>
+    <string name="report_issue">Would you like to report this issue ?</string>
 </resources>
