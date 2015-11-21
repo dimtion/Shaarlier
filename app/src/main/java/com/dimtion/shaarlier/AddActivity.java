@@ -52,7 +52,7 @@ public class AddActivity extends Activity {
             switch (msg.arg1) {
                 case NetworkService.RETRIEVE_TITLE_ID:
                     if (m_prefOpenDialog) {
-                        if (msg.obj.equals("")) {
+                        if ("".equals(msg.obj)) {
                             updateTitle((String) msg.obj, true);
                         } else {
                             updateTitle((String) msg.obj, false);
@@ -257,7 +257,7 @@ public class AddActivity extends Activity {
         networkIntent.putExtra("url", sharedUrl);
         networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
 
-        if (defaultTitle.equals("")) {
+        if ("".equals(defaultTitle)) {
             startService(networkIntent);
 
             if (m_prefOpenDialog) {
@@ -291,7 +291,7 @@ public class AddActivity extends Activity {
 
         if (isError) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
-        } else if (!title.equals("")) {
+        } else if (!"".equals(title)) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
         }
 

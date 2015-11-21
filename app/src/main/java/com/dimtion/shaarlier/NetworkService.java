@@ -15,10 +15,10 @@ import java.io.IOException;
 
 public class NetworkService extends IntentService {
     public static final String EXTRA_MESSENGER="com.dimtion.shaarlier.networkservice.EXTRA_MESSENGER";
-    static final int NO_ERROR = 0;
-    static final int NETWORK_ERROR = 1;
-    static final int TOKEN_ERROR = 2;
-    static final int LOGIN_ERROR = 3;
+    public static final int NO_ERROR = 0;
+    public static final int NETWORK_ERROR = 1;
+    public static final int TOKEN_ERROR = 2;
+    public static final int LOGIN_ERROR = 3;
 
     public static final int RETRIEVE_TITLE_ID = 1;
 
@@ -60,7 +60,7 @@ public class NetworkService extends IntentService {
                 String description = intent.getStringExtra("description");
                 String tags = intent.getStringExtra("tags");
                 boolean isPrivate = intent.getBooleanExtra("privateShare", true);
-                if (title.equals("") && this.loadedTitle != null) {
+                if ("".equals(title) && this.loadedTitle != null) {
                     title = this.loadedTitle;
                     this.loadedTitle = null;
                 }

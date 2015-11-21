@@ -38,7 +38,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
 
     private class networkHandler extends Handler{
-        final Activity mParent;
+        private final Activity mParent;
 
         public networkHandler(Activity parent){
             this.mParent = parent;

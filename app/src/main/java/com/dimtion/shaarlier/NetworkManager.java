@@ -51,7 +51,7 @@ class NetworkManager {
     // TODO : unit test on this, I'm not quite sure it is perfect...
     //
     public static boolean isUrl(String url) {
-        return URLUtil.isValidUrl(url) && !url.equals("http://");
+        return URLUtil.isValidUrl(url) && !"http://".equals(url);
     }
 
     //
@@ -59,7 +59,7 @@ class NetworkManager {
     //
     public static String toUrl(String givenUrl) {
         String protocol = "http://";  // Default value
-        if (givenUrl.equals("")) {
+        if ("".equals(givenUrl)) {
             return givenUrl;
         }
 

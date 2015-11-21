@@ -185,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
                 alert.show();
                 break;
+            default:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
