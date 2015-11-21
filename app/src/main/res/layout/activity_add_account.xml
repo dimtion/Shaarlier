@@ -99,14 +99,16 @@
             android:text="@string/user_name"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/basicUsernameTextView"
-            android:enabled="false" />
+            android:enabled="false"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/basicUsernameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:enabled="false" />
+            android:enabled="false"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -115,14 +117,16 @@
             android:text="@string/user_password"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/basicPasswordTextView"
-            android:enabled="false" />
+            android:enabled="false"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/basicPasswordView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:enabled="false" />
+            android:enabled="false"
+            android:visibility="gone" />
 
         <CheckBox
             android:id="@+id/defaultAccountCheck"

@@ -242,6 +242,10 @@ public class AddAccountActivity extends AppCompatActivity {
         findViewById(R.id.basicPasswordView).setEnabled(checked);
         findViewById(R.id.basicUsernameTextView).setEnabled(checked);
         findViewById(R.id.basicPasswordTextView).setEnabled(checked);
+        findViewById(R.id.basicUsernameTextView).setVisibility(checked ? View.VISIBLE : View.GONE);
+        findViewById(R.id.basicPasswordTextView).setVisibility(checked ? View.VISIBLE : View.GONE);
+        findViewById(R.id.basicUsernameView).setVisibility(checked ? View.VISIBLE : View.GONE);
+        findViewById(R.id.basicPasswordView).setVisibility(checked ? View.VISIBLE : View.GONE);
     }
 
 
