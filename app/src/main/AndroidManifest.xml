@@ -28,7 +28,7 @@
             android:label="@string/title_activity_add"
             android:noHistory="true"
             android:taskAffinity="com.dimtion.Shaarlier.share"
-            android:theme="@android:style/Theme.NoDisplay" >
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -58,7 +58,7 @@
         <service
             android:name=".NetworkService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
     </application>
 
