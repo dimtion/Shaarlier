@@ -87,9 +87,11 @@ class NetworkManager {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    //
-    // Static method to load the title of a web page
-    //
+    /**
+     * Static method to load the title of a web page
+     * @param url the url of the web page
+     * @return "" if there is an error, the page title in other cases
+     */
     public static String loadTitle(String url) {
         try {
             Connection.Response pageResp = Jsoup.connect(url)

@@ -20,6 +20,10 @@ public class NetworkService extends IntentService {
     static final int TOKEN_ERROR = 2;
     static final int LOGIN_ERROR = 3;
 
+    public static final int RETRIEVE_TITLE_ID = 1;
+
+    private String loadedTitle;
+
     private Exception mError;
     private ShaarliAccount mShaarliAccount;
     public NetworkService() {
@@ -34,33 +38,36 @@ public class NetworkService extends IntentService {
         String action = intent.getStringExtra("action");
 
 
-        if(action.equals("checkShaarli")){
-            String urlShaarli = intent.getStringExtra("urlShaarli");
-            String username = intent.getStringExtra("username");
-            String password = intent.getStringExtra("password");
-            Boolean validateCert = intent.getBooleanExtra("validateCert", true);
+        switch (action) {
+            case "checkShaarli":
+                String urlShaarli = intent.getStringExtra("urlShaarli");
+                String username = intent.getStringExtra("username");
+                String password = intent.getStringExtra("password");
+                Boolean validateCert = intent.getBooleanExtra("validateCert", true);
 
-            msg.arg1 = checkShaarli(urlShaarli, username, password, validateCert);
-            if(msg.arg1 == NETWORK_ERROR){
-                msg.obj = mError;
-            }
-            // Send back messages to the calling activity
-            try {
-                assert messenger != null;
-                messenger.send(msg);
-            }
-            catch (android.os.RemoteException | AssertionError e1) {
-                Log.w(getClass().getName(), "Exception sending message", e1);
-
-            }
-        } else {
-            if (action.equals("postLink")) {
+                msg.arg1 = checkShaarli(urlShaarli, username, password, validateCert);
+                if (msg.arg1 == NETWORK_ERROR) {
+                    msg.obj = mError;
+                }
+                // Send back messages to the calling activity
+                try {
+                    assert messenger != null;
+                    messenger.send(msg);
+                } catch (android.os.RemoteException | AssertionError e1) {
+                    Log.w(getClass().getName(), "Exception sending message", e1);
+                }
+                break;
+            case "postLink":
                 String sharedUrl = intent.getStringExtra("sharedUrl");
                 String title = intent.getStringExtra("title");
                 String description = intent.getStringExtra("description");
                 String tags = intent.getStringExtra("tags");
                 boolean isPrivate = intent.getBooleanExtra("privateShare", true);
-                int accountId = intent.getIntExtra("chosenAccountId", -1);
+                if (title.equals("") && this.loadedTitle != null) {
+                    title = this.loadedTitle;
+                    this.loadedTitle = null;
+                }
+                long accountId = intent.getLongExtra("chosenAccountId", -1);
 
                 try {
                     AccountsSource acs = new AccountsSource(this);
@@ -68,17 +75,37 @@ public class NetworkService extends IntentService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     sendNotificationShareError(sharedUrl, title, description, tags, isPrivate);
-                    stopSelf();
                 }
                 // TODO : wait for title to be retrieved.
                 postLink(sharedUrl, title, description, tags, isPrivate);
-            }
+                break;
+            case "retrieveTitle":
+                this.loadedTitle = "";
+                String url = intent.getStringExtra("url");
+                String pageTitle = getPageTitle(url);
+                this.loadedTitle = pageTitle;
+
+                msg.arg1 = RETRIEVE_TITLE_ID;
+                msg.obj = pageTitle;
+                // Send back messages to the calling activity
+                try {
+                    assert messenger != null;
+                    messenger.send(msg);
+                } catch (android.os.RemoteException | AssertionError e1) {
+                    Log.w(getClass().getName(), "Exception sending message", e1);
+                }
+                break;
         }
-
-
-        stopSelf();
     }
 
+    /**
+     * Check if the given credentials are correct
+     * @param urlShaarli user Shaarli url
+     * @param username username of this shaarli
+     * @param password passowrd associated to the username
+     * @param validateCert do we check the certificate
+     * @return NO_ERROR if nothing is wrong
+     */
     private int checkShaarli(String urlShaarli, String username, String password, boolean validateCert){
         NetworkManager manager = new NetworkManager(urlShaarli, username, password, validateCert);
         try {
@@ -127,6 +154,15 @@ public class NetworkService extends IntentService {
         }
     }
 
+    /**
+     * Retrieve the title of a page
+     * @param url the page to get the title
+     * @return the title page, "" if there is an error
+     */
+    private String getPageTitle(String url){
+        return NetworkManager.loadTitle(url);
+    }
+
     private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare){
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
@@ -136,11 +172,9 @@ public class NetworkService extends IntentService {
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_LOW);
 
-        // Creates an explicit intent for an Activity in your app
+        // Creates an explicit intent To relaunch this service
         Intent resultIntent = new Intent(this, NetworkService.class);
 
-//        resultIntent.setAction(Intent.ACTION_SEND);
-//        resultIntent.setType("text/plain");
         resultIntent.putExtra("action", "postLink");
         resultIntent.putExtra("sharedUrl", sharedUrl);
         resultIntent.putExtra("title", title);
@@ -148,7 +182,6 @@ public class NetworkService extends IntentService {
         resultIntent.putExtra("tags", tags);
         resultIntent.putExtra("privateShare", privateShare);
         resultIntent.putExtra("chosenAccountId", this.mShaarliAccount.getId());
-
 
         resultIntent.putExtra(Intent.EXTRA_TEXT, sharedUrl);
         resultIntent.putExtra(Intent.EXTRA_SUBJECT, title);
