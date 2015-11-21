@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         saveSettings();
     }
 
-    void saveSettings() {
+    private void saveSettings() {
         // Get user inputs :
         boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    void loadSettings() {
+    private void loadSettings() {
         // Retrieve user previous settings
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
 //        updateSettingsFromUpdate(pref);

@@ -37,7 +37,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
 
     private class networkHandler extends Handler{
-        Activity mParent;
+        final Activity mParent;
 
         public networkHandler(Activity parent){
             this.mParent = parent;
@@ -149,7 +149,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
     /**
      * Handle the action of deletion : show a confirmation dialog then delete (if wanted)
-     * @param view : The view needed for handling interfce actions
+     * @param view : The view needed for handling interface actions
      */
     public void deleteAccountAction(View view) {
         // Show dialog to confirm deletion

@@ -102,7 +102,7 @@ public class NetworkService extends IntentService {
      * Check if the given credentials are correct
      * @param urlShaarli user Shaarli url
      * @param username username of this shaarli
-     * @param password passowrd associated to the username
+     * @param password password associated to the username
      * @param validateCert do we check the certificate
      * @return NO_ERROR if nothing is wrong
      */

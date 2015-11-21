@@ -119,8 +119,8 @@ class AutoCompleteWrapper {
         @Override
         protected void onPostExecute(Boolean r) {
             if(!r) {
-                String Serror = (mError != null) ? mError.getMessage() : "";
-                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " -- " + Serror, Toast.LENGTH_LONG).show();
+                String error = (mError != null) ? mError.getMessage() : "";
+                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " -- " + error, Toast.LENGTH_LONG).show();
             } else {
                 updateTagsView();
             }

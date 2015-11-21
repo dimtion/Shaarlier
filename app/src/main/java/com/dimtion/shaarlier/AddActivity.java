@@ -2,11 +2,9 @@ package com.dimtion.shaarlier;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,7 +15,6 @@ import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -39,7 +36,7 @@ public class AddActivity extends Activity {
     private View a_dialogView;
 
     private class networkHandler extends Handler {
-        Activity m_parent;
+        final Activity m_parent;
 
         public networkHandler(Activity parent) {
             this.m_parent = parent;
@@ -102,7 +99,6 @@ public class AddActivity extends Activity {
                 handleDialog(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags);
             } else {
                 if (autoTitle) {
-//                    final GetPageTitle getter = new GetPageTitle();
                     loadAutoTitle(sharedUrlTrimmed, defaultTitle);
                 }
                 handleSendPost(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags, privateShare, this.chosenAccount);
@@ -238,12 +234,6 @@ public class AddActivity extends Activity {
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
                         chosenAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
 
-                        // In case sharing is too long, close keyboard:
-                        InputMethodManager imm = (InputMethodManager) getSystemService(
-                                Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
-
-
                         // Finally send everything
                         handleSendPost(url, title, description, tags, privateShare, chosenAccount);
                     }
@@ -266,7 +256,6 @@ public class AddActivity extends Activity {
         networkIntent.putExtra("action", "retrieveTitle");
         networkIntent.putExtra("url", sharedUrl);
         networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
-
 
         if (defaultTitle.equals("")) {
             startService(networkIntent);
@@ -292,13 +281,12 @@ public class AddActivity extends Activity {
                     }
                 });
             }
-
         } else if (m_prefOpenDialog) {
             updateTitle(defaultTitle, false);
         }
-        }
+    }
 
-        private void updateTitle(String title, boolean isError) {
+    private void updateTitle(String title, boolean isError) {
         ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.title_hint);
 
         if (isError) {

@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name=".AccountsManagementActivity"
-            android:label="@string/title_activity_accounts_managment"
+            android:label="@string/title_activity_accounts_management"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
