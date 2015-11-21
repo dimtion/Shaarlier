@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.List;
@@ -29,6 +30,8 @@ public class AddAccountActivity extends AppCompatActivity {
     private String urlShaarli;
     private String username;
     private String password;
+    private String basicAuthUsername;
+    private String basicAuthPassword;
     private String shortName;
     private ShaarliAccount account;
     private Boolean isDefaultAccount;
@@ -148,7 +151,13 @@ public class AddAccountActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.usernameView)).setText(account.getUsername());
         ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
         ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
-        ((CheckBox) findViewById(R.id.disableCertValidation)).setChecked(!account.isValidateCert());
+
+        if (!"".equals(account.getBasicAuthUsername())) {
+            ((EditText) findViewById(R.id.basicUsernameView)).setText(account.getBasicAuthUsername());
+            ((EditText) findViewById(R.id.basicPasswordView)).setText(account.getBasicAuthPassword());
+            ((Switch) findViewById(R.id.basicAuthSwitch)).setChecked(true);
+            enableBasicAuth(findViewById(R.id.basicAuthSwitch));
+        }
 
         // Is it the default account ?
         SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
@@ -227,6 +236,14 @@ public class AddAccountActivity extends AppCompatActivity {
         }
     }
 
+    public void enableBasicAuth(View toggle) {
+        boolean checked = ((Switch) toggle).isChecked();
+        findViewById(R.id.basicUsernameView).setEnabled(checked);
+        findViewById(R.id.basicPasswordView).setEnabled(checked);
+        findViewById(R.id.basicUsernameTextView).setEnabled(checked);
+        findViewById(R.id.basicPasswordTextView).setEnabled(checked);
+    }
+
 
     /**
      * Action which handle the press on the try and save button
@@ -242,6 +259,14 @@ public class AddAccountActivity extends AppCompatActivity {
         final String urlShaarliInput = ((EditText) findViewById(R.id.urlShaarliView)).getText().toString();
         this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
         this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
+        if (((Switch)findViewById(R.id.basicAuthSwitch)).isChecked()) {
+            this.basicAuthUsername = ((EditText) findViewById(R.id.basicUsernameView)).getText().toString();
+            this.basicAuthPassword = ((EditText) findViewById(R.id.basicPasswordView)).getText().toString();
+        }
+        else {
+            this.basicAuthUsername = "";
+            this.basicAuthPassword = "";
+        }
         this.shortName = ((EditText) findViewById(R.id.shortNameView)).getText().toString();
         this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
         this.isValidateCert = !((CheckBox) findViewById(R.id.disableCertValidation)).isChecked();
@@ -256,6 +281,8 @@ public class AddAccountActivity extends AppCompatActivity {
         accountToTest.setUsername(this.username);
         accountToTest.setPassword(this.password);
         accountToTest.setValidateCert(this.isValidateCert);
+        accountToTest.setBasicAuthUsername(this.basicAuthUsername);
+        accountToTest.setBasicAuthPassword(this.basicAuthPassword);
 
         // Try the configuration :
         Intent i = new Intent(this, NetworkService.class);
@@ -277,11 +304,13 @@ public class AddAccountActivity extends AppCompatActivity {
                 account.setUrlShaarli(this.urlShaarli);
                 account.setUsername(this.username);
                 account.setPassword(this.password);
+                account.setBasicAuthUsername(this.basicAuthUsername);
+                account.setBasicAuthPassword(this.basicAuthPassword);
                 account.setShortName(this.shortName);
                 account.setValidateCert(this.isValidateCert);
                 accountsSource.editAccount(account);
             } else {
-                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.shortName, this.isValidateCert);
+                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.basicAuthUsername, this.basicAuthPassword, this.shortName, this.isValidateCert);
             }
         } catch (Exception e) {
             Log.e("ENCRYPTION ERROR", e.getMessage());

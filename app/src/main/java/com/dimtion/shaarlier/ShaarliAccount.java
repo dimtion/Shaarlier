@@ -12,6 +12,8 @@ public class ShaarliAccount implements Serializable {
     private String urlShaarli;
     private String username;
     private String password;
+    private String basicAuthUsername;
+    private String basicAuthPassword;
     private String shortName;
     private byte[] initialVector;
     private boolean validateCert;
@@ -53,6 +55,22 @@ public class ShaarliAccount implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getBasicAuthUsername() {
+        return basicAuthUsername;
+    }
+
+    public void setBasicAuthUsername(String basicAuthUsername) {
+        this.basicAuthUsername = basicAuthUsername;
+    }
+
+    public String getBasicAuthPassword() {
+        return basicAuthPassword;
+    }
+
+    public void setBasicAuthPassword(String basicAuthPassword) {
+        this.basicAuthPassword = basicAuthPassword;
     }
 
     public String getShortName() {

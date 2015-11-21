@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:weightSum="1">
 
         <TextView
             android:layout_width="match_parent"
@@ -64,6 +65,64 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/basic_auth"
+                android:id="@+id/textView2" />
+
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/basicAuthSwitch"
+                android:checked="false"
+                android:layout_gravity="right"
+                android:onClick="enableBasicAuth" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/user_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/basicUsernameTextView"
+            android:enabled="false" />
+
+        <EditText
+            android:id="@+id/basicUsernameView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:enabled="false" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/user_password"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/basicPasswordTextView"
+            android:enabled="false" />
+
+        <EditText
+            android:id="@+id/basicPasswordView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:enabled="false" />
 
         <CheckBox
             android:id="@+id/defaultAccountCheck"
