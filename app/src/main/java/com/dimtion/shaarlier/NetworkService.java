@@ -40,12 +40,9 @@ public class NetworkService extends IntentService {
 
         switch (action) {
             case "checkShaarli":
-                String urlShaarli = intent.getStringExtra("urlShaarli");
-                String username = intent.getStringExtra("username");
-                String password = intent.getStringExtra("password");
-                Boolean validateCert = intent.getBooleanExtra("validateCert", true);
+                ShaarliAccount accountToTest = (ShaarliAccount) intent.getSerializableExtra("account");
 
-                msg.arg1 = checkShaarli(urlShaarli, username, password, validateCert);
+                msg.arg1 = checkShaarli(accountToTest);
                 if (msg.arg1 == NETWORK_ERROR) {
                     msg.obj = mError;
                 }
@@ -100,14 +97,12 @@ public class NetworkService extends IntentService {
 
     /**
      * Check if the given credentials are correct
-     * @param urlShaarli user Shaarli url
-     * @param username username of this shaarli
-     * @param password password associated to the username
-     * @param validateCert do we check the certificate
+     * @param account The account with the credentials
      * @return NO_ERROR if nothing is wrong
      */
-    private int checkShaarli(String urlShaarli, String username, String password, boolean validateCert){
-        NetworkManager manager = new NetworkManager(urlShaarli, username, password, validateCert);
+    private int checkShaarli(ShaarliAccount account){
+
+        NetworkManager manager = new NetworkManager(account);
         try {
             if (!manager.retrieveLoginToken()) {
                 return TOKEN_ERROR;
@@ -127,11 +122,7 @@ public class NetworkService extends IntentService {
         boolean posted = true;  // Assume it is shared
         try {
             // Connect the user to the site :
-            NetworkManager manager = new NetworkManager(
-                    mShaarliAccount.getUrlShaarli(),
-                    mShaarliAccount.getUsername(),
-                    mShaarliAccount.getPassword(),
-                    mShaarliAccount.isValidateCert());
+            NetworkManager manager = new NetworkManager(mShaarliAccount);
             manager.setTimeout(60000); // Long for slow networks
             if(manager.retrieveLoginToken() && manager.login()) {
                 manager.postLink(sharedUrl, title, description, tags, privateShare);

@@ -70,11 +70,7 @@ class AutoCompleteWrapper {
             */
             for (ShaarliAccount account : accounts) {
                 // Download tags :
-                NetworkManager manager = new NetworkManager(
-                        account.getUrlShaarli(),
-                        account.getUsername(),
-                        account.getPassword(),
-                        account.isValidateCert());
+                NetworkManager manager = new NetworkManager(account);
                 TagsSource tagsSource = new TagsSource(a_context);
                 try {
                     if(manager.retrieveLoginToken() && manager.login()) {

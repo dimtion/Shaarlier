@@ -1,10 +1,13 @@
 package com.dimtion.shaarlier;
 
+import java.io.Serializable;
+
 /**
  * Created by dimtion on 11/05/2015.
  * A Shaarli Account
  */
-public class ShaarliAccount {
+
+public class ShaarliAccount implements Serializable {
     private long id;
     private String urlShaarli;
     private String username;

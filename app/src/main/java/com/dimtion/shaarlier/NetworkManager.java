@@ -39,11 +39,11 @@ class NetworkManager {
         return mLastError;
     }
 
-    NetworkManager(String shaarliUrl, String username, String password, boolean validateCert) {
-        this.m_shaarliUrl = shaarliUrl;
-        this.m_username = username;
-        this.m_password = password;
-        this.m_validateCert = validateCert;
+    NetworkManager(ShaarliAccount account) {
+        this.m_shaarliUrl = account.getUrlShaarli();
+        this.m_username = account.getUsername();
+        this.m_password = account.getPassword();
+        this.m_validateCert = account.isValidateCert();
     }
 
     //
@@ -58,7 +58,6 @@ class NetworkManager {
     // Change something which is close to a url to something that is really one
     //
     public static String toUrl(String givenUrl) {
-
         String protocol = "http://";  // Default value
         if (!givenUrl.equals("")) {
 
@@ -112,7 +111,7 @@ class NetworkManager {
     }
 
     //
-    // Check the website is a compatible shaarli, by downloading a token
+    // Check the if website is a compatible shaarli, by downloading a token
     //
     public boolean retrieveLoginToken() throws IOException {
         final String loginFormUrl = this.m_shaarliUrl + "?do=login";

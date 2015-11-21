@@ -239,13 +239,17 @@ public class AddAccountActivity extends AppCompatActivity {
 
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
+        // Create a fake account :
+        ShaarliAccount accountToTest = new ShaarliAccount();
+        accountToTest.setUrlShaarli(this.urlShaarli);
+        accountToTest.setUsername(this.username);
+        accountToTest.setPassword(this.password);
+        accountToTest.setValidateCert(this.isValidateCert);
+
         // Try the configuration :
         Intent i = new Intent(this, NetworkService.class);
         i.putExtra("action", "checkShaarli");
-        i.putExtra("urlShaarli", this.urlShaarli);
-        i.putExtra("username", this.username);
-        i.putExtra("password", this.password);
-        i.putExtra("validateCert", this.isValidateCert);
+        i.putExtra("account", accountToTest);
         i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
         startService(i);
     }
