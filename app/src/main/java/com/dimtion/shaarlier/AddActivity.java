@@ -242,6 +242,11 @@ public class AddActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
                     }
+                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        finish();
+                    }
                 })
                 .show();
     }
