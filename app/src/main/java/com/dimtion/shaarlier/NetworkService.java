@@ -5,11 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -24,12 +27,21 @@ public class NetworkService extends IntentService {
 
     private String loadedTitle;
 
+    private Context mContext;
+    private android.os.Handler mToastHandler;
     private Exception mError;
     private ShaarliAccount mShaarliAccount;
     private String loadedDescription;
 
     public NetworkService() {
         super("NetworkService");
+    }
+
+    @Override
+    public void onCreate(){
+        super.onCreate();
+        mContext = this;
+        mToastHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -116,6 +128,22 @@ public class NetworkService extends IntentService {
     }
 
     /**
+     * Display Toast in the main thread
+     * Thanks : http://stackoverflow.com/a/3955826
+     */
+    private class DisplayToast implements Runnable{
+        String mText;
+
+        public DisplayToast(String text){
+            mText = text;
+        }
+
+        public void run(){
+            Toast.makeText(mContext, mText, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
      * Check if the given credentials are correct
      * @param account The account with the credentials
      * @return NO_ERROR if nothing is wrong
@@ -157,10 +185,10 @@ public class NetworkService extends IntentService {
         }
 
         if (!posted) {
-//            Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
             sendNotificationShareError(sharedUrl, title, description, tags, privateShare);
 //            sendReport(mError, chosenAccount);
         } else {
+            mToastHandler.post(new DisplayToast(getString(R.string.add_success)));
             Log.i("SUCCESS", "Success while sharing link");
         }
     }
