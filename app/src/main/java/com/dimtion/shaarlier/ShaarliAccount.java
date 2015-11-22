@@ -1,16 +1,22 @@
 package com.dimtion.shaarlier;
 
+import java.io.Serializable;
+
 /**
  * Created by dimtion on 11/05/2015.
  * A Shaarli Account
  */
-public class ShaarliAccount {
+
+public class ShaarliAccount implements Serializable {
     private long id;
     private String urlShaarli;
     private String username;
     private String password;
+    private String basicAuthUsername;
+    private String basicAuthPassword;
     private String shortName;
     private byte[] initialVector;
+    private boolean validateCert;
 
     @Override
     public String toString() {
@@ -51,6 +57,22 @@ public class ShaarliAccount {
         this.password = password;
     }
 
+    public String getBasicAuthUsername() {
+        return basicAuthUsername;
+    }
+
+    public void setBasicAuthUsername(String basicAuthUsername) {
+        this.basicAuthUsername = basicAuthUsername;
+    }
+
+    public String getBasicAuthPassword() {
+        return basicAuthPassword;
+    }
+
+    public void setBasicAuthPassword(String basicAuthPassword) {
+        this.basicAuthPassword = basicAuthPassword;
+    }
+
     public String getShortName() {
         return shortName;
     }
@@ -65,5 +87,13 @@ public class ShaarliAccount {
 
     public void setInitialVector(byte[] initialVector) {
         this.initialVector = initialVector;
+    }
+
+    public boolean isValidateCert() {
+        return validateCert;
+    }
+
+    public void setValidateCert(boolean validateCert) {
+        this.validateCert = validateCert;
     }
 }

@@ -54,7 +54,6 @@ class AutoCompleteWrapper {
         } catch (Exception e){
             sendReport(e);
         }
-
     }
 
     private class AutoCompleteRetriever extends AsyncTask<String, Void, Boolean> {
@@ -71,10 +70,7 @@ class AutoCompleteWrapper {
             */
             for (ShaarliAccount account : accounts) {
                 // Download tags :
-                NetworkManager manager = new NetworkManager(
-                        account.getUrlShaarli(),
-                        account.getUsername(),
-                        account.getPassword());
+                NetworkManager manager = new NetworkManager(account);
                 TagsSource tagsSource = new TagsSource(a_context);
                 try {
                     if(manager.retrieveLoginToken() && manager.login()) {
@@ -119,8 +115,8 @@ class AutoCompleteWrapper {
         @Override
         protected void onPostExecute(Boolean r) {
             if(!r) {
-                String Serror = (mError != null) ? mError.getMessage() : "";
-                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " -- " + Serror, Toast.LENGTH_LONG).show();
+                String error = (mError != null) ? mError.getMessage() : "";
+                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " -- " + error, Toast.LENGTH_LONG).show();
             } else {
                 updateTagsView();
             }

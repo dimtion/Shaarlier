@@ -2,20 +2,19 @@ package com.dimtion.shaarlier;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,7 +22,6 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,10 +31,54 @@ public class AddActivity extends Activity {
     private List<ShaarliAccount> allAccounts;
     private Boolean privateShare;
     private boolean autoTitle;
+    private boolean autoDescription;
+    private boolean stopLoadingTitle;
+    private boolean stopLoadingDescription;
     private boolean m_prefOpenDialog;
 
     private View a_dialogView;
-    private AsyncTask a_TitleGetterExec;
+
+    private class networkHandler extends Handler {
+        final Activity m_parent;
+
+        public networkHandler(Activity parent) {
+            this.m_parent = parent;
+        }
+
+        /**
+         * Handle the arrival of a message coming from the network service.
+         *
+         * @param msg the message given by the service
+         */
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.arg1) {
+                case NetworkService.RETRIEVE_TITLE_ID:
+                    if (m_prefOpenDialog) {
+                        String title = ((String[]) msg.obj)[0];
+                        String description = ((String[]) msg.obj)[1];
+
+                        if(!stopLoadingTitle && autoTitle) {
+                            if ("".equals(title)) {
+                                updateTitle(title, true);
+                            } else {
+                                updateTitle(title, false);
+                            }
+                        }
+                        if(!stopLoadingDescription && autoDescription) {
+                            if ("".equals(description)) {
+                                updateDescription(description, true);
+                            } else {
+                                updateDescription(description, false);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +93,11 @@ public class AddActivity extends Activity {
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
         m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+        autoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
+        stopLoadingTitle = false;
+        stopLoadingDescription = false;
 
-        // Check if there is at least one account, then launch the settings :
+        // Check if there is at least one account, if so launch the settings :
         getAllAccounts();
         if (this.allAccounts.isEmpty()) {
             Intent intentLaunchSettings = new Intent(this, MainActivity.class);
@@ -64,16 +109,24 @@ public class AddActivity extends Activity {
             String sharedUrlTrimmed = this.extractUrl(sharedUrl);
             String defaultTitle = this.extractTitle(reader);
 
-            // Show edit dialog if the users wants :
-            if (m_prefOpenDialog) {
-                handleDialog(sharedUrlTrimmed, defaultTitle);
-            } else {
-                if (autoTitle) {
-                    final GetPageTitle getter = new GetPageTitle();
-                    a_TitleGetterExec = getter.execute(sharedUrlTrimmed, defaultTitle);
-                }
+            String defaultDescription = intent.getStringExtra("description") != null ? intent.getStringExtra("description") : "";
+            String defaultTags = intent.getStringExtra("tags") != null ? intent.getStringExtra("tags") : "";
 
-                new HandleAddUrl().execute(sharedUrlTrimmed, defaultTitle, "", "");
+            if (!autoTitle){
+                defaultTitle = "";
+            }
+            if (!autoDescription){
+                defaultDescription = "";
+            }
+
+            // Show edit dialog if the users wants
+            if (m_prefOpenDialog) {
+                handleDialog(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags);
+            } else {
+                if (autoTitle || autoDescription) {
+                    loadAutoTitleAndDescription(sharedUrlTrimmed, defaultTitle, defaultDescription);
+                }
+                handleSendPost(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags, privateShare, this.chosenAccount);
             }
         } else {
             Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
@@ -119,9 +172,9 @@ public class AddActivity extends Activity {
         }
     }
 
-    //
-    // Method to extract the url from shared data and delete trackers
-    //
+    /**
+     * Method to extract the url from shared data and delete trackers
+     **/
     private String extractUrl(String sharedUrl) {
         String finalUrl;
         // trim the url because of annoying apps which send to much data :
@@ -157,17 +210,21 @@ public class AddActivity extends Activity {
         return finalUrl;
     }
 
-    //
-    // Method to extract the title from shared data
-    //
+    /**
+     * Method to extract the title from shared data
+     **/
     private String extractTitle(ShareCompat.IntentReader reader) {
-        return reader.getSubject() != null ? reader.getSubject() : "";
+        if (reader.getSubject() != null && !NetworkManager.isUrl(reader.getSubject())){
+            return reader.getSubject();
+        }
+
+        return "";
     }
 
     //
     // Method made to handle the dialog box
     //
-    private void handleDialog(final String sharedUrl, String givenTitle) {
+    private void handleDialog(final String sharedUrl, String givenTitle, String defaultDescription, String defaultTags) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme));
         LayoutInflater inflater = AddActivity.this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.share_dialog, null);
@@ -177,9 +234,9 @@ public class AddActivity extends Activity {
         // Init accountSpinner
         initAccountSpinner();
 
-        // Load title :
-        if (autoTitle && NetworkManager.isUrl(sharedUrl)) {
-            loadAutoTitle(sharedUrl, givenTitle);
+        // Load title or description:
+        if ((autoDescription || autoTitle) && NetworkManager.isUrl(sharedUrl)) {
+            loadAutoTitleAndDescription(sharedUrl, givenTitle, defaultDescription);
         }
 
         // Init url  :
@@ -187,6 +244,7 @@ public class AddActivity extends Activity {
 
         // Init tags :
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
+        ((EditText) dialogView.findViewById(R.id.tags)).setText(defaultTags);
         new AutoCompleteWrapper(textView, this);
 
         // Open the dialog :
@@ -194,7 +252,7 @@ public class AddActivity extends Activity {
                 .setTitle(R.string.share)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // Retrieve interface :
+                        // Retrieve user data
                         String url = ((EditText) dialogView.findViewById(R.id.url)).getText().toString();
                         String title = ((EditText) dialogView.findViewById(R.id.title)).getText().toString();
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
@@ -202,50 +260,105 @@ public class AddActivity extends Activity {
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
                         chosenAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
 
-                        // In case sharing is too long, close keyboard:
-                        InputMethodManager imm = (InputMethodManager) getSystemService(
-                                Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
-
-
                         // Finally send everything
-                        new HandleAddUrl().execute(url, title, description, tags);
+                        handleSendPost(url, title, description, tags, privateShare, chosenAccount);
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
                     }
-                })
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                finish();
+            }
+        })
                 .show();
     }
 
     // To get an automatic title :
-    private void loadAutoTitle(String sharedUrl, String defaultTitle) {
-        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
-        ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
+    private void loadAutoTitleAndDescription(String sharedUrl, String defaultTitle, String defaultDescription) {
 
-        final GetPageTitle getter = new GetPageTitle();
-        a_TitleGetterExec = getter.execute(sharedUrl, defaultTitle);
-        ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // Don't use network ressources if not needed
+        if (!autoTitle && !autoDescription){
+            return;
+        }
+        // Launch intent to retrieve the title and the description
+        final Intent networkIntent = new Intent(this, NetworkService.class);
+        networkIntent.putExtra("action", "retrieveTitleAndDescription");
+        networkIntent.putExtra("url", sharedUrl);
+        networkIntent.putExtra("autoTitle", autoTitle);
+        networkIntent.putExtra("autoDescription", autoDescription);
+        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
 
+        stopLoadingTitle = false;
+        stopLoadingDescription = false;
+        startService(networkIntent);
+
+        // Everything is done in the NetworkService if no dialog is opened
+        if (!m_prefOpenDialog){
+            return;
+        }
+
+        if (autoDescription) {
+            if ("".equals(defaultDescription)) {
+                a_dialogView.findViewById(R.id.loading_description).setVisibility(View.VISIBLE);
+                ((EditText) a_dialogView.findViewById(R.id.description)).setHint(R.string.loading_description_hint);
+
+                // If in the meanwhile the user type text in the field, stop retrieving the description.
+                ((EditText) a_dialogView.findViewById(R.id.description)).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        stopLoadingDescription = true;
+                        a_dialogView.findViewById(R.id.loading_description).setVisibility(View.GONE);
+                        ((EditText) a_dialogView.findViewById(R.id.description)).removeTextChangedListener(this);
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // Nothing to be done
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // Nothing to be done
+                    }
+                });
+            } else {
+                stopLoadingDescription = true;
+                updateDescription(defaultDescription, false);
             }
+        }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                getter.cancel(true);
-                a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+        if (autoTitle) {
+            if ("".equals(defaultTitle)) {
+                a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
+                ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
+                // If in the meanwhile the user type text in the field, stop retrieving the title.
+                ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        stopLoadingTitle = true;
+                        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+                        ((EditText) a_dialogView.findViewById(R.id.title)).removeTextChangedListener(this);
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // Nothing to be done
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // Nothing to be done
+                    }
+                });
+            } else {
+                stopLoadingTitle = true;
+                updateTitle(defaultTitle, false);
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
+        }
     }
 
     private void updateTitle(String title, boolean isError) {
@@ -253,95 +366,47 @@ public class AddActivity extends Activity {
 
         if (isError) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
-        } else if (!title.equals("")) {
+        } else {
             ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
         }
 
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
     }
 
-    //
-    // Class which handle the arrival of a new shared url, async
-    //
-    private class HandleAddUrl extends AsyncTask<String, Void, Boolean> {
+    private void updateDescription(String description, boolean isError){
+        ((EditText) a_dialogView.findViewById(R.id.description)).setHint(R.string.description_hint);
 
-        Exception mError;
-
-        @Override
-        protected Boolean doInBackground(String... url) {
-
-            // If there is no title, wait for title getter :
-            String loadedTitle;
-            String sharedTitle;
-            if (url[1].equals("")) {
-                try {
-                    loadedTitle = (String) a_TitleGetterExec.get();
-                } catch (Exception e) { // could happen if the user didn't want to load titles.
-                    loadedTitle = "";
-                }
-                sharedTitle = loadedTitle;
-            } else {
-                sharedTitle = url[1];
-            }
-
-            try {
-                // Connect the user to the site :
-                NetworkManager manager = new NetworkManager(
-                        chosenAccount.getUrlShaarli(),
-                        chosenAccount.getUsername(),
-                        chosenAccount.getPassword());
-                manager.setTimeout(60000); // Long for slow networks
-                if(manager.retrieveLoginToken() && manager.login()) {
-                    manager.postLink(url[0], sharedTitle, url[2], url[3], privateShare);
-                } else {
-                    mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
-                    return false;
-                }
-            } catch (IOException | NullPointerException e) {
-                mError = e;
-                Log.e("ERROR", e.getMessage());
-                return false;
-            }
-            return true;
+        if (isError) {
+            ((EditText) a_dialogView.findViewById(R.id.description)).setHint(R.string.error_retrieving_description);
+        } else {
+            ((EditText) a_dialogView.findViewById(R.id.description)).setText(description);
         }
 
-        @Override
-        protected void onPostExecute(Boolean posted) {
-            if (posted) {
-                Toast.makeText(getApplicationContext(), R.string.add_success, Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.add_error + " : " + mError.getMessage(), Toast.LENGTH_LONG).show();
-                sendReport(mError, chosenAccount);
-            }
-
-        }
+        a_dialogView.findViewById(R.id.loading_description).setVisibility(View.GONE);
     }
 
-    private class GetPageTitle extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... url) {
-            if (url[1].equals("")) {
-                return NetworkManager.loadTitle(url[0]);
-            } else {
-                return url[1];
-            }
-        }
+    /**
+     * Start the network service to send the link with all its data to Shaarli
+     * @param sharedUrl the one url
+     * @param title a chosen title by the user
+     * @param description user description
+     * @param tags user tags
+     * @param isPrivate true if the link is private
+     * @param account the account which the share operate
+     */
+    private void handleSendPost(String sharedUrl, String title, String description, String tags, boolean isPrivate, ShaarliAccount account){
+        Intent networkIntent = new Intent(this, NetworkService.class);
+        networkIntent.putExtra("action", "postLink");
+        networkIntent.putExtra("sharedUrl", sharedUrl);
+        networkIntent.putExtra("title", title);
+        networkIntent.putExtra("description", description);
+        networkIntent.putExtra("tags", tags);
+        networkIntent.putExtra("privateShare", isPrivate);
+        networkIntent.putExtra("chosenAccountId", account.getId());
+        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
 
-        @Override
-        protected void onPostExecute(String title) {
-            if (m_prefOpenDialog) {
-                if (title.equals("")) {
-                    updateTitle(title, true);
-                } else {
-                    updateTitle(title, false);
-                }
-            }
-        }
-
-        @Override
-        protected void onCancelled(String title) {
-            updateTitle("", false);
-        }
+        startService(networkIntent);
+        finish();
     }
 
     private void sendReport(final Exception error, final ShaarliAccount account) {

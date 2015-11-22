@@ -18,12 +18,17 @@ import javax.crypto.SecretKey;
  */
 class AccountsSource {
 
-    private final String[] allColumns = {MySQLiteHelper.ACCOUNTS_COLUMN_ID,
+    private final String[] allColumns = {
+            MySQLiteHelper.ACCOUNTS_COLUMN_ID,
             MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI,
             MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME,
             MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER,
             MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME,
-            MySQLiteHelper.ACCOUNTS_COLUMN_IV};
+            MySQLiteHelper.ACCOUNTS_COLUMN_IV,
+            MySQLiteHelper.ACCOUNTS_COLUMN_VALIDATE_CERT,
+            MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME,
+            MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER,
+    };
     private final MySQLiteHelper dbHelper;
     private final Context mContext;
     private SQLiteDatabase db;
@@ -45,23 +50,26 @@ class AccountsSource {
         dbHelper.close();
     }
 
-    public ShaarliAccount createAccount(String urlShaarli, String username, String password, String shortName) throws Exception {
+    public ShaarliAccount createAccount(String urlShaarli, String username, String password, String basicAuthUsername, String basicAuthPassword, String shortName, boolean validateCert) throws Exception {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, urlShaarli);
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, username);
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME, basicAuthUsername);
 
         // Generate the iv :
         byte[] iv = EncryptionHelper.generateInitialVector();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_IV, iv);
 
         byte[] password_cipher = encryptPassword(password, iv);
-
-
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
+
+        byte[] basic_password_cipher = encryptPassword(basicAuthPassword, iv);
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER, basic_password_cipher);
+
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, shortName);
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_VALIDATE_CERT, validateCert ? 1:0 );  // Convert bool to int
 
         long insertId = db.insert(MySQLiteHelper.TABLE_ACCOUNTS, null, values);
-
         return getShaarliAccountById(insertId);
     }
 
@@ -126,6 +134,8 @@ class AccountsSource {
         account.setUrlShaarli(cursor.getString(1));
         account.setUsername(cursor.getString(2));
         account.setInitialVector(cursor.getBlob(5));
+        account.setValidateCert(cursor.getInt(6) == 1);  // Convert int to bool
+        account.setBasicAuthUsername(cursor.getString(7));
 
         byte[] password_cypher = cursor.getBlob(3);
         String password;
@@ -136,6 +146,17 @@ class AccountsSource {
             return null;
         }
         account.setPassword(password);
+
+        byte[] basic_password_cypher = cursor.getBlob(8);
+        String basic_password;
+        try {
+            basic_password = decryptPassword(basic_password_cypher, account.getInitialVector());
+        } catch (Exception e) {
+            e.printStackTrace();
+            basic_password = "";
+        }
+        account.setBasicAuthPassword(basic_password);
+
         account.setShortName(cursor.getString(4));
 
         return account;
@@ -150,6 +171,7 @@ class AccountsSource {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, account.getUrlShaarli());
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, account.getUsername());
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME, account.getBasicAuthUsername());
 
         // Generate a new iv :
         account.setInitialVector(EncryptionHelper.generateInitialVector());
@@ -159,7 +181,9 @@ class AccountsSource {
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_PASSWORD_CYPHER, password_cipher);
 
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_SHORT_NAME, account.getShortName());
-
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_VALIDATE_CERT, account.isValidateCert() ? 1:0);  // convert bool to int
+        byte[] basic_password_cipher = encryptPassword(account.getBasicAuthPassword(), account.getInitialVector());
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER, basic_password_cipher);
 
         db.update(MySQLiteHelper.TABLE_ACCOUNTS, values, QUERY_WHERE, null);
     }

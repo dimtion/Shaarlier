@@ -16,7 +16,7 @@ import java.util.TimeZone;
  * Created by dimtion on 16/05/2015.
  * A class to help debugging, should not be in production
  */
-public class DebugHelper {
+class DebugHelper {
 
     public static void sendMailDev(Activity context, String subject, String content) {
         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(

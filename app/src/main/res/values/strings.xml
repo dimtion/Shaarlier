@@ -24,18 +24,22 @@
     <string name="title_activity_add">Add to Shaarli</string>
     <string name="user_name">Username :</string>
     <string name="user_password">Password :</string>
+    <string name="basic_auth">HTTP Basic Authentication</string>
     <string name="your_shaarli_url">Your Shaarli url :</string>
 
     <string name="params" translatable="false">com.dimtion.shaarliposter.parms</string>
     <string name="p_url_shaarli" translatable="false">com.dimtion.shaarliposter.p_url_shaarli</string>
     <string name="p_username" translatable="false">com.dimtion.shaarliposter.p_username</string>
     <string name="p_password" translatable="false">com.dimtion.shaarliposter.p_password</string>
+    <string name="p_basic_username" translatable="false">com.dimtion.shaarliposter.p_basic_username</string>
+    <string name="p_basic_password" translatable="false">com.dimtion.shaarliposter.p_basic_password</string>
     <string name="p_validated" translatable="false">com.dimtion.shaarliposter.p_validated</string>
     <string name="p_default_private" translatable="false">com.dimtion.shaarlier.p_default_private</string>
     <string name="p_show_share_dialog" translatable="false">com.dimtion.shaarlier.p_show_share_dialog</string>
     <string name="p_protocol" translatable="false">com.dimtion.shaarlier.p_protocol</string>
     <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
     <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
+    <string name="p_auto_description" translatable="false">com.dimtion.shaarlier.auto_description</string>
     <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
     <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
     <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
@@ -51,6 +55,7 @@
     </string-array>
     <string name="loading_title_hint">Loading title…</string>
     <string name="error_retrieving_title">Title could not be loaded</string>
+    <string name="error_retrieving_description">Description could not be loaded</string>
     <string name="auto_load_title">Automatically load page title</string>
     <string name="username_hint" translatable="false">Batman</string>
     <string name="url_hint">http://shaarli.myserver.org</string>
@@ -66,7 +71,7 @@
     <string name="title">Title :</string>
     <string name="title_hint"> </string>
     <string name="text_description">Description :</string>
-    <string name="title_activity_accounts_managment">Accounts</string>
+    <string name="title_activity_accounts_management">Accounts</string>
 
     <string name="text_add">Add</string>
     <string name="text_validate">Validate</string>
@@ -78,4 +83,11 @@
     <string name="title_activity_add_account">New account</string>
     <string name="text_confirm_deletion_account">Are you sure you want to delete this account ?</string>
     <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
+    <string name="check_disable_cert_validation">Disable certificate validation (unsecured)</string>
+    <string name="error_unknown">An unknown error has occurred</string>
+    <string name="add_account">Add account</string>
+    <string name="send_report">You think this is a bug ?</string>
+    <string name="report_issue">Would you like to report this issue ?</string>
+    <string name="loading_description_hint">Loading description...</string>
+    <string name="auto_load_description">Automatically load page description</string>
 </resources>

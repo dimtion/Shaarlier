@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
  * A simple class to encrypt and decrypt simple data
  * (Probably needs review)
  */
-public class EncryptionHelper {
+class EncryptionHelper {
     public final static int KEY_LENGTH = 256;
     public final static int IV_LENGTH = 16;
 

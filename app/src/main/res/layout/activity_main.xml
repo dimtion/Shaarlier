@@ -28,7 +28,7 @@
 
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/button_manage_accounts"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,6 +68,14 @@
             android:layout_marginTop="5dp"
             android:checked="true"
             android:text="@string/auto_load_title" />
+
+        <CheckBox
+            android:id="@+id/auto_load_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:checked="true"
+            android:text="@string/auto_load_description" />
 
         <TextView
             android:id="@+id/textView4"

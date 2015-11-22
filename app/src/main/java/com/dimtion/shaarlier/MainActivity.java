@@ -7,19 +7,21 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
+    private boolean m_isNoAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,24 +44,21 @@ public class MainActivity extends ActionBarActivity {
             textVersion.setText(getText(R.string.text_version));
         }
 
-        ///////////
-        // DEBUG //
-        ///////////
+    }
 
-//        try {
-//            SecretKey key = EncryptionHelper.generateKey();
-//            String message = "Hé toi, à qui est ce & ?";
-//            byte[] encoded = message.getBytes("UTF-8");
-//            byte[] encrypted = EncryptionHelper.encrypt(encoded, key);
-//
-//            // On décode :
-//            byte[] decrypted = EncryptionHelper.decrypt(encrypted, key);
-//            String finale = new String(decrypted, "UTF-8");
-//            Log.d("YEAH", finale);
-//        } catch (Exception e){
-//            Log.e("HELLLO", e.getMessage());
-//        }
+    @Override
+    public void onResume(){
+        super.onResume();
+        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+        accountsSource.rOpen();
+        m_isNoAccount = accountsSource.getAllAccounts().isEmpty();
 
+        Button manageAccountsButton = (Button) findViewById(R.id.button_manage_accounts);
+        if(m_isNoAccount){
+            manageAccountsButton.setText(R.string.add_account);
+        } else {
+            manageAccountsButton.setText(R.string.button_manage_accounts);
+        }
     }
 
     @Override
@@ -68,27 +67,36 @@ public class MainActivity extends ActionBarActivity {
         saveSettings();
     }
 
-    void saveSettings() {
+    private void saveSettings() {
         // Get user inputs :
         boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
         boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
+        boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_default_private), isPrivate)
                 .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
+                .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
                 .apply();
 
     }
 
     public void openAccountsManager(View view) {
-        Intent intent = new Intent(this, AccountsManagementActivity.class);
+        Intent intent;
+        if(m_isNoAccount){
+            intent = new Intent(this, AddAccountActivity.class);
+        } else {
+            intent = new Intent(this, AccountsManagementActivity.class);
+
+        }
         startActivity(intent);
+
     }
 
-    void loadSettings() {
+    private void loadSettings() {
         // Retrieve user previous settings
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
 //        updateSettingsFromUpdate(pref);
@@ -96,15 +104,18 @@ public class MainActivity extends ActionBarActivity {
         boolean prv = pref.getBoolean(getString(R.string.p_default_private), false);
         boolean sherDial = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+        boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
 
         // Retrieve interface :
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
         CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
         CheckBox autoTitleCheck = (CheckBox) findViewById(R.id.auto_load_title);
+        CheckBox autoDescriptionCheck = (CheckBox) findViewById(R.id.auto_load_description);
 
         // Display user previous settings :
         privateCheck.setChecked(prv);
         autoTitleCheck.setChecked(isAutoTitle);
+        autoDescriptionCheck.setChecked(isAutoDescription);
         shareDialogCheck.setChecked(sherDial);
     }
 
@@ -128,7 +139,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             case R.id.action_go_to_shaarli:
                 SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-//                updateSettingsFromUpdate(pref);
 
                 String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
 
@@ -178,6 +188,8 @@ public class MainActivity extends ActionBarActivity {
 
                 alert.show();
                 break;
+            default:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
