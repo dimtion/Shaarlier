@@ -185,11 +185,15 @@ public class AddActivity extends Activity {
         return finalUrl;
     }
 
-    //
-    // Method to extract the title from shared data
-    //
+    /**
+     * Method to extract the title from shared data
+     **/
     private String extractTitle(ShareCompat.IntentReader reader) {
-        return reader.getSubject() != null ? reader.getSubject() : "";
+        if (reader.getSubject() != null && !NetworkManager.isUrl(reader.getSubject())){
+            return reader.getSubject();
+        }
+
+        return "";
     }
 
     //
@@ -264,7 +268,6 @@ public class AddActivity extends Activity {
 
         if ("".equals(defaultTitle)) {
             startService(networkIntent);
-
             if (m_prefOpenDialog) {
                 // If in the meanwhile the user type text in the field, stop retrieving the title.
                 ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
