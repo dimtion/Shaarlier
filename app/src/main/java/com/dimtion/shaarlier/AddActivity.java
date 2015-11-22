@@ -146,8 +146,9 @@ public class AddActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
             this.chosenAccount = null;
+        } finally {
+            accountsSource.close();
         }
-        accountsSource.close();
 
         if (this.chosenAccount != null) {
             int indexChosenAccount = 0;

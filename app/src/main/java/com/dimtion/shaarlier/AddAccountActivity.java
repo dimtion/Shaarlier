@@ -321,9 +321,10 @@ public class AddAccountActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             Log.e("ENCRYPTION ERROR", e.getMessage());
-        }
+        } finally {
+            accountsSource.close();
 
-        accountsSource.close();
+        }
 
         // Set the default account if needed
         if (this.isDefaultAccount) {

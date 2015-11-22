@@ -21,15 +21,14 @@ public class AccountsManagementActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accounts_management);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         final ListView accountsListView = (ListView) findViewById(R.id.accountListView);
+        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
         try {
-            AccountsSource accountsSource = new AccountsSource(getApplicationContext());
             accountsSource.rOpen();
             List<ShaarliAccount> accountsList = accountsSource.getAllAccounts();
             ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, accountsList);
@@ -41,9 +40,11 @@ public class AccountsManagementActivity extends AppCompatActivity {
             else
                 findViewById(R.id.noAccountToShow).setVisibility(View.GONE);
 
-            accountsSource.close();
+
         } catch (SQLException e) {
             Log.e("DB_ERROR", e.toString());
+        } finally {
+            accountsSource.close();
         }
         accountsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
