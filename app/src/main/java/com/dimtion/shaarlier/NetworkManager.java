@@ -85,24 +85,21 @@ class NetworkManager {
      * Change something which is close to a url to something that is really one
      */
     public static String toUrl(String givenUrl) {
+        String finalUrl = givenUrl;
         String protocol = "http://";  // Default value
         if ("".equals(givenUrl)) {
-            return givenUrl;
+            return givenUrl;  // Edge case, maybe need some discussion
         }
 
-        if (!givenUrl.endsWith("/")) {
-            givenUrl += '/';
+        if (!finalUrl.endsWith("/")) {
+            finalUrl += '/';
         }
 
-        if (givenUrl.startsWith("http://")) {
-            givenUrl = givenUrl.replace("http://", "");
-
-        } else if (givenUrl.startsWith("https://")) {
-            givenUrl = givenUrl.replace("https://", "");
-            protocol = "https://";
+        if (!(finalUrl.startsWith("http://") || finalUrl.startsWith("https://"))) {
+            finalUrl = protocol + finalUrl;
         }
 
-        return protocol + givenUrl;
+        return finalUrl;
     }
 
     /**
@@ -213,8 +210,8 @@ class NetworkManager {
         String encodedShareUrl = URLEncoder.encode(sharedUrl, "UTF-8");
         retrievePostLinkToken(encodedShareUrl);
 
-        if (!isUrl(sharedUrl)) { // In case the url isn't really one, just post the one chosen by the server.
-            sharedUrl = this.mSharedUrl;
+        if (isUrl(sharedUrl)) { // In case the url isn't really one, just post the one chosen by the server.
+            this.mSharedUrl = sharedUrl;
         }
 
         final String postUrl = this.mShaarliUrl + "?post=" + encodedShareUrl;
@@ -224,7 +221,7 @@ class NetworkManager {
                 .data("token", this.mToken)
                 .data("lf_tags", sharedTags)
                 .data("lf_linkdate", this.mDatePostLink)
-                .data("lf_url", sharedUrl)
+                .data("lf_url", this.mSharedUrl)
                 .data("lf_title", sharedTitle)
                 .data("lf_description", sharedDescription);
         if (privateShare) postPageConn.data("lf_private", "on");

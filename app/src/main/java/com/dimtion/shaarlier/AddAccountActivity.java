@@ -78,6 +78,7 @@ public class AddAccountActivity extends AppCompatActivity {
                 default:
                     Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
                     enableSendReport(new Exception("UNKNOWN ERROR"));
+                    break;
             }
         }
 

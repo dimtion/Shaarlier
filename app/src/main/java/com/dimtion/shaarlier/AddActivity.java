@@ -39,10 +39,10 @@ public class AddActivity extends Activity {
     private View a_dialogView;
 
     private class networkHandler extends Handler {
-        final Activity m_parent;
+        private final Activity mParent;
 
         public networkHandler(Activity parent) {
-            this.m_parent = parent;
+            this.mParent = parent;
         }
 
         /**
@@ -76,6 +76,7 @@ public class AddActivity extends Activity {
                     break;
                 default:
                     Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+                    break;
             }
         }
     }

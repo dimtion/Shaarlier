@@ -28,7 +28,7 @@ public class NetworkService extends IntentService {
     private String loadedTitle;
 
     private Context mContext;
-    private android.os.Handler mToastHandler;
+    private Handler mToastHandler;
     private Exception mError;
     private ShaarliAccount mShaarliAccount;
     private String loadedDescription;
@@ -132,7 +132,7 @@ public class NetworkService extends IntentService {
      * Thanks : http://stackoverflow.com/a/3955826
      */
     private class DisplayToast implements Runnable{
-        String mText;
+        private String mText;
 
         public DisplayToast(String text){
             mText = text;

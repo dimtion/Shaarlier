@@ -57,7 +57,7 @@ class AutoCompleteWrapper {
     }
 
     private class AutoCompleteRetriever extends AsyncTask<String, Void, Boolean> {
-        Exception mError;
+        private Exception mError;
         @Override
         protected Boolean doInBackground(String... foo) {
             AccountsSource accountsSource = new AccountsSource(a_context);
