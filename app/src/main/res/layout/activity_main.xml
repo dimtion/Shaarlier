@@ -69,6 +69,14 @@
             android:checked="true"
             android:text="@string/auto_load_title" />
 
+        <CheckBox
+            android:id="@+id/auto_load_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:checked="true"
+            android:text="@string/auto_load_description" />
+
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"

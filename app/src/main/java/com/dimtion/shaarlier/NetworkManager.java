@@ -5,11 +5,13 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
+import android.util.Log;
 import android.webkit.URLUtil;
 
 import org.json.JSONArray;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
@@ -118,16 +120,22 @@ class NetworkManager {
      * @param url the url of the web page
      * @return "" if there is an error, the page title in other cases
      */
-    public static String loadTitle(String url) {
+    public static String[] loadTitleAndDescription(String url) {
+        String title = "";
+        String description = "";
         try {
-            Connection.Response pageResp = Jsoup.connect(url)
+            Document pageResp = Jsoup.connect(url)
                     .maxBodySize(50240) // Hopefully we won't need more data
                     .followRedirects(true)
-                    .execute();
-            return pageResp.parse().title();
+                    .execute()
+                    .parse();
+            title = pageResp.title();
+            description = pageResp.head().select("meta[name=description]").first().attr("content");
         } catch (Exception e) {
-            return "";
+            // Just abandon the task if there is a problem
+            Log.w("NetworkManager", e.toString());
         }
+        return new String[]{title, description};
     }
 
     /**

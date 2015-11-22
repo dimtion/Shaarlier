@@ -26,6 +26,8 @@ public class NetworkService extends IntentService {
 
     private Exception mError;
     private ShaarliAccount mShaarliAccount;
+    private String loadedDescription;
+
     public NetworkService() {
         super("NetworkService");
     }
@@ -64,6 +66,10 @@ public class NetworkService extends IntentService {
                     title = this.loadedTitle;
                     this.loadedTitle = null;
                 }
+                if ("".equals(description) && this.loadedDescription != null) {
+                    description = this.loadedDescription;
+                    this.loadedDescription = null;
+                }
                 long accountId = intent.getLongExtra("chosenAccountId", -1);
 
                 try {
@@ -75,14 +81,26 @@ public class NetworkService extends IntentService {
                 }
                 postLink(sharedUrl, title, description, tags, isPrivate);
                 break;
-            case "retrieveTitle":
+            case "retrieveTitleAndDescription":
                 this.loadedTitle = "";
+                this.loadedDescription = "";
+
                 String url = intent.getStringExtra("url");
-                String pageTitle = getPageTitle(url);
-                this.loadedTitle = pageTitle;
+
+                boolean autoTitle = intent.getBooleanExtra("autoTitle", true);
+                boolean autoDescription = intent.getBooleanExtra("autoDescription", false);
+
+                String[] pageTitleAndDescription = getPageTitleAndDescription(url);
+
+                if (autoTitle){
+                    this.loadedTitle = pageTitleAndDescription[0];
+                }
+                if (autoDescription){
+                    this.loadedDescription = pageTitleAndDescription[1];
+                }
 
                 msg.arg1 = RETRIEVE_TITLE_ID;
-                msg.obj = pageTitle;
+                msg.obj = pageTitleAndDescription;
                 // Send back messages to the calling activity
                 try {
                     assert messenger != null;
@@ -90,6 +108,9 @@ public class NetworkService extends IntentService {
                 } catch (android.os.RemoteException | AssertionError e1) {
                     Log.w(getClass().getName(), "Exception sending message", e1);
                 }
+                break;
+            default:
+                // Do nothing
                 break;
         }
     }
@@ -149,8 +170,8 @@ public class NetworkService extends IntentService {
      * @param url the page to get the title
      * @return the title page, "" if there is an error
      */
-    private String getPageTitle(String url){
-        return NetworkManager.loadTitle(url);
+    private String[] getPageTitleAndDescription(String url){
+        return NetworkManager.loadTitleAndDescription(url);
     }
 
     private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare){

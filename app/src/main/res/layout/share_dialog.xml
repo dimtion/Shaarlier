@@ -72,18 +72,36 @@
             android:text="@string/text_description"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText
-            android:id="@+id/description"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:gravity="top|left"
-            android:hint="@string/description_hint"
-            android:inputType="textMultiLine|textCapSentences"
-            android:maxLines="10"
-            android:minLines="3"
-            android:singleLine="false"
-            android:textSize="15sp" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:gravity="top|start"
+                android:hint="@string/description_hint"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="10"
+                android:minLines="3"
+                android:singleLine="false"
+                android:textSize="15sp" />
+
+            <ProgressBar
+                android:id="@+id/loading_description"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/description"
+                android:layout_alignRight="@+id/description"
+                android:layout_alignTop="@+id/description"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:indeterminate="true"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <MultiAutoCompleteTextView
             android:id="@+id/tags"

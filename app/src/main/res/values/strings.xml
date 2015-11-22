@@ -39,6 +39,7 @@
     <string name="p_protocol" translatable="false">com.dimtion.shaarlier.p_protocol</string>
     <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
     <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
+    <string name="p_auto_description" translatable="false">com.dimtion.shaarlier.auto_description</string>
     <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
     <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
     <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
@@ -54,6 +55,7 @@
     </string-array>
     <string name="loading_title_hint">Loading title…</string>
     <string name="error_retrieving_title">Title could not be loaded</string>
+    <string name="error_retrieving_description">Description could not be loaded</string>
     <string name="auto_load_title">Automatically load page title</string>
     <string name="username_hint" translatable="false">Batman</string>
     <string name="url_hint">http://shaarli.myserver.org</string>
@@ -86,4 +88,6 @@
     <string name="add_account">Add account</string>
     <string name="send_report">You think this is a bug ?</string>
     <string name="report_issue">Would you like to report this issue ?</string>
+    <string name="loading_description_hint">Loading description...</string>
+    <string name="auto_load_description">Automatically load page description</string>
 </resources>

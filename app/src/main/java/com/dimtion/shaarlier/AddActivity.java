@@ -31,6 +31,9 @@ public class AddActivity extends Activity {
     private List<ShaarliAccount> allAccounts;
     private Boolean privateShare;
     private boolean autoTitle;
+    private boolean autoDescription;
+    private boolean stopLoadingTitle;
+    private boolean stopLoadingDescription;
     private boolean m_prefOpenDialog;
 
     private View a_dialogView;
@@ -52,10 +55,22 @@ public class AddActivity extends Activity {
             switch (msg.arg1) {
                 case NetworkService.RETRIEVE_TITLE_ID:
                     if (m_prefOpenDialog) {
-                        if ("".equals(msg.obj)) {
-                            updateTitle((String) msg.obj, true);
-                        } else {
-                            updateTitle((String) msg.obj, false);
+                        String title = ((String[]) msg.obj)[0];
+                        String description = ((String[]) msg.obj)[1];
+
+                        if(!stopLoadingTitle && autoTitle) {
+                            if ("".equals(title)) {
+                                updateTitle(title, true);
+                            } else {
+                                updateTitle(title, false);
+                            }
+                        }
+                        if(!stopLoadingDescription && autoDescription) {
+                            if ("".equals(description)) {
+                                updateDescription(description, true);
+                            } else {
+                                updateDescription(description, false);
+                            }
                         }
                     }
                     break;
@@ -78,6 +93,9 @@ public class AddActivity extends Activity {
         privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
         m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+        autoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
+        stopLoadingTitle = false;
+        stopLoadingDescription = false;
 
         // Check if there is at least one account, if so launch the settings :
         getAllAccounts();
@@ -94,12 +112,19 @@ public class AddActivity extends Activity {
             String defaultDescription = intent.getStringExtra("description") != null ? intent.getStringExtra("description") : "";
             String defaultTags = intent.getStringExtra("tags") != null ? intent.getStringExtra("tags") : "";
 
+            if (!autoTitle){
+                defaultTitle = "";
+            }
+            if (!autoDescription){
+                defaultDescription = "";
+            }
+
             // Show edit dialog if the users wants
             if (m_prefOpenDialog) {
                 handleDialog(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags);
             } else {
-                if (autoTitle) {
-                    loadAutoTitle(sharedUrlTrimmed, defaultTitle);
+                if (autoTitle || autoDescription) {
+                    loadAutoTitleAndDescription(sharedUrlTrimmed, defaultTitle, defaultDescription);
                 }
                 handleSendPost(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags, privateShare, this.chosenAccount);
             }
@@ -209,16 +234,13 @@ public class AddActivity extends Activity {
         // Init accountSpinner
         initAccountSpinner();
 
-        // Load title :
-        if (autoTitle && NetworkManager.isUrl(sharedUrl)) {
-            loadAutoTitle(sharedUrl, givenTitle);
+        // Load title or description:
+        if ((autoDescription || autoTitle) && NetworkManager.isUrl(sharedUrl)) {
+            loadAutoTitleAndDescription(sharedUrl, givenTitle, defaultDescription);
         }
 
         // Init url  :
         ((EditText) dialogView.findViewById(R.id.url)).setText(sharedUrl);
-
-        // Init Description field :
-        ((EditText) dialogView.findViewById(R.id.description)).setText(defaultDescription);
 
         // Init tags :
         MultiAutoCompleteTextView textView = (MultiAutoCompleteTextView) dialogView.findViewById(R.id.tags);
@@ -246,36 +268,51 @@ public class AddActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
                     }
-                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        finish();
-                    }
-                })
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                finish();
+            }
+        })
                 .show();
     }
 
     // To get an automatic title :
-    private void loadAutoTitle(String sharedUrl, String defaultTitle) {
-        if (m_prefOpenDialog) {
-            a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
-            ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
+    private void loadAutoTitleAndDescription(String sharedUrl, String defaultTitle, String defaultDescription) {
+
+        // Don't use network ressources if not needed
+        if (!autoTitle && !autoDescription){
+            return;
         }
+        // Launch intent to retrieve the title and the description
         final Intent networkIntent = new Intent(this, NetworkService.class);
-        networkIntent.putExtra("action", "retrieveTitle");
+        networkIntent.putExtra("action", "retrieveTitleAndDescription");
         networkIntent.putExtra("url", sharedUrl);
+        networkIntent.putExtra("autoTitle", autoTitle);
+        networkIntent.putExtra("autoDescription", autoDescription);
         networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
 
-        if ("".equals(defaultTitle)) {
-            startService(networkIntent);
-            if (m_prefOpenDialog) {
-                // If in the meanwhile the user type text in the field, stop retrieving the title.
-                ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
+        stopLoadingTitle = false;
+        stopLoadingDescription = false;
+        startService(networkIntent);
+
+        // Everything is done in the NetworkService if no dialog is opened
+        if (!m_prefOpenDialog){
+            return;
+        }
+
+        if (autoDescription) {
+            if ("".equals(defaultDescription)) {
+                a_dialogView.findViewById(R.id.loading_description).setVisibility(View.VISIBLE);
+                ((EditText) a_dialogView.findViewById(R.id.description)).setHint(R.string.loading_description_hint);
+
+                // If in the meanwhile the user type text in the field, stop retrieving the description.
+                ((EditText) a_dialogView.findViewById(R.id.description)).addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count,
-                                                  int after) {
-                        stopService(networkIntent);
-                        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        stopLoadingDescription = true;
+                        a_dialogView.findViewById(R.id.loading_description).setVisibility(View.GONE);
+                        ((EditText) a_dialogView.findViewById(R.id.description)).removeTextChangedListener(this);
                     }
 
                     @Override
@@ -288,9 +325,39 @@ public class AddActivity extends Activity {
                         // Nothing to be done
                     }
                 });
+            } else {
+                stopLoadingDescription = true;
+                updateDescription(defaultDescription, false);
             }
-        } else if (m_prefOpenDialog) {
-            updateTitle(defaultTitle, false);
+        }
+
+        if (autoTitle) {
+            if ("".equals(defaultTitle)) {
+                a_dialogView.findViewById(R.id.loading_title).setVisibility(View.VISIBLE);
+                ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.loading_title_hint);
+                // If in the meanwhile the user type text in the field, stop retrieving the title.
+                ((EditText) a_dialogView.findViewById(R.id.title)).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        stopLoadingTitle = true;
+                        a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+                        ((EditText) a_dialogView.findViewById(R.id.title)).removeTextChangedListener(this);
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // Nothing to be done
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // Nothing to be done
+                    }
+                });
+            } else {
+                stopLoadingTitle = true;
+                updateTitle(defaultTitle, false);
+            }
         }
     }
 
@@ -299,11 +366,23 @@ public class AddActivity extends Activity {
 
         if (isError) {
             ((EditText) a_dialogView.findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
-        } else if (!"".equals(title)) {
+        } else {
             ((EditText) a_dialogView.findViewById(R.id.title)).setText(title);
         }
 
         a_dialogView.findViewById(R.id.loading_title).setVisibility(View.GONE);
+    }
+
+    private void updateDescription(String description, boolean isError){
+        ((EditText) a_dialogView.findViewById(R.id.description)).setHint(R.string.description_hint);
+
+        if (isError) {
+            ((EditText) a_dialogView.findViewById(R.id.description)).setHint(R.string.error_retrieving_description);
+        } else {
+            ((EditText) a_dialogView.findViewById(R.id.description)).setText(description);
+        }
+
+        a_dialogView.findViewById(R.id.loading_description).setVisibility(View.GONE);
     }
 
     /**

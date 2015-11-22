@@ -19,8 +19,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.List;
-
 
 public class MainActivity extends AppCompatActivity {
     private boolean m_isNoAccount;
@@ -74,12 +72,14 @@ public class MainActivity extends AppCompatActivity {
         boolean isPrivate = ((CheckBox) findViewById(R.id.default_private)).isChecked();
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
         boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
+        boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_default_private), isPrivate)
                 .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
+                .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
                 .apply();
 
     }
@@ -104,15 +104,18 @@ public class MainActivity extends AppCompatActivity {
         boolean prv = pref.getBoolean(getString(R.string.p_default_private), false);
         boolean sherDial = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+        boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
 
         // Retrieve interface :
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
         CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
         CheckBox autoTitleCheck = (CheckBox) findViewById(R.id.auto_load_title);
+        CheckBox autoDescriptionCheck = (CheckBox) findViewById(R.id.auto_load_description);
 
         // Display user previous settings :
         privateCheck.setChecked(prv);
         autoTitleCheck.setChecked(isAutoTitle);
+        autoDescriptionCheck.setChecked(isAutoDescription);
         shareDialogCheck.setChecked(sherDial);
     }
 
