@@ -64,18 +64,20 @@ public class AddAccountActivity extends AppCompatActivity {
                     finish();
                     break;
                 case NetworkService.NETWORK_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_connecting));
                     enableSendReport((Exception) msg.obj);
                     break;
                 case NetworkService.TOKEN_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.error_parsing_token, Toast.LENGTH_LONG).show();
+                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_parsing_token));
                     enableSendReport(new Exception("TOKEN ERROR"));
                     break;
                 case NetworkService.LOGIN_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.error_login, Toast.LENGTH_LONG).show();
+                    ((EditText) findViewById(R.id.usernameView)).setError(getString(R.string.error_login));
+                    ((EditText) findViewById(R.id.passwordView)).setError(getString(R.string.error_login));
                     enableSendReport(new Exception("LOGIN ERROR"));
                     break;
                 default:
+                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_unknown));
                     Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
                     enableSendReport(new Exception("UNKNOWN ERROR"));
                     break;

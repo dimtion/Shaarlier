@@ -18,7 +18,7 @@
     <string name="share">Partager sur Shaarli</string>
     <string name="success_test">Les paramètres sont corrects</string>
     <string name="tags_hint">tags (séparés par des espaces)</string>
-    <string name="test_connection">Tester puis enregistrer ces paramètres</string>
+    <string name="test_connection">Tester puis enregistrer</string>
     <string name="text_about">À propos</string>
     <string name="text_behaviour">Comportement</string>
     <string name="text_show_share_dialog">Afficher une boite de dialogue lors du partage</string>
@@ -43,7 +43,6 @@ Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez
     <string name="title">Titre :</string>
     <string name="text_description">Description :</string>
     <string name="text_add">Add</string>
-    <string name="button_delete_account">EFFACER LE COMPTE</string>
     <string name="button_manage_accounts">Gérer les comptes</string>
     <string name="check_default_account">Compte par défaut</string>
     <string name="text_account_name">Nom du compte :</string>
@@ -52,9 +51,15 @@ Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez
     <string name="title_activity_accounts_management">Comptes</string>
     <string name="title_activity_add_account">Nouveau compte</string>
     <string name="text_confirm_deletion_account">Êtes-vous sûr de vouloir supprimer ce compte ?</string>
-    <string name="error_retrieving_tags">Une erreur s\'est produite lors du chargement des tags</string>
-    <string name="check_disable_cert_validation">Désactiver la validation du certificat (non recommandé)</string>
+    <string name="error_retrieving_tags">Erreur lors du chargement des tags</string>
+    <string name="check_disable_cert_validation">Désactiver la validation du certificat (non sécurisé)</string>
     <string name="add_account">Ajouter un compte</string>
     <string name="send_report">Vous pensez que c\'est un bug ?</string>
     <string name="report_issue">Voulez-vous signaler ce bug ?</string>
+    <string name="auto_load_description">Charger automatiquement la description</string>
+    <string name="basic_auth">Authentification HTTP</string>
+    <string name="error_retrieving_description">La description n\'a pu être chargée</string>
+    <string name="error_unknown">Une erreur inconnue s\'est produite</string>
+    <string name="loading_description_hint">Chargement...</string>
+    <string name="button_delete_account">Effacer le compte</string>
 </resources>

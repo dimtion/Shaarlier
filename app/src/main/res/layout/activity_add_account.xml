@@ -2,16 +2,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="0dp"
+    android:paddingTop="0dp"
     tools:context="com.dimtion.shaarlier.AddAccountActivity">
 
     <LinearLayout
+        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
         android:weightSum="1">
+
+        <Button
+            android:id="@+id/sendReportButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="deleteAccountAction"
+            android:text="@string/send_report"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="match_parent"
@@ -64,7 +75,7 @@
             android:id="@+id/shortNameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="textCapWords" />
 
         <Space
             android:layout_width="match_parent"
@@ -170,13 +181,6 @@
             android:visibility="gone" />
 
 
-        <Button
-            android:id="@+id/sendReportButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="deleteAccountAction"
-            android:text="@string/send_report"
-            android:layout_marginTop="10dp"
-            android:visibility="gone" />
+
     </LinearLayout>
 </ScrollView>
