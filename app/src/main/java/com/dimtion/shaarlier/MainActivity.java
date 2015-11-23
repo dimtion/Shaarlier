@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -123,6 +122,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        if(m_isNoAccount) {
+            menu.findItem(R.id.action_share).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        } else {
+            menu.findItem(R.id.action_share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
+
         return true;
     }
 
@@ -135,16 +140,6 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_settings:
-                return true;
-            case R.id.action_go_to_shaarli:
-                SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-
-                String url = pref.getString(getString(R.string.p_url_shaarli), getString(R.string.developer_shaarli));
-
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                startActivity(browserIntent);
-                break;
             case R.id.action_share:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
