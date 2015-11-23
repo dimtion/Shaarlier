@@ -46,9 +46,8 @@
 
     <string name="share">Share an Shaarli</string>
     <string name="text_about">About</string>
-    <string name="text_about_details">To use this app your need a <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli">Shaarli</a>, a minimalist delicious clone.
-    This app is proudly developed by dimtion, find me on my <a href="https://github.com/dimtion/Shaarlier">github account</a> (and on other places on the Internet).
-    If you find any bug (which is quite impossible) or have a feature request don\'t hesitate to publish on the <a href="https://github.com/dimtion/Shaarlier/issues">issue tracker.</a></string>
+    <string name="text_about_details">To use this app your need a <a href="https://github.com/shaarli/Shaarli">Shaarli</a>, a minimalist delicious clone.
+    This app is proudly developed by dimtion, find me on <a href="https://github.com/dimtion/Shaarlier">GitHub</a> (and on other places on the Internet).</string>
     <string-array name="select_protocol" translatable="false">
         <item>http://</item>
         <item>https://</item>
@@ -63,7 +62,7 @@
     <string name="developer_shaarli" translatable="false">https://shaarli.dimtion.fr</string>
     <string name="developer_mail" translatable="false">zizou.xena@gmail.com</string>
     <string name="action_share">Share a link</string>
-    <string name="text_version">Version : unknown</string>
+    <string name="text_version">Version unknown</string>
     <string name="hint_new_url">(empty for a new note)</string>
     <string name="text_new_url">Link to share :</string>
     <string name="text_url" translatable="false">Url :</string>

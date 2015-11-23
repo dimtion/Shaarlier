@@ -1,6 +1,6 @@
 # Shaarlier
 
-[![Join the chat at https://gitter.im/dimtion/Shaarlier](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dimtion/Shaarlier?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/6228d636f0e44708b2739a35e8b9a2b0)](https://www.codacy.com/app/zizou-xena/Shaarlier)
 
 A simple app for sharing links on your Shaarli.
 

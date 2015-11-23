@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-            textVersion.setText("Version : " + versionName + " (" + Integer.toString(versionCode) + ")");
+            textVersion.setText("Version " + versionName);
 
         } catch (PackageManager.NameNotFoundException e) {
             textVersion.setText(getText(R.string.text_version));

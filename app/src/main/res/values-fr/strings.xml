@@ -27,16 +27,15 @@
     <string name="user_name">Pseudo :</string>
     <string name="user_password">Mot de passe :</string>
     <string name="your_shaarli_url">Url de votre Shaarli :</string>
-    <string name="text_about_details">Pour utiliser cette application vous avez besoin d\'un <a href="http://sebsauvage.net/wiki/doku.php?id=php:shaarli">Shaarli</a>, un clone minimaliste de delicious.
-Cette application est fièrement développée par dimtion, vous pouvez me trouver sur mon <a href="https://github.com/dimtion/Shaarlier">github</a> (et d\'autres recoins d\'internet).
-Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez pas à publier sur le <a href="https://github.com/dimtion/Shaarlier/issues">bug tracker</a>.</string>
+    <string name="text_about_details">Pour utiliser cette application vous avez besoin d\'un <a href="https://github.com/shaarli/Shaarli">Shaarli</a>, un clone minimaliste de delicious.
+Cette application est fièrement développée par dimtion, vous pouvez me trouver sur <a href="https://github.com/dimtion/Shaarlier">GitHub</a> (et d\'autres recoins d\'internet).</string>
     <string name="loading_title_hint">Chargement du title…</string>
     <string name="error_retrieving_title">Erreur chargement titre</string>
     <string name="auto_load_title">Charger automatiquement le titre de la page</string>
     <string name="url_hint">shaarli.monserveur.fr</string>
     <string name="action_go_to_shaarli">Aller à mon Shaarli</string>
     <string name="action_share">Partager un lien</string>
-    <string name="text_version">Version : inconnue</string>
+    <string name="text_version">Version inconnue</string>
     <string name="hint_new_url">(vide pour une nouvelle note)</string>
     <string name="text_new_url">Lien à partager :</string>
     <string name="text_url_hint">(laisser vide pour une nouvelle note)</string>
