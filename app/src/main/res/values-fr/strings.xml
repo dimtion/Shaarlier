@@ -58,8 +58,8 @@ Si vous trouvez le moindre bug ou avez une idée de fonctionnalité, n\'hésitez
     <string name="report_issue">Voulez-vous signaler ce bug ?</string>
     <string name="auto_load_description">Charger automatiquement la description</string>
     <string name="basic_auth">Authentification HTTP</string>
-    <string name="error_retrieving_description">La description n\'a pu être chargée</string>
+    <string name="error_retrieving_description">Aucune description n\'a été trouvé</string>
     <string name="error_unknown">Une erreur inconnue s\'est produite</string>
-    <string name="loading_description_hint">Chargement...</string>
+    <string name="loading_description_hint">Chargement…</string>
     <string name="button_delete_account">Effacer le compte</string>
 </resources>

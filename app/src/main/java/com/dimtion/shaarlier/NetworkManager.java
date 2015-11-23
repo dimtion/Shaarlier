@@ -23,12 +23,21 @@ import java.util.Map;
  * This class handle all the communications with Shaarli and other web services
  */
 class NetworkManager {
+    private static final int LOAD_TITLE_MAX_BODY_SIZE = 50240;
+    private static final int DEFAULT_TIME_OUT = 10000;
+
+    private static final String[] DESCRIPTION_SELECTORS = {
+            "meta[property=og:description]",
+            "meta[name=description]",
+            "meta[name=twitter:description]",
+    };
+
     private final String mShaarliUrl;
     private final String mUsername;
     private final String mPassword;
     private final boolean mValidateCert;
     private final String mBasicAuth;
-    private Integer mTimeout = 10000;
+    private Integer mTimeout = DEFAULT_TIME_OUT;
 
     private Map<String, String> mCookies;
     private String mToken;
@@ -55,6 +64,12 @@ class NetworkManager {
         }
     }
 
+    /**
+     * Helper method which create a new connection to Shaarli
+     * @param url the url of the shaarli
+     * @param isPost true if we create a POST request, false for a GET request
+     * @return pre-made jsoupConnection
+     */
     private Connection createShaarliConnection(String url, boolean isPost){
         Connection jsoupConnection = Jsoup.connect(url);
 
@@ -120,17 +135,31 @@ class NetworkManager {
     public static String[] loadTitleAndDescription(String url) {
         String title = "";
         String description = "";
+        Document pageResp = null;
         try {
-            Document pageResp = Jsoup.connect(url)
-                    .maxBodySize(50240) // Hopefully we won't need more data
+            pageResp = Jsoup.connect(url)
+                    .maxBodySize(LOAD_TITLE_MAX_BODY_SIZE) // Hopefully we won't need more data
                     .followRedirects(true)
                     .execute()
                     .parse();
             title = pageResp.title();
-            description = pageResp.head().select("meta[name=description]").first().attr("content");
         } catch (Exception e) {
             // Just abandon the task if there is a problem
-            Log.w("NetworkManager", e.toString());
+            Log.e("NetworkManager", e.toString());
+            return new String[]{title, description};
+        }
+
+        // Many ways to get the description
+        for (String selector : DESCRIPTION_SELECTORS) {
+            try {
+                description = pageResp.head().select(selector).first().attr("content");
+            }
+            catch (Exception e){
+                Log.i("NetworkManager", e.toString());
+            }
+            if (!"".equals(description)){
+                break;
+            }
         }
         return new String[]{title, description};
     }
