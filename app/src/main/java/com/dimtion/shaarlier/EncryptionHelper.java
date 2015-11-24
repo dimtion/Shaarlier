@@ -72,7 +72,7 @@ class EncryptionHelper {
         return Base64.encode(clear.getBytes(), Base64.DEFAULT);
     }
 
-    public static String Base64ToString(byte[] data) throws UnsupportedEncodingException {
+    public static String base64ToString(byte[] data) throws UnsupportedEncodingException {
         return new String(Base64.decode(data, Base64.DEFAULT));
     }
 }

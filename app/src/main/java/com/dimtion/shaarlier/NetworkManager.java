@@ -135,7 +135,7 @@ class NetworkManager {
     public static String[] loadTitleAndDescription(String url) {
         String title = "";
         String description = "";
-        Document pageResp = null;
+        Document pageResp;
         try {
             pageResp = Jsoup.connect(url)
                     .maxBodySize(LOAD_TITLE_MAX_BODY_SIZE) // Hopefully we won't need more data

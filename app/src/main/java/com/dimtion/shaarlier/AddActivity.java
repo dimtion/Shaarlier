@@ -167,7 +167,7 @@ public class AddActivity extends Activity {
     //
     private void initAccountSpinner() {
         final Spinner accountSpinnerView = (Spinner) a_dialogView.findViewById(R.id.chooseAccount);
-        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);
+        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.tags_list, this.allAccounts);
         accountSpinnerView.setAdapter(adapter);
         if (accountSpinnerView.getCount() <= 1) {
             accountSpinnerView.setVisibility(View.GONE);
@@ -409,30 +409,6 @@ public class AddActivity extends Activity {
 
         startService(networkIntent);
         finish();
-    }
-
-    private void sendReport(final Exception error, final ShaarliAccount account) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage("Would you like to report this issue ?").setTitle("REPORT - Shaarlier: add link");
-
-
-        final String extra = "Url Shaarli: " + account.getUrlShaarli();
-        final Activity activity = this;
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                DebugHelper.sendMailDev(activity, "REPORT - Shaarlier: add link", DebugHelper.generateReport(error, activity, extra));
-                finish();
-            }
-        });
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-                finish();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 }
 

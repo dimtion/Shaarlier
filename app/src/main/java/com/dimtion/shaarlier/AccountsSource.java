@@ -106,13 +106,13 @@ class AccountsSource {
     private String decryptPassword(byte[] cipherData, byte[] initialVector) throws Exception {
         SecretKey key = getSecretKey();
         byte[] encodedPassword = EncryptionHelper.decrypt(cipherData, key, initialVector);
-        return EncryptionHelper.Base64ToString(encodedPassword);
+        return EncryptionHelper.base64ToString(encodedPassword);
     }
 
     //
     // Returns null if the account doesn't exist
     //
-    public ShaarliAccount getShaarliAccountById(long id) throws Exception {
+    public ShaarliAccount getShaarliAccountById(long id) {
         rOpen();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_ACCOUNTS, allColumns, MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + id, null,
                 null, null, null);

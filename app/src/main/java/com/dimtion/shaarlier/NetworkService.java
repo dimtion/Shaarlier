@@ -132,7 +132,7 @@ public class NetworkService extends IntentService {
      * Thanks : http://stackoverflow.com/a/3955826
      */
     private class DisplayToast implements Runnable{
-        private String mText;
+        private final String mText;
 
         public DisplayToast(String text){
             mText = text;

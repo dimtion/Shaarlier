@@ -87,6 +87,7 @@
     <string name="add_account">Add account</string>
     <string name="send_report">You think this is a bug ?</string>
     <string name="report_issue">Would you like to report this issue ?</string>
-    <string name="loading_description_hint">Loading description...</string>
+    <string name="loading_description_hint">Loading description…</string>
     <string name="auto_load_description">Automatically load page description</string>
+    <string name="version">"Version %1$s"</string>
 </resources>

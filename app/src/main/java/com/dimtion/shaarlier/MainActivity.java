@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -36,24 +37,22 @@ public class MainActivity extends AppCompatActivity {
         TextView textVersion = (TextView) findViewById(R.id.text_version);
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-            textVersion.setText("Version " + versionName);
+            textVersion.setText(String.format(getString(R.string.version), versionName));
 
         } catch (PackageManager.NameNotFoundException e) {
             textVersion.setText(getText(R.string.text_version));
         }
-
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         AccountsSource accountsSource = new AccountsSource(getApplicationContext());
         accountsSource.rOpen();
         m_isNoAccount = accountsSource.getAllAccounts().isEmpty();
 
         Button manageAccountsButton = (Button) findViewById(R.id.button_manage_accounts);
-        if(m_isNoAccount){
+        if (m_isNoAccount) {
             manageAccountsButton.setText(R.string.add_account);
         } else {
             manageAccountsButton.setText(R.string.button_manage_accounts);
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void openAccountsManager(View view) {
         Intent intent;
-        if(m_isNoAccount){
+        if (m_isNoAccount) {
             intent = new Intent(this, AddAccountActivity.class);
         } else {
             intent = new Intent(this, AccountsManagementActivity.class);
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        if(m_isNoAccount) {
+        if (m_isNoAccount) {
             menu.findItem(R.id.action_share).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         } else {
             menu.findItem(R.id.action_share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -149,7 +148,12 @@ public class MainActivity extends AppCompatActivity {
                 final LinearLayout layout = new LinearLayout(this);
 
                 final TextView textView = new TextView(this);
-                textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+                if (Build.VERSION.SDK_INT < 23) {
+                    //noinspection deprecation
+                    textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+                } else {
+                    textView.setTextAppearance(android.R.style.TextAppearance_Medium);
+                }
                 textView.setText(getText(R.string.text_new_url));
 
                 // Set an EditText view to get user input

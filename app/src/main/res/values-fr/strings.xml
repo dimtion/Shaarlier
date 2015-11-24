@@ -61,4 +61,5 @@ Cette application est fièrement développée par dimtion, vous pouvez me trouve
     <string name="error_unknown">Une erreur inconnue s\'est produite</string>
     <string name="loading_description_hint">Chargement…</string>
     <string name="button_delete_account">Effacer le compte</string>
+    <string name="version">"Version %1$s"</string>
 </resources>
