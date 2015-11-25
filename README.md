@@ -6,7 +6,7 @@ A simple app for sharing links on your Shaarli.
 
 ## Features
 - Publish links on your Shaarli
-- Automatically add a title to your links (as Shaarli does)
+- Automatically add a title and a description to your links (as Shaarli does)
 - Optional dialog box for editing title, description or tags
 - Multiple Shaarlis
 
