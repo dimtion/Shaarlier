@@ -92,6 +92,7 @@ public class NetworkService extends IntentService {
                     sendNotificationShareError(sharedUrl, title, description, tags, isPrivate);
                 }
                 postLink(sharedUrl, title, description, tags, isPrivate);
+                stopSelf();
                 break;
             case "retrieveTitleAndDescription":
                 this.loadedTitle = "";
@@ -186,7 +187,6 @@ public class NetworkService extends IntentService {
 
         if (!posted) {
             sendNotificationShareError(sharedUrl, title, description, tags, privateShare);
-//            sendReport(mError, chosenAccount);
         } else {
             mToastHandler.post(new DisplayToast(getString(R.string.add_success)));
             Log.i("SUCCESS", "Success while sharing link");
