@@ -1,6 +1,7 @@
 package com.dimtion.shaarlier;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,15 +72,30 @@ public class MainActivity extends AppCompatActivity {
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
         boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
         boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
-        // Save data :
+        boolean isHandleHttpScheme = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
+
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+
+        boolean currentHandleHttpScheme = pref.getBoolean(getString(R.string.p_handle_http_scheme), false);
+
+        // Save data :
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_default_private), isPrivate)
                 .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
                 .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
+                .putBoolean(getString(R.string.p_handle_http_scheme), isHandleHttpScheme)
                 .apply();
 
+        if(currentHandleHttpScheme != isHandleHttpScheme) {
+            ComponentName component = new ComponentName(this, HttpSchemeHandlerActivity.class);
+
+            int flag = (isHandleHttpScheme ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    : PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+
+            getPackageManager().setComponentEnabledSetting(
+                    component, flag, PackageManager.DONT_KILL_APP);
+        }
     }
 
     public void openAccountsManager(View view) {
@@ -103,17 +119,20 @@ public class MainActivity extends AppCompatActivity {
         boolean sherDial = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
         boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
+        boolean isHandleHttpScheme = pref.getBoolean(getString(R.string.p_handle_http_scheme), false);
 
         // Retrieve interface :
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
         CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
         CheckBox autoTitleCheck = (CheckBox) findViewById(R.id.auto_load_title);
         CheckBox autoDescriptionCheck = (CheckBox) findViewById(R.id.auto_load_description);
+        CheckBox handleHttpSchemeCheck = (CheckBox) findViewById(R.id.handle_http_scheme);
 
         // Display user previous settings :
         privateCheck.setChecked(prv);
         autoTitleCheck.setChecked(isAutoTitle);
         autoDescriptionCheck.setChecked(isAutoDescription);
+        handleHttpSchemeCheck.setChecked(isHandleHttpScheme);
         shareDialogCheck.setChecked(sherDial);
     }
 
