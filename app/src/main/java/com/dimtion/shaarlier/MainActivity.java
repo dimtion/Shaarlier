@@ -24,6 +24,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private boolean m_isNoAccount;
 
+    private boolean isHandlingHttpScheme;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,29 +74,19 @@ public class MainActivity extends AppCompatActivity {
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
         boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
         boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
-        boolean isHandleHttpScheme = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
-
-        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-
-        boolean currentHandleHttpScheme = pref.getBoolean(getString(R.string.p_handle_http_scheme), false);
-
+        boolean isHandlingHttpSchemeNewValue = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
         // Save data :
+        SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(getString(R.string.p_default_private), isPrivate)
                 .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
                 .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
-                .putBoolean(getString(R.string.p_handle_http_scheme), isHandleHttpScheme)
                 .apply();
 
-        if(currentHandleHttpScheme != isHandleHttpScheme) {
-            ComponentName component = new ComponentName(this, HttpSchemeHandlerActivity.class);
-
-            int flag = (isHandleHttpScheme ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                    : PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
-
-            getPackageManager().setComponentEnabledSetting(
-                    component, flag, PackageManager.DONT_KILL_APP);
+        if(isHandlingHttpSchemeNewValue != isHandlingHttpScheme) {
+            isHandlingHttpScheme = isHandlingHttpSchemeNewValue;
+            setHandleHttpScheme(isHandlingHttpSchemeNewValue);
         }
     }
 
@@ -119,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         boolean sherDial = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
         boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
-        boolean isHandleHttpScheme = pref.getBoolean(getString(R.string.p_handle_http_scheme), false);
+        isHandlingHttpScheme = isHandlingHttpScheme();
 
         // Retrieve interface :
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
@@ -132,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         privateCheck.setChecked(prv);
         autoTitleCheck.setChecked(isAutoTitle);
         autoDescriptionCheck.setChecked(isAutoDescription);
-        handleHttpSchemeCheck.setChecked(isHandleHttpScheme);
+        handleHttpSchemeCheck.setChecked(isHandlingHttpScheme);
         shareDialogCheck.setChecked(sherDial);
     }
 
@@ -211,6 +203,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isHandlingHttpScheme() {
+        return getPackageManager().getComponentEnabledSetting(getHttpSchemeHandlingComponent())
+                == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
+    private void setHandleHttpScheme(boolean handleHttpScheme) {
+        int flag = (handleHttpScheme ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+
+        getPackageManager().setComponentEnabledSetting(
+                getHttpSchemeHandlingComponent(), flag, PackageManager.DONT_KILL_APP);
+    }
+
+    private ComponentName getHttpSchemeHandlingComponent() {
+        return new ComponentName(this, HttpSchemeHandlerActivity.class);
     }
 
 }
