@@ -56,6 +56,7 @@ Cette application est fièrement développée par dimtion, vous pouvez me trouve
     <string name="send_report">Vous pensez que c\'est un bug ?</string>
     <string name="report_issue">Voulez-vous signaler ce bug ?</string>
     <string name="auto_load_description">Charger automatiquement la description</string>
+    <string name="handle_http_scheme">Afficher Shaarlier dans la liste des navigateurs web</string>
     <string name="basic_auth">Authentification HTTP</string>
     <string name="error_retrieving_description">Aucune description n\'a été trouvé</string>
     <string name="error_unknown">Une erreur inconnue s\'est produite</string>

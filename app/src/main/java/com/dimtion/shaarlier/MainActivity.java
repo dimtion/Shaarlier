@@ -24,8 +24,6 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private boolean m_isNoAccount;
 
-    private boolean isHandlingHttpScheme;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isShareDialog = ((CheckBox) findViewById(R.id.show_share_dialog)).isChecked();
         boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
         boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
-        boolean isHandlingHttpSchemeNewValue = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
+        boolean isHandlingHttpScheme = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -84,10 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
                 .apply();
 
-        if(isHandlingHttpSchemeNewValue != isHandlingHttpScheme) {
-            isHandlingHttpScheme = isHandlingHttpSchemeNewValue;
-            setHandleHttpScheme(isHandlingHttpSchemeNewValue);
-        }
+        setHandleHttpScheme(isHandlingHttpScheme);
     }
 
     public void openAccountsManager(View view) {
@@ -111,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         boolean sherDial = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
         boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
-        isHandlingHttpScheme = isHandlingHttpScheme();
+        boolean isHandlingHttpScheme = isHandlingHttpScheme();
 
         // Retrieve interface :
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
@@ -211,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setHandleHttpScheme(boolean handleHttpScheme) {
+        if(handleHttpScheme == isHandlingHttpScheme()) return;
+
         int flag = (handleHttpScheme ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 : PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
 
