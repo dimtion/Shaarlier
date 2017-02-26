@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         boolean isAutoTitle = ((CheckBox) findViewById(R.id.auto_load_title)).isChecked();
         boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
         boolean isHandlingHttpScheme = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
+        boolean useShaarli2twitter = ((CheckBox) findViewById(R.id.handle_twitter_plugin)).isChecked();
+
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(getString(R.string.p_show_share_dialog), isShareDialog)
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
                 .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
+                .putBoolean(getString(R.string.p_shaarli2twitter), useShaarli2twitter)
                 .apply();
 
         setHandleHttpScheme(isHandlingHttpScheme);
@@ -107,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isAutoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
         boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
         boolean isHandlingHttpScheme = isHandlingHttpScheme();
+        boolean isShaarli2twitter = pref.getBoolean(getString(R.string.p_shaarli2twitter), false);
 
         // Retrieve interface :
         CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         CheckBox autoTitleCheck = (CheckBox) findViewById(R.id.auto_load_title);
         CheckBox autoDescriptionCheck = (CheckBox) findViewById(R.id.auto_load_description);
         CheckBox handleHttpSchemeCheck = (CheckBox) findViewById(R.id.handle_http_scheme);
+        CheckBox shaarli2twitter = (CheckBox) findViewById(R.id.handle_twitter_plugin);
 
         // Display user previous settings :
         privateCheck.setChecked(prv);
@@ -121,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         autoDescriptionCheck.setChecked(isAutoDescription);
         handleHttpSchemeCheck.setChecked(isHandlingHttpScheme);
         shareDialogCheck.setChecked(sherDial);
+        shaarli2twitter.setChecked(isShaarli2twitter);
     }
 
     @Override

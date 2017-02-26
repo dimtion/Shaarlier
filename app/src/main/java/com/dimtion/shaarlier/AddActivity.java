@@ -35,6 +35,7 @@ public class AddActivity extends Activity {
     private boolean stopLoadingTitle;
     private boolean stopLoadingDescription;
     private boolean m_prefOpenDialog;
+    private boolean tweet;
 
     private View a_dialogView;
 
@@ -91,10 +92,11 @@ public class AddActivity extends Activity {
 
         // Get the user preferences :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-        privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
-        m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
-        autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
-        autoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
+        this.privateShare = pref.getBoolean(getString(R.string.p_default_private), true);
+        this.m_prefOpenDialog = pref.getBoolean(getString(R.string.p_show_share_dialog), true);
+        this.autoTitle = pref.getBoolean(getString(R.string.p_auto_title), true);
+        this.autoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
+        this.tweet = pref.getBoolean(getString(R.string.p_shaarli2twitter), false);
         stopLoadingTitle = false;
         stopLoadingDescription = false;
 
@@ -127,7 +129,7 @@ public class AddActivity extends Activity {
                 if (autoTitle || autoDescription) {
                     loadAutoTitleAndDescription(sharedUrlTrimmed, defaultTitle, defaultDescription);
                 }
-                handleSendPost(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags, privateShare, this.chosenAccount);
+                handleSendPost(sharedUrlTrimmed, defaultTitle, defaultDescription, defaultTags, privateShare, this.chosenAccount, this.tweet);
             }
         } else {
             Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
@@ -249,6 +251,16 @@ public class AddActivity extends Activity {
         ((EditText) dialogView.findViewById(R.id.tags)).setText(defaultTags);
         new AutoCompleteWrapper(textView, this);
 
+        // Init the tweet button if necessary:
+        CheckBox tweetCheckBox = ((CheckBox) dialogView.findViewById(R.id.tweet));
+        if (!this.tweet) {
+            tweetCheckBox.setVisibility(View.GONE);
+            tweetCheckBox.setChecked(false);
+        } else {
+            tweetCheckBox.setVisibility(View.VISIBLE);
+            tweetCheckBox.setChecked(true);
+        }
+
         // Open the dialog :
         builder.setView(dialogView)
                 .setTitle(R.string.share)
@@ -260,10 +272,11 @@ public class AddActivity extends Activity {
                         String description = ((EditText) dialogView.findViewById(R.id.description)).getText().toString();
                         String tags = ((EditText) dialogView.findViewById(R.id.tags)).getText().toString();
                         privateShare = ((CheckBox) dialogView.findViewById(R.id.private_share)).isChecked();
+                        tweet = ((CheckBox) dialogView.findViewById(R.id.tweet)).isChecked();
                         chosenAccount = (ShaarliAccount) ((Spinner) dialogView.findViewById(R.id.chooseAccount)).getSelectedItem();
 
                         // Finally send everything
-                        handleSendPost(url, title, description, tags, privateShare, chosenAccount);
+                        handleSendPost(url, title, description, tags, privateShare, chosenAccount, tweet);
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -396,7 +409,7 @@ public class AddActivity extends Activity {
      * @param isPrivate true if the link is private
      * @param account the account which the share operate
      */
-    private void handleSendPost(String sharedUrl, String title, String description, String tags, boolean isPrivate, ShaarliAccount account){
+    private void handleSendPost(String sharedUrl, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet){
         Intent networkIntent = new Intent(this, NetworkService.class);
         networkIntent.putExtra("action", "postLink");
         networkIntent.putExtra("sharedUrl", sharedUrl);
@@ -404,6 +417,7 @@ public class AddActivity extends Activity {
         networkIntent.putExtra("description", description);
         networkIntent.putExtra("tags", tags);
         networkIntent.putExtra("privateShare", isPrivate);
+        networkIntent.putExtra("tweet", tweet);
         networkIntent.putExtra("chosenAccountId", account.getId());
         networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
 

@@ -77,6 +77,13 @@
             android:checked="true"
             android:text="@string/auto_load_description" />
 
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <CheckBox
             android:id="@+id/handle_http_scheme"
             android:layout_width="wrap_content"
@@ -85,6 +92,16 @@
             android:checked="false"
             android:text="@string/handle_http_scheme" />
 
+        <CheckBox
+            android:id="@+id/handle_twitter_plugin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:checked="false"
+            android:text="@string/use_twitter" />
+
+
+        <!-- Footer -->
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
@@ -100,6 +117,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_about_details"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
+
 
         <TextView
             android:id="@+id/text_version"

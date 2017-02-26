@@ -234,7 +234,7 @@ class NetworkManager {
      * Method which publishes a link to shaarli
      * Assume being logged in
      */
-    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare)
+    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet)
             throws IOException {
         String encodedShareUrl = URLEncoder.encode(sharedUrl, "UTF-8");
         retrievePostLinkToken(encodedShareUrl);
@@ -254,6 +254,7 @@ class NetworkManager {
                 .data("lf_title", sharedTitle)
                 .data("lf_description", sharedDescription);
         if (privateShare) postPageConn.data("lf_private", "on");
+        if (tweet) postPageConn.data("tweet", "on");
         postPageConn.execute(); // Then we post
     }
 

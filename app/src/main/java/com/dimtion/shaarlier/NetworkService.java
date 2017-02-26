@@ -74,6 +74,8 @@ public class NetworkService extends IntentService {
                 String description = intent.getStringExtra("description");
                 String tags = intent.getStringExtra("tags");
                 boolean isPrivate = intent.getBooleanExtra("privateShare", true);
+                boolean tweet = intent.getBooleanExtra("tweet", true);
+
                 if ("".equals(title) && this.loadedTitle != null) {
                     title = this.loadedTitle;
                     this.loadedTitle = null;
@@ -89,9 +91,9 @@ public class NetworkService extends IntentService {
                     this.mShaarliAccount = (accountId != -1 ? acs.getShaarliAccountById(accountId) : acs.getDefaultAccount());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    sendNotificationShareError(sharedUrl, title, description, tags, isPrivate);
+                    sendNotificationShareError(sharedUrl, title, description, tags, isPrivate, tweet);
                 }
-                postLink(sharedUrl, title, description, tags, isPrivate);
+                postLink(sharedUrl, title, description, tags, isPrivate, tweet);
                 stopSelf();
                 break;
             case "retrieveTitleAndDescription":
@@ -167,14 +169,14 @@ public class NetworkService extends IntentService {
         return NO_ERROR;
     }
 
-    private void postLink(String sharedUrl, String title, String description, String tags, boolean privateShare){
+    private void postLink(String sharedUrl, String title, String description, String tags, boolean privateShare, boolean tweet){
         boolean posted = true;  // Assume it is shared
         try {
             // Connect the user to the site :
             NetworkManager manager = new NetworkManager(mShaarliAccount);
             manager.setTimeout(60000); // Long for slow networks
             if(manager.retrieveLoginToken() && manager.login()) {
-                manager.postLink(sharedUrl, title, description, tags, privateShare);
+                manager.postLink(sharedUrl, title, description, tags, privateShare, tweet);
             } else {
                 mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
                 posted =  false;
@@ -186,7 +188,7 @@ public class NetworkService extends IntentService {
         }
 
         if (!posted) {
-            sendNotificationShareError(sharedUrl, title, description, tags, privateShare);
+            sendNotificationShareError(sharedUrl, title, description, tags, privateShare, tweet);
         } else {
             mToastHandler.post(new DisplayToast(getString(R.string.add_success)));
             Log.i("SUCCESS", "Success while sharing link");
@@ -202,7 +204,7 @@ public class NetworkService extends IntentService {
         return NetworkManager.loadTitleAndDescription(url);
     }
 
-    private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare){
+    private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare, boolean tweet){
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)
@@ -220,6 +222,7 @@ public class NetworkService extends IntentService {
         resultIntent.putExtra("description", description);
         resultIntent.putExtra("tags", tags);
         resultIntent.putExtra("privateShare", privateShare);
+        resultIntent.putExtra("tweet", tweet);
         resultIntent.putExtra("chosenAccountId", this.mShaarliAccount.getId());
 
         resultIntent.putExtra(Intent.EXTRA_TEXT, sharedUrl);
