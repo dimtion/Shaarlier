@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,11 +15,14 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -144,66 +148,126 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_share:
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-                alert.setTitle(getString(R.string.share));
-
-                // TODO : move this to a xml file :
-                final LinearLayout layout = new LinearLayout(this);
-
-                final TextView textView = new TextView(this);
-                if (Build.VERSION.SDK_INT < 23) {
-                    //noinspection deprecation
-                    textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                } else {
-                    textView.setTextAppearance(android.R.style.TextAppearance_Medium);
-                }
-                textView.setText(getText(R.string.text_new_url));
-
-                // Set an EditText view to get user input
-                final EditText input = new EditText(this);
-                input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-                input.setHint(getText(R.string.hint_new_url));
-
-                layout.setOrientation(LinearLayout.VERTICAL);
-                layout.setPadding(10, 10, 20, 20);
-
-                layout.addView(textView);
-                layout.addView(input);
-                alert.setView(layout);
-
-                alert.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = input.getText().toString();
-                        Intent intent = new Intent(getBaseContext(), AddActivity.class);
-                        intent.setAction(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT, value);
-                        startActivity(intent);
-                    }
-                });
-
-                alert.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // Canceled.
-                    }
-                });
-
-                alert.show();
+                shareDialog();
+                break;
+            case R.id.action_open_shaarli:
+                openShaarliDialog();
                 break;
             default:
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    private void shareDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(getString(R.string.share));
+
+        // TODO: move this to a xml file:
+        final LinearLayout layout = new LinearLayout(this);
+
+        final TextView textView = new TextView(this);
+        if (Build.VERSION.SDK_INT < 23) {
+            //noinspection deprecation
+            textView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+        } else {
+            textView.setTextAppearance(android.R.style.TextAppearance_Medium);
+        }
+        textView.setText(getText(R.string.text_new_url));
+
+        // Set an EditText view to get user input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+        input.setHint(getText(R.string.hint_new_url));
+
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(10, 10, 20, 20);
+
+        layout.addView(textView);
+        layout.addView(input);
+        alert.setView(layout);
+
+        alert.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String value = input.getText().toString();
+                Intent intent = new Intent(getBaseContext(), AddActivity.class);
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, value);
+                startActivity(intent);
+            }
+        });
+
+        alert.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
+
+    private void openShaarliDialog() {
+        AccountsSource accountsSource = new AccountsSource(this);
+        accountsSource.rOpen();
+        final List<ShaarliAccount> accounts = accountsSource.getAllAccounts();
+        accountsSource.close();
+
+        if (accounts == null || accounts.size() < 1) {
+            return;
+        }
+        if (accounts.size() == 1) {
+            Intent browserIntent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(accounts.get(0).getUrlShaarli())
+            );
+            startActivity(browserIntent);
+        }
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(getString(R.string.action_open_shaarli));
+
+        // TODO: move this to a xml file:
+        final LinearLayout layout = new LinearLayout(this);
+        for (final ShaarliAccount account : accounts) {
+            Button b = new Button(this);
+            b.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            );
+            b.setText(account.getShortName());
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(account.getUrlShaarli())
+                    );
+                    startActivity(browserIntent);
+                }
+            });
+
+            layout.addView(b);
+        }
+
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(10, 10, 20, 20);
+
+        alert.setView(layout);
+
+        alert.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
     }
 
     private boolean isHandlingHttpScheme() {

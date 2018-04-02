@@ -64,7 +64,7 @@
     <string name="action_share">Share a link</string>
     <string name="text_version">Version unknown</string>
     <string name="hint_new_url">(empty for a new note)</string>
-    <string name="text_new_url">Link to share :</string>
+    <string name="text_new_url">Link to share:</string>
     <string name="text_url" translatable="false">Url :</string>
     <string name="text_url_hint">(leave empty for a new note)</string>
     <string name="title">Title :</string>
@@ -95,4 +95,5 @@
     <string name="tweet">Tweet</string>
     <string name="use_twitter">Use twitter (needs shaarli2twitter plugin)</string>
     <string name="advanced">Advanced</string>
+    <string name="action_open_shaarli">Open Shaarli</string>
 </resources>
