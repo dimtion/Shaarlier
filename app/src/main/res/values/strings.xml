@@ -44,7 +44,7 @@
     <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
     <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
 
-    <string name="share">Share an Shaarli</string>
+    <string name="share">Share a link</string>
     <string name="text_about">About</string>
     <string name="text_about_details">To use this app your need a <a href="https://github.com/shaarli/Shaarli">Shaarli</a>, a minimalist delicious clone.
     This app is proudly developed by dimtion, find me on <a href="https://github.com/dimtion/Shaarlier">GitHub</a> (and on other places on the Internet).</string>
