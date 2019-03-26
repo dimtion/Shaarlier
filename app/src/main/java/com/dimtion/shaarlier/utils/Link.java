@@ -1,6 +1,6 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.utils;
 
-class Link {
+public class Link {
     private String url;
     private String title;
     private String description;
@@ -9,7 +9,7 @@ class Link {
     private ShaarliAccount account;
     private boolean tweet;
 
-    Link(String url, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet) {
+    public Link(String url, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet) {
         this.url = url;
         this.title = title;
         this.description = description;
@@ -19,59 +19,59 @@ class Link {
         this.tweet = tweet;
     }
 
-    String getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    void setUrl(String url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    String getTags() {
+    public String getTags() {
         return tags;
     }
 
-    void setTags(String tags) {
+    public void setTags(String tags) {
         this.tags = tags;
     }
 
-    boolean isPrivate() {
+    public boolean isPrivate() {
         return isPrivate;
     }
 
-    void setPrivate(boolean aPrivate) {
+    public void setPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
     }
 
-    ShaarliAccount getAccount() {
+    public ShaarliAccount getAccount() {
         return account;
     }
 
-    void setAccount(ShaarliAccount account) {
+    public void setAccount(ShaarliAccount account) {
         this.account = account;
     }
 
-    boolean isTweet() {
+    public boolean isTweet() {
         return tweet;
     }
 
-    void setTweet(boolean tweet) {
+    public void setTweet(boolean tweet) {
         this.tweet = tweet;
     }
 }

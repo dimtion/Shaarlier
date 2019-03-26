@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,6 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.utils.Tag;
+
 import java.util.List;
 
 /**
@@ -17,7 +21,7 @@ import java.util.List;
  * Inspired from : http://stackoverflow.com/a/5051180
  * and : http://www.claytical.com/blog/android-dynamic-autocompletion-using-google-places-api
  */
-class AutoCompleteWrapper {
+public class AutoCompleteWrapper {
 
     private final MultiAutoCompleteTextView a_textView;
     private final Context a_context;
@@ -27,7 +31,7 @@ class AutoCompleteWrapper {
         this.a_textView = textView;
         this.a_context = context;
 
-        this.a_textView.setTokenizer(new SpaceTokenizer());
+        this.a_textView.setTokenizer(new AccountsSource.SpaceTokenizer());
 
         this.adapter = new ArrayAdapter<>(a_context, R.layout.tags_list);
         this.a_textView.setAdapter(this.adapter);
@@ -64,7 +68,7 @@ class AutoCompleteWrapper {
             accountsSource.rOpen();
             List<ShaarliAccount> accounts = accountsSource.getAllAccounts();
 
-            Boolean success = true;
+            boolean success = true;
             /* For the moment we keep all the tags, if later somebody wants to have the tags
             ** separated for each accounts, we will see
             */

@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.services;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -13,6 +13,11 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.helpers.AccountsSource;
+import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
 
 import java.io.IOException;
 

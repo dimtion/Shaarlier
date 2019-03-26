@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.dimtion.shaarlier.R;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -15,7 +17,7 @@ import javax.crypto.SecretKey;
  * Created by dimtion on 11/05/2015.
  * This class update the db scheme when necessary
  */
-class MySQLiteHelper extends SQLiteOpenHelper {
+public class MySQLiteHelper extends SQLiteOpenHelper {
 
 
     // Table : accounts
@@ -108,7 +110,7 @@ class MySQLiteHelper extends SQLiteOpenHelper {
         String busr = prefs.getString(mContext.getString(R.string.p_basic_username), "");
         String bpwd = prefs.getString(mContext.getString(R.string.p_basic_password), "");
         int protocol = prefs.getInt(mContext.getString(R.string.p_protocol), 0);
-        Boolean isValidated = prefs.getBoolean(mContext.getString(R.string.p_validated), false);
+        boolean isValidated = prefs.getBoolean(mContext.getString(R.string.p_validated), false);
 
         String[] prot = {"http://", "https://"};
         try {

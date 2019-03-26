@@ -1,8 +1,7 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.util.Base64;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -22,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
  * A simple class to encrypt and decrypt simple data
  * (Probably needs review)
  */
-class EncryptionHelper {
+public class EncryptionHelper {
     public final static int KEY_LENGTH = 256;
     public final static int IV_LENGTH = 16;
 
@@ -68,11 +67,11 @@ class EncryptionHelper {
         return encryptDecrypt(Cipher.DECRYPT_MODE, encrypted, key, initialVector);
     }
 
-    public static byte[] stringToBase64(String clear) throws UnsupportedEncodingException {
+    public static byte[] stringToBase64(String clear) {
         return Base64.encode(clear.getBytes(), Base64.DEFAULT);
     }
 
-    public static String base64ToString(byte[] data) throws UnsupportedEncodingException {
+    public static String base64ToString(byte[] data) {
         return new String(Base64.decode(data, Base64.DEFAULT));
     }
 }

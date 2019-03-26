@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,6 +22,13 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.helpers.AccountsSource;
+import com.dimtion.shaarlier.helpers.DebugHelper;
+import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.services.NetworkService;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
+
 import java.util.List;
 
 
@@ -39,6 +46,36 @@ public class AddAccountActivity extends AppCompatActivity {
 
     private Boolean isEditing = false;
 
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_account);
+
+        Intent intent = getIntent();
+        long accountId = intent.getLongExtra("_id", -1);
+
+        if (accountId != -1) {
+            isEditing = true;
+            AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+            try {
+                account = accountsSource.getShaarliAccountById(accountId);
+            } catch (Exception e) {
+                account = null;
+            }
+            fillFields();
+        } else {
+
+            AccountsSource source = new AccountsSource(getApplicationContext());
+            source.rOpen();
+            List<ShaarliAccount> allAccounts = source.getAllAccounts();
+            if (allAccounts.isEmpty()) {  // If it is the first account created
+                CheckBox defaultCheck = findViewById(R.id.defaultAccountCheck);
+                defaultCheck.setChecked(true);
+                defaultCheck.setEnabled(false);
+            }
+        }
+    }
 
     private class networkHandler extends Handler{
         private final Activity mParent;
@@ -85,7 +122,7 @@ public class AddAccountActivity extends AppCompatActivity {
         }
 
         private void enableSendReport(final Exception error) {
-            Button reportButton = (Button) findViewById(R.id.sendReportButton);
+            Button reportButton = findViewById(R.id.sendReportButton);
             reportButton.setVisibility(View.VISIBLE);
             reportButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -111,36 +148,6 @@ public class AddAccountActivity extends AppCompatActivity {
                 }
             });
 
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_account);
-
-        Intent intent = getIntent();
-        long accountId = intent.getLongExtra("_id", -1);
-
-        if (accountId != -1) {
-            isEditing = true;
-            AccountsSource accountsSource = new AccountsSource(getApplicationContext());
-            try {
-                account = accountsSource.getShaarliAccountById(accountId);
-            } catch (Exception e) {
-                account = null;
-            }
-            fillFields();
-        } else {
-
-            AccountsSource source = new AccountsSource(getApplicationContext());
-            source.rOpen();
-            List<ShaarliAccount> allAccounts = source.getAllAccounts();
-            if (allAccounts.isEmpty()) {  // If it is the first account created
-                CheckBox defaultCheck = (CheckBox) findViewById(R.id.defaultAccountCheck);
-                defaultCheck.setChecked(true);
-                defaultCheck.setEnabled(false);
-            }
         }
     }
 

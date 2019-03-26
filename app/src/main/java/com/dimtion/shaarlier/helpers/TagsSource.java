@@ -1,10 +1,14 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+
+import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.utils.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,23 +24,23 @@ class TagsSource {
     private final MySQLiteHelper dbHelper;
     private SQLiteDatabase db;
 
-    public TagsSource(Context context) {
+    TagsSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
     }
 
-    public void rOpen() throws SQLException {
+    void rOpen() throws SQLException {
         db = dbHelper.getReadableDatabase();
     }
 
-    public void wOpen() throws SQLException {
+    void wOpen() throws SQLException {
         db = dbHelper.getWritableDatabase();
     }
 
-    public void close() {
+    void close() {
         dbHelper.close();
     }
 
-    public List<Tag> getAllTags() {
+    List<Tag> getAllTags() {
         List<Tag> tags = new ArrayList<>();
 
         Cursor cursor = db.query(MySQLiteHelper.TABLE_TAGS, allColumns, null, null, null, null, null);
@@ -51,7 +55,7 @@ class TagsSource {
         return tags;
     }
 
-    public Tag createTag(ShaarliAccount masterAccount, String value) {
+    Tag createTag(ShaarliAccount masterAccount, String value) {
         Tag tag = new Tag();
         tag.setMasterAccount(masterAccount);
         tag.setValue(value.trim());
@@ -84,7 +88,7 @@ class TagsSource {
         return tag;
     }
 
-    private Tag cursorToTag(Cursor cursor) {  // If necessary (later), load the full account in the tag
+    private Tag cursorToTag(@NonNull Cursor cursor) {  // If necessary (later), load the full account in the tag
         Tag tag = new Tag();
         tag.setId(cursor.getLong(0));
         tag.setMasterAccountId(cursor.getLong(1));

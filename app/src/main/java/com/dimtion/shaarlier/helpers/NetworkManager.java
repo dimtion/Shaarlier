@@ -1,12 +1,15 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 import android.webkit.URLUtil;
+
+import com.dimtion.shaarlier.utils.ShaarliAccount;
 
 import org.json.JSONArray;
 import org.jsoup.Connection;
@@ -22,7 +25,7 @@ import java.util.Map;
  * Created by dimtion on 05/04/2015.
  * This class handle all the communications with Shaarli and other web services
  */
-class NetworkManager {
+public class NetworkManager {
     private static final int LOAD_TITLE_MAX_BODY_SIZE = 50240;
     private static final int DEFAULT_TIME_OUT = 10000;
 
@@ -50,7 +53,7 @@ class NetworkManager {
         return mLastError;
     }
 
-    NetworkManager(ShaarliAccount account) {
+    public NetworkManager(@NonNull ShaarliAccount account) {
         this.mShaarliUrl = account.getUrlShaarli();
         this.mUsername = account.getUsername();
         this.mPassword = account.getPassword();
@@ -121,7 +124,7 @@ class NetworkManager {
      * Method to test the network connection
      * @return true if the device is connected to the network
      */
-    public static boolean testNetwork(Activity parentActivity) {
+    public static boolean testNetwork(@NonNull Activity parentActivity) {
         ConnectivityManager connMgr = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
@@ -132,7 +135,7 @@ class NetworkManager {
      * @param url the url of the web page
      * @return "" if there is an error, the page title in other cases
      */
-    public static String[] loadTitleAndDescription(String url) {
+    public static String[] loadTitleAndDescription(@NonNull String url) {
         String title = "";
         String description = "";
         Document pageResp;

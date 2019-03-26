@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +19,15 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.helpers.AccountsSource;
+import com.dimtion.shaarlier.helpers.AutoCompleteWrapper;
+import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.services.NetworkService;
+import com.dimtion.shaarlier.utils.Link;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.utils.UserPreferences;
 
 import java.util.Collections;
 import java.util.List;

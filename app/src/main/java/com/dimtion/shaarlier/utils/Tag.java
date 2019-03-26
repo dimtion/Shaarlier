@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.utils;
 
 /**
  * Created by dimtion on 12/05/2015.

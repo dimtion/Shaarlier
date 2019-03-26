@@ -1,10 +1,12 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+
+import com.dimtion.shaarlier.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,7 +18,7 @@ import java.util.TimeZone;
  * Created by dimtion on 16/05/2015.
  * A class to help debugging, should not be in production
  */
-class DebugHelper {
+public class DebugHelper {
 
     public static void sendMailDev(Activity context, String subject, String content) {
         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(

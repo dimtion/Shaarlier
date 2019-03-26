@@ -14,7 +14,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="20dp"
-        tools:context=".MainActivity">
+        tools:context=".activities.MainActivity">
 
         <ImageView
             android:id="@+id/imageView"

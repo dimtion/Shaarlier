@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.activities;
 
 import android.content.Intent;
 import android.database.SQLException;
@@ -11,6 +11,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.helpers.AccountsSource;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
 
 import java.util.List;
 
@@ -26,7 +30,7 @@ public class AccountsManagementActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        final ListView accountsListView = (ListView) findViewById(R.id.accountListView);
+        final ListView accountsListView = findViewById(R.id.accountListView);
         AccountsSource accountsSource = new AccountsSource(getApplicationContext());
         try {
             accountsSource.rOpen();

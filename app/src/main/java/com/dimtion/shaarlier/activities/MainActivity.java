@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.activities;
 
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -22,6 +22,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.helpers.AccountsSource;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
+
 import java.util.List;
 
 
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         loadSettings();
 
         // Load custom design :
-        TextView textVersion = (TextView) findViewById(R.id.text_version);
+        TextView textVersion = findViewById(R.id.text_version);
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             textVersion.setText(String.format(getString(R.string.version), versionName));
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         m_isNoAccount = accountsSource.getAllAccounts().isEmpty();
         accountsSource.close();
 
-        Button manageAccountsButton = (Button) findViewById(R.id.button_manage_accounts);
+        Button manageAccountsButton = findViewById(R.id.button_manage_accounts);
         if (m_isNoAccount) {
             manageAccountsButton.setText(R.string.add_account);
         } else {
@@ -118,12 +122,12 @@ public class MainActivity extends AppCompatActivity {
         boolean isShaarli2twitter = pref.getBoolean(getString(R.string.p_shaarli2twitter), false);
 
         // Retrieve interface :
-        CheckBox privateCheck = (CheckBox) findViewById(R.id.default_private);
-        CheckBox shareDialogCheck = (CheckBox) findViewById(R.id.show_share_dialog);
-        CheckBox autoTitleCheck = (CheckBox) findViewById(R.id.auto_load_title);
-        CheckBox autoDescriptionCheck = (CheckBox) findViewById(R.id.auto_load_description);
-        CheckBox handleHttpSchemeCheck = (CheckBox) findViewById(R.id.handle_http_scheme);
-        CheckBox shaarli2twitter = (CheckBox) findViewById(R.id.handle_twitter_plugin);
+        CheckBox privateCheck = findViewById(R.id.default_private);
+        CheckBox shareDialogCheck = findViewById(R.id.show_share_dialog);
+        CheckBox autoTitleCheck = findViewById(R.id.auto_load_title);
+        CheckBox autoDescriptionCheck = findViewById(R.id.auto_load_description);
+        CheckBox handleHttpSchemeCheck = findViewById(R.id.handle_http_scheme);
+        CheckBox shaarli2twitter = findViewById(R.id.handle_twitter_plugin);
 
         // Display user previous settings :
         privateCheck.setChecked(prv);

@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,15 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.widget.MultiAutoCompleteTextView;
+
+import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.utils.ShaarliAccount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +25,7 @@ import javax.crypto.SecretKey;
  * Created by dimtion on 11/05/2015.
  * API for managing accounts
  */
-class AccountsSource {
+public class AccountsSource {
 
     private final String[] allColumns = {
             MySQLiteHelper.ACCOUNTS_COLUMN_ID,
@@ -109,9 +118,7 @@ class AccountsSource {
         return EncryptionHelper.base64ToString(encodedPassword);
     }
 
-    //
-    // Returns null if the account doesn't exist
-    //
+    @Nullable
     public ShaarliAccount getShaarliAccountById(long id) {
         rOpen();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_ACCOUNTS, allColumns, MySQLiteHelper.ACCOUNTS_COLUMN_ID + " = " + id, null,
@@ -125,7 +132,8 @@ class AccountsSource {
         return account;
     }
 
-    private ShaarliAccount cursorToAccount(Cursor cursor) {
+    @Nullable
+    private ShaarliAccount cursorToAccount(@NonNull Cursor cursor) {
         if (cursor.isAfterLast())
             return null;
 
@@ -188,7 +196,7 @@ class AccountsSource {
         db.update(MySQLiteHelper.TABLE_ACCOUNTS, values, QUERY_WHERE, null);
     }
 
-    public ShaarliAccount getDefaultAccount() throws Exception {
+    public ShaarliAccount getDefaultAccount() {
         SharedPreferences prefs = this.mContext.getSharedPreferences(this.mContext.getString(R.string.params), Context.MODE_PRIVATE);
         long defaultAccountId = prefs.getLong(this.mContext.getString(R.string.p_default_account), -1);
 
@@ -202,5 +210,63 @@ class AccountsSource {
             close();
         }
         return defaultAccount;
+    }
+
+    /**
+     * Created by dimtion on 22/02/2015.
+     * Custom tokenizer, found on : http://stackoverflow.com/a/4596652/1582589 by vsm *
+     */
+
+
+    public static class SpaceTokenizer implements MultiAutoCompleteTextView.Tokenizer {
+
+        public int findTokenStart(CharSequence text, int cursor) {
+            int i = cursor;
+
+            while (i > 0 && text.charAt(i - 1) != ' ') {
+                i--;
+            }
+            while (i < cursor && text.charAt(i) == ' ') {
+                i++;
+            }
+
+            return i;
+        }
+
+        public int findTokenEnd(CharSequence text, int cursor) {
+            int i = cursor;
+            int len = text.length();
+
+            while (i < len) {
+                if (text.charAt(i) == ' ') {
+                    return i;
+                } else {
+                    i++;
+                }
+            }
+
+            return len;
+        }
+
+        public CharSequence terminateToken(CharSequence text) {
+            int i = text.length();
+
+            while (i > 0 && text.charAt(i - 1) == ' ') {
+                i--;
+            }
+
+            if (i > 0 && text.charAt(i - 1) == ' ') {
+                return text;
+            } else {
+                if (text instanceof Spanned) {
+                    SpannableString sp = new SpannableString(text + " ");
+                    TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
+                            Object.class, sp, 0);
+                    return sp;
+                } else {
+                    return text + " ";
+                }
+            }
+        }
     }
 }

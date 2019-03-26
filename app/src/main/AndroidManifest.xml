@@ -10,7 +10,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".ShareActivity"
+        <activity
+            android:name=".activities.ShareActivity"
             android:autoRemoveFromRecents="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:excludeFromRecents="true"
@@ -24,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
@@ -34,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HttpSchemeHandlerActivity"
+            android:name=".activities.HttpSchemeHandlerActivity"
             android:autoRemoveFromRecents="true"
             android:enabled="false"
             android:excludeFromRecents="true"
@@ -63,25 +64,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AccountsManagementActivity"
+            android:name=".activities.AccountsManagementActivity"
             android:label="@string/title_activity_accounts_management"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dimtion.shaarlier.MainActivity" />
+                android:value="com.dimtion.shaarlier.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".AddAccountActivity"
+            android:name=".activities.AddAccountActivity"
             android:label="@string/title_activity_add_account"
-            android:parentActivityName=".AccountsManagementActivity"
+            android:parentActivityName=".activities.AccountsManagementActivity"
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dimtion.shaarlier.AccountsManagementActivity" />
+                android:value="com.dimtion.shaarlier.activities.AccountsManagementActivity" />
         </activity>
 
         <service
-            android:name=".NetworkService"
+            android:name=".services.NetworkService"
             android:enabled="true"
             android:exported="false" />
     </application>

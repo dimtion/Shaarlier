@@ -1,18 +1,20 @@
-package com.dimtion.shaarlier;
+package com.dimtion.shaarlier.utils;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 
+import com.dimtion.shaarlier.R;
+
 import static android.content.Context.MODE_PRIVATE;
 
-class UserPreferences {
+public class UserPreferences {
     private boolean privateShare;
     private boolean openDialog;
     private boolean autoTitle;
     private boolean autoDescription;
     private boolean tweet;
 
-    static UserPreferences load(Activity a) {
+    public static UserPreferences load(Activity a) {
         UserPreferences p = new UserPreferences();
         SharedPreferences pref = a.getSharedPreferences(a.getString(R.string.params), MODE_PRIVATE);
         p.privateShare = pref.getBoolean(a.getString(R.string.p_default_private), true);
@@ -24,43 +26,43 @@ class UserPreferences {
         return p;
     }
 
-    boolean isPrivateShare() {
+    public boolean isPrivateShare() {
         return privateShare;
     }
 
-    void setPrivateShare(boolean m_privateShare) {
+    public void setPrivateShare(boolean m_privateShare) {
         this.privateShare = m_privateShare;
     }
 
-    boolean isOpenDialog() {
+    public boolean isOpenDialog() {
         return openDialog;
     }
 
-    void setOpenDialog(boolean m_prefOpenDialog) {
+    public void setOpenDialog(boolean m_prefOpenDialog) {
         this.openDialog = m_prefOpenDialog;
     }
 
-    boolean isAutoTitle() {
+    public boolean isAutoTitle() {
         return autoTitle;
     }
 
-    void setAutoTitle(boolean m_autoTitle) {
+    public void setAutoTitle(boolean m_autoTitle) {
         this.autoTitle = m_autoTitle;
     }
 
-    boolean isAutoDescription() {
+    public boolean isAutoDescription() {
         return autoDescription;
     }
 
-    void setAutoDescription(boolean m_autoDescription) {
+    public void setAutoDescription(boolean m_autoDescription) {
         this.autoDescription = m_autoDescription;
     }
 
-    boolean isTweet() {
+    public boolean isTweet() {
         return tweet;
     }
 
-    void setTweet(boolean tweet) {
+    public void setTweet(boolean tweet) {
         this.tweet = tweet;
     }
 }
