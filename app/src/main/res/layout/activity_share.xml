@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,26 +16,18 @@
             android:id="@+id/chooseAccount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:spinnerMode="dialog" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_url" />
 
         <EditText
             android:id="@+id/url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:ems="10"
             android:hint="@string/hint_new_url"
             android:importantForAutofill="no"
             android:inputType="textUri" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -46,8 +37,9 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/title_hint"
             android:ems="10"
-            android:hint=""
+            android:padding="16dp"
             android:importantForAutofill="no"
             android:inputType="textAutoCorrect|textEmailSubject" />
 
@@ -66,11 +58,6 @@
                 android:visibility="gone" />
         </RelativeLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_description" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -79,8 +66,9 @@
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/description_hint"
             android:ems="10"
-            android:hint=""
+            android:padding="16dp"
             android:importantForAutofill="no"
             android:inputType="textMultiLine|textCapSentences"
             android:maxLines="10"
@@ -106,19 +94,23 @@
             android:id="@+id/tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:hint="@string/tags_hint" />
 
-        <CheckBox
+        <Switch
             android:id="@+id/private_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:text="@string/private_share" />
 
-        <CheckBox
+        <Switch
             android:id="@+id/tweet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:text="@string/tweet" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

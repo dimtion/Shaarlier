@@ -1,22 +1,23 @@
 package com.dimtion.shaarlier;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -241,10 +242,10 @@ public class ShareActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.tags)).setText(defaults.getTags());
         new AutoCompleteWrapper(textView, this);
 
-        ((CheckBox) findViewById(R.id.private_share)).setChecked(defaults.isPrivate());
+        ((Checkable) findViewById(R.id.private_share)).setChecked(defaults.isPrivate());
 
         // Init the tweet button if necessary:
-        CheckBox tweetCheckBox = findViewById(R.id.tweet);
+        Switch tweetCheckBox = findViewById(R.id.tweet);
         tweetCheckBox.setChecked(userPrefs.isTweet());
         if (!userPrefs.isTweet()) {
             tweetCheckBox.setVisibility(View.GONE);
@@ -392,9 +393,9 @@ public class ShareActivity extends AppCompatActivity {
                ((EditText) findViewById(R.id.title)).getText().toString(),
                ((EditText) findViewById(R.id.description)).getText().toString(),
                ((EditText) findViewById(R.id.tags)).getText().toString(),
-               ((CheckBox) findViewById(R.id.private_share)).isChecked(),
+               ((Checkable) findViewById(R.id.private_share)).isChecked(),
                (ShaarliAccount) ((Spinner) findViewById(R.id.chooseAccount)).getSelectedItem(),
-               ((CheckBox) findViewById(R.id.tweet)).isChecked()
+               ((Checkable) findViewById(R.id.tweet)).isChecked()
        );
        sendLink(link);
        finish();

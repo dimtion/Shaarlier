@@ -6,7 +6,7 @@
     <string name="add_not_handle">Unhandled content</string>
     <string name="add_success">Your link have been shared</string>
     <string name="default_private">New links are private by default</string>
-    <string name="description_hint"> </string>
+    <string name="description_hint">Description</string>
     <string name="error_connecting">The given url does not seems to work</string>
     <string name="error_internet_connection">No internet connection</string>
     <string name="error_login">The username or the password is wrong</string>
@@ -69,7 +69,7 @@
     <string name="text_url" translatable="false">Url :</string>
     <string name="text_url_hint">(leave empty for a new note)</string>
     <string name="title">Title :</string>
-    <string name="title_hint"> </string>
+    <string name="title_hint">Title</string>
     <string name="text_description">Description :</string>
     <string name="title_activity_accounts_management">Accounts</string>
 

@@ -6,7 +6,7 @@
     <string name="add_not_handle">Contenu non géré</string>
     <string name="add_success">Votre lien a bien été partagé</string>
     <string name="default_private">Liens privés par défaut</string>
-    <string name="description_hint"> </string>
+    <string name="description_hint">" Description"</string>
     <string name="error_connecting">L\'url donnée ne semble pas fonctionner</string>
     <string name="error_internet_connection">Vous n\'êtes pas connecté à internet</string>
     <string name="error_login">Le pseudo ou le mot de passe est incorrect</string>
@@ -24,7 +24,7 @@
     <string name="text_show_share_dialog">Afficher une boite de dialogue lors du partage</string>
     <string name="title_activity_add">Ajouter à Shaarli</string>
     <string name="title_activity_share">Ajouter à Shaarli</string>
-    <string name="title_hint"> </string>
+    <string name="title_hint">" Titre"</string>
     <string name="user_name">Pseudo :</string>
     <string name="user_password">Mot de passe :</string>
     <string name="your_shaarli_url">Url de votre Shaarli :</string>
