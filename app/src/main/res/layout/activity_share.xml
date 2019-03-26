@@ -1,56 +1,55 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/share_layout"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@android:style/Theme.Holo.Dialog">
+    tools:context=".ShareActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp">
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
 
         <Spinner
             android:id="@+id/chooseAccount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Widget.AppCompat.Spinner" />
+            android:spinnerMode="dialog" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_url"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/text_url" />
 
         <EditText
             android:id="@+id/url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ems="10"
             android:hint="@string/hint_new_url"
-            android:inputType="textUri"
-            android:theme="@style/Widget.AppCompat.EditText" />
+            android:importantForAutofill="no"
+            android:inputType="textUri" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/title"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/title" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/title"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/title_hint"
-                android:inputType="textCapSentences"
-                android:theme="@style/Widget.AppCompat.EditText" />
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint=""
+            android:importantForAutofill="no"
+            android:inputType="textAutoCorrect|textEmailSubject" />
 
             <ProgressBar
                 android:id="@+id/loading_title"
@@ -58,36 +57,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/title"
+                android:layout_alignEnd="@+id/title"
                 android:layout_alignRight="@+id/title"
                 android:layout_alignTop="@+id/title"
                 android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:indeterminate="true"
                 android:visibility="gone" />
         </RelativeLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/text_description"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/text_description" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:gravity="top|start"
-                android:hint="@string/description_hint"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxLines="10"
-                android:minLines="3"
-                android:singleLine="false"
-                android:textSize="15sp" />
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint=""
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="10"
+            android:minLines="3"
+            android:singleLine="false"
+            android:textSize="15sp" />
 
             <ProgressBar
                 android:id="@+id/loading_description"
@@ -107,28 +106,19 @@
             android:id="@+id/tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:dropDownHeight="150dp"
-            android:hint="@string/tags_hint"
-            android:inputType="textAutoComplete"
-            android:imeOptions="actionDone" />
+            android:hint="@string/tags_hint" />
 
         <CheckBox
             android:id="@+id/private_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp"
-            android:checked="false"
             android:text="@string/private_share" />
 
         <CheckBox
             android:id="@+id/tweet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp"
-            android:checked="true"
             android:text="@string/tweet" />
     </LinearLayout>
-</ScrollView>
+
+</android.support.constraint.ConstraintLayout>

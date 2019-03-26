@@ -22,6 +22,7 @@
     <string name="text_behaviour">Behaviour</string>
     <string name="text_show_share_dialog">Show dialog box when sharing</string>
     <string name="title_activity_add">Add to Shaarli</string>
+    <string name="title_activity_share">Add to Shaarli</string>
     <string name="user_name">Username :</string>
     <string name="user_password">Password :</string>
     <string name="basic_auth">HTTP Basic Authentication</string>

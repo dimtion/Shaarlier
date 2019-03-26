@@ -16,7 +16,7 @@ public class HttpSchemeHandlerActivity extends Activity {
         if(data != null) {
             String url = data.toString();
 
-            Intent addActivityIntent = new Intent(this, AddActivity.class);
+            Intent addActivityIntent = new Intent(this, ShareActivity.class);
             addActivityIntent.setAction(Intent.ACTION_SEND);
             addActivityIntent.setType("text/plain");
             addActivityIntent.putExtra(Intent.EXTRA_TEXT, url);

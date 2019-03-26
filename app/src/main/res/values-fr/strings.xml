@@ -23,6 +23,7 @@
     <string name="text_behaviour">Comportement</string>
     <string name="text_show_share_dialog">Afficher une boite de dialogue lors du partage</string>
     <string name="title_activity_add">Ajouter à Shaarli</string>
+    <string name="title_activity_share">Ajouter à Shaarli</string>
     <string name="title_hint"> </string>
     <string name="user_name">Pseudo :</string>
     <string name="user_password">Mot de passe :</string>

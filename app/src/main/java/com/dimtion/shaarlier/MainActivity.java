@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         alert.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String value = input.getText().toString();
-                Intent intent = new Intent(getBaseContext(), AddActivity.class);
+                Intent intent = new Intent(getBaseContext(), ShareActivity.class);
                 intent.setAction(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, value);
