@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         AccountsSource accountsSource = new AccountsSource(getApplicationContext());
         accountsSource.rOpen();
         m_isNoAccount = accountsSource.getAllAccounts().isEmpty();
+        accountsSource.close();
 
         Button manageAccountsButton = (Button) findViewById(R.id.button_manage_accounts);
         if (m_isNoAccount) {

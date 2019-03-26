@@ -78,8 +78,9 @@ public class ShareActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         userPrefs = UserPreferences.load(this);
-        // stopLoadingTitle = false;
-        // stopLoadingDescription = false;
+
+        isLoadingTitle = false;
+        isLoadingDescription = false;
 
         loadAccounts();
         if (accounts.isEmpty()) {
@@ -114,10 +115,10 @@ public class ShareActivity extends AppCompatActivity {
     private void loadAccounts() {
         AccountsSource accountsSource = new AccountsSource(this);
         accountsSource.rOpen();
-        accounts = accountsSource.getAllAccounts();
-
-        // Set the default account as the selected one
         try {
+            accounts = accountsSource.getAllAccounts();
+
+            // Set the default account as the selected one
             selectedAccount = accountsSource.getDefaultAccount();
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,6 +240,8 @@ public class ShareActivity extends AppCompatActivity {
         MultiAutoCompleteTextView textView = findViewById(R.id.tags);
         ((EditText) findViewById(R.id.tags)).setText(defaults.getTags());
         new AutoCompleteWrapper(textView, this);
+
+        ((CheckBox) findViewById(R.id.private_share)).setChecked(defaults.isPrivate());
 
         // Init the tweet button if necessary:
         CheckBox tweetCheckBox = findViewById(R.id.tweet);
