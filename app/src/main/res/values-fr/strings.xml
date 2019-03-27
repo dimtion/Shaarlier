@@ -68,4 +68,5 @@ Cette application est fièrement développée par dimtion, vous pouvez me trouve
     <string name="tweet">Tweeter</string>
     <string name="use_twitter">Twitter (nécessite shaarli2twitter)</string>
     <string name="action_open_shaarli">Ouvrir Shaarli</string>
+    <string name="is_not_new_link">edition</string>
 </resources>

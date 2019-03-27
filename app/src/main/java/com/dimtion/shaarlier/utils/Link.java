@@ -1,6 +1,8 @@
 package com.dimtion.shaarlier.utils;
 
-public class Link {
+import java.io.Serializable;
+
+public class Link implements Serializable {
     private String url;
     private String title;
     private String description;
@@ -9,7 +11,10 @@ public class Link {
     private ShaarliAccount account;
     private boolean tweet;
 
-    public Link(String url, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet) {
+    private String datePostLink;
+    private String token;
+
+    public Link(String url, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet, String datePostLink, String token) {
         this.url = url;
         this.title = title;
         this.description = description;
@@ -17,6 +22,20 @@ public class Link {
         this.isPrivate = isPrivate;
         this.account = account;
         this.tweet = tweet;
+        this.datePostLink = datePostLink;
+        this.token = token;
+    }
+
+    public Link(Link other) {
+        this.url = other.url;
+        this.title = other.title;
+        this.description = other.description;
+        this.tags = other.tags;
+        this.isPrivate = other.isPrivate;
+        this.account = other.account;
+        this.tweet = other.tweet;
+        this.datePostLink = other.datePostLink;
+        this.token = other.token;
     }
 
     public String getUrl() {
@@ -74,4 +93,27 @@ public class Link {
     public void setTweet(boolean tweet) {
         this.tweet = tweet;
     }
+
+    public String getDatePostLink() {
+        return datePostLink;
+    }
+
+    public void setDatePostLink(String datePostLink) {
+        this.datePostLink = datePostLink;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public boolean seemsNotNew() {
+        return ((description != null && !description.trim().equals(""))
+                || (tags != null && !tags.trim().equals(""))
+        );
+    }
+
 }

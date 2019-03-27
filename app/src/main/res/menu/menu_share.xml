@@ -3,9 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.MainActivity">
     <item
+        android:id="@+id/editing"
+        android:checkable="false"
+        android:enabled="false"
+        android:orderInCategory="99"
+        android:title="@string/is_not_new_link"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_action_accept"
-        android:orderInCategory="99"
+        android:orderInCategory="100"
         android:title="@string/action_share"
         app:showAsAction="always" />
 </menu>

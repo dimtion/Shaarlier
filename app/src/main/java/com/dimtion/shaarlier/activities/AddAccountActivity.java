@@ -300,7 +300,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
         // Try the configuration :
         Intent i = new Intent(this, NetworkService.class);
-        i.putExtra("action", "checkShaarli");
+        i.putExtra("action", NetworkService.INTENT_CHECK);
         i.putExtra("account", accountToTest);
         i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
         startService(i);

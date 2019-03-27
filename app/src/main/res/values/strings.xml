@@ -97,4 +97,5 @@
     <string name="use_twitter">Use twitter (needs shaarli2twitter plugin)</string>
     <string name="advanced">Advanced</string>
     <string name="action_open_shaarli">Open Shaarli</string>
+    <string name="is_not_new_link">editing</string>
 </resources>

@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.webkit.URLUtil;
 
+import com.dimtion.shaarlier.utils.Link;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
 
 import org.json.JSONArray;
@@ -48,6 +49,10 @@ public class NetworkManager {
     private String mDatePostLink;
     private String mSharedUrl;
     private Exception mLastError;
+
+    private String mPrefetchedTitle;
+    private String mPrefetchedDescription;
+    private String mPrefetchedTags;
 
     public Exception getLastError() {
         return mLastError;
@@ -227,15 +232,34 @@ public class NetworkManager {
                 .execute();
         final Element postFormBody = postFormPage.parse().body();
 
-        // Update our situation :
-        this.mToken = postFormBody.select("input[name=token]").first().attr("value");
-        this.mDatePostLink = postFormBody.select("input[name=lf_linkdate]").first().attr("value"); // Date choosen by the server
-        this.mSharedUrl = postFormBody.select("input[name=lf_url]").first().attr("value");
+        // Update our situation:
+        // TODO: Soft fail: if one field does not load, try the others anyway
+        mToken = postFormBody.select("input[name=token]").first().attr("value");
+        mDatePostLink = postFormBody.select("input[name=lf_linkdate]").first().attr("value");  // Date chosen by the server
+        mSharedUrl = postFormBody.select("input[name=lf_url]").first().attr("value");
+        mPrefetchedTitle = postFormBody.select("input[name=lf_title]").first().attr("value");
+        mPrefetchedDescription = postFormBody.select("textarea[name=lf_description]").first().html();
+        mPrefetchedTags = postFormBody.select("input[name=lf_tags]").first().attr("value");
+    }
+
+    public Link prefetchLinkData(Link link) throws IOException {
+        String encodedShareUrl = URLEncoder.encode(link.getUrl(), "UTF-8");
+        retrievePostLinkToken(encodedShareUrl);
+
+        Link newLink = new Link(link);
+        newLink.setUrl(mSharedUrl);
+        newLink.setTitle(mPrefetchedTitle);
+        newLink.setDescription(mPrefetchedDescription);
+        newLink.setTags(mPrefetchedTags);
+        newLink.setDatePostLink(mDatePostLink);
+        newLink.setToken(mToken);
+        return newLink;
     }
 
     /**
      * Method which publishes a link to shaarli
      * Assume being logged in
+     * TODO: use the prefetch function
      */
     public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet)
             throws IOException {

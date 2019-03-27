@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,47 +41,22 @@ public class ShareActivity extends AppCompatActivity {
     private ShaarliAccount selectedAccount;
     private Link defaults;
 
-    private boolean isLoadingTitle;
-    private boolean isLoadingDescription;
+    final int LOADER_PREFETCH = 2;
+    private boolean isLoadingTitle = false;
+    private boolean isLoadingDescription = false;
+    private boolean isPrefetching = false;
+
 
     final int LOADER_TITLE = 0;
     final int LOADER_DESCRIPTION = 1;
+    private boolean isNotNewLink = false;
+    private Menu menu;
 
-    private class networkHandler extends Handler {
-        /**
-         * Handle the arrival of a message coming from the network service.
-         *
-         * @param msg the message given by the service
-         */
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.arg1) {
-                case NetworkService.RETRIEVE_TITLE_ID:
-                    if (userPrefs.isOpenDialog()) {
-                        String title = ((String[]) msg.obj)[0];
-                        String description = ((String[]) msg.obj)[1];
-
-                        if(isLoadingTitle && userPrefs.isAutoTitle()) {
-                            if ("".equals(title)) {
-                                updateTitle(title, true);
-                            } else {
-                                updateTitle(title, false);
-                            }
-                        }
-                        if(isLoadingDescription && userPrefs.isAutoDescription()) {
-                            if ("".equals(description)) {
-                                updateDescription(description, true);
-                            } else {
-                                updateDescription(description, false);
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
-                    break;
-            }
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_share, menu);
+        this.menu = menu;
+        return true;
     }
 
     @Override
@@ -88,9 +65,6 @@ public class ShareActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         userPrefs = UserPreferences.load(this);
-
-        isLoadingTitle = false;
-        isLoadingDescription = false;
 
         loadAccounts();
         if (accounts.isEmpty()) {
@@ -112,12 +86,34 @@ public class ShareActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_share, menu);
-        return true;
-    }
+    /**
+     * Load data passed through the intent
+     */
+    private void readIntent(@NonNull Intent intent) {
+        ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
+        String defaultUrl = extractUrl(reader.getText().toString());
+        String defaultTitle = extractTitle(reader.getSubject());
+        String defaultDescription = intent.getStringExtra("description") != null ? intent.getStringExtra("description") : "";
+        String defaultTags = intent.getStringExtra("tags") != null ? intent.getStringExtra("tags") : "";
 
+        if (!userPrefs.isAutoTitle()) {
+            defaultTitle = "";
+        }
+        if (!userPrefs.isAutoDescription()) {
+            defaultDescription = "";
+        }
+        defaults = new Link(
+                defaultUrl,
+                defaultTitle,
+                defaultDescription,
+                defaultTags,
+                userPrefs.isPrivateShare(),
+                selectedAccount,
+                userPrefs.isTweet(),
+                null,
+                null
+        );
+    }
 
     /**
      * Load user accounts and set the default one as the first of the list
@@ -151,30 +147,36 @@ public class ShareActivity extends AppCompatActivity {
     }
 
     /**
-     * Load data passed through the intent
+     * Open a dialog for the user to change the description of the share
      */
-    private void readIntent(Intent intent) {
-        ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
-        String defaultUrl = extractUrl(reader.getText().toString());
-        String defaultTitle = extractTitle(reader.getSubject());
-        String defaultDescription = intent.getStringExtra("description") != null ? intent.getStringExtra("description") : "";
-        String defaultTags = intent.getStringExtra("tags") != null ? intent.getStringExtra("tags") : "";
+    private void openDialog() {
+        setContentView(R.layout.activity_share);
 
-        if (!userPrefs.isAutoTitle()) {
-            defaultTitle = "";
+        initAccountSpinner();
+
+        if (NetworkManager.isUrl(defaults.getUrl())) {
+            prefetchLink(defaults);
+            autoLoadTitleAndDescription(defaults);
+            updateLoadersVisibility();
         }
-        if (!userPrefs.isAutoDescription()) {
-            defaultDescription = "";
+
+        ((EditText) findViewById(R.id.url)).setText(defaults.getUrl());
+
+
+        MultiAutoCompleteTextView textView = findViewById(R.id.tags);
+        ((EditText) findViewById(R.id.tags)).setText(defaults.getTags());
+        new AutoCompleteWrapper(textView, this);
+
+        ((Checkable) findViewById(R.id.private_share)).setChecked(defaults.isPrivate());
+
+        // Init the tweet button if necessary:
+        Switch tweetCheckBox = findViewById(R.id.tweet);
+        tweetCheckBox.setChecked(userPrefs.isTweet());
+        if (!userPrefs.isTweet()) {
+            tweetCheckBox.setVisibility(View.GONE);
+        } else {
+            tweetCheckBox.setVisibility(View.VISIBLE);
         }
-        defaults = new Link(
-                defaultUrl,
-                defaultTitle,
-                defaultDescription,
-                defaultTags,
-                userPrefs.isPrivateShare(),
-                selectedAccount,
-                userPrefs.isTweet()
-        );
     }
 
     /**
@@ -233,34 +235,21 @@ public class ShareActivity extends AppCompatActivity {
     }
 
     /**
-     * Open a dialog for the user to change the description of the share
+     * Initiate a network handler to prefetch link information on Shaarli.
+     * This can be used to know if a link was already saved, and then retrieve
+     * its data.
+     *
+     * TODO: use this prefetching in order to save one network request when sharing
+     * @param defaults defaults values
      */
-    private void openDialog() {
-        setContentView(R.layout.activity_share);
+    private void prefetchLink(@NonNull Link defaults) {
+        final Intent networkIntent = new Intent(this, NetworkService.class);
+        networkIntent.putExtra("action", NetworkService.INTENT_PREFETCH);
+        networkIntent.putExtra("link", defaults);
+        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler()));
 
-        initAccountSpinner();
-
-        if (NetworkManager.isUrl(defaults.getUrl())) {
-            autoLoadTitleAndDescription(defaults);
-        }
-
-        ((EditText) findViewById(R.id.url)).setText(defaults.getUrl());
-
-
-        MultiAutoCompleteTextView textView = findViewById(R.id.tags);
-        ((EditText) findViewById(R.id.tags)).setText(defaults.getTags());
-        new AutoCompleteWrapper(textView, this);
-
-        ((Checkable) findViewById(R.id.private_share)).setChecked(defaults.isPrivate());
-
-        // Init the tweet button if necessary:
-        Switch tweetCheckBox = findViewById(R.id.tweet);
-        tweetCheckBox.setChecked(userPrefs.isTweet());
-        if (!userPrefs.isTweet()) {
-            tweetCheckBox.setVisibility(View.GONE);
-        } else {
-            tweetCheckBox.setVisibility(View.VISIBLE);
-        }
+        isPrefetching = true;
+        startService(networkIntent);
     }
 
     private void initAccountSpinner() {
@@ -280,13 +269,13 @@ public class ShareActivity extends AppCompatActivity {
         }
         // Launch intent to retrieve the title and the description
         final Intent networkIntent = new Intent(this, NetworkService.class);
-        networkIntent.putExtra("action", "retrieveTitleAndDescription");
+        networkIntent.putExtra("action", NetworkService.INTENT_RETRIEVE_TITLE_AND_DESCRIPTION);
         networkIntent.putExtra("url", defaults.getUrl());
         networkIntent.putExtra("autoTitle", userPrefs.isAutoTitle());
         networkIntent.putExtra("autoDescription", userPrefs.isAutoDescription());
         networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler()));
 
-        isLoadingTitle  = true;
+        isLoadingTitle = true;
         isLoadingDescription = true;
         startService(networkIntent);
 
@@ -314,6 +303,13 @@ public class ShareActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * helper function for stopEarlyAutoload closure.
+     * It is not very useful otherwise
+     *
+     * @param loaderId
+     * @param value
+     */
     private void setLoading(int loaderId, boolean value) {
         switch (loaderId) {
             case LOADER_TITLE:
@@ -322,15 +318,32 @@ public class ShareActivity extends AppCompatActivity {
             case LOADER_DESCRIPTION:
                 isLoadingDescription = value;
                 break;
+            case LOADER_PREFETCH:
+                isPrefetching = value;
+                break;
             default:
                 break;
         }
     }
 
+    private void updateLoadersVisibility() {
+        View titleLoader = findViewById(R.id.loading_title);
+        if (isLoadingTitle || isPrefetching) {
+            titleLoader.setVisibility(View.VISIBLE);
+        } else {
+            titleLoader.setVisibility(View.GONE);
+        }
+
+        View descriptionLoader = findViewById(R.id.loading_description);
+        if (isLoadingDescription || isPrefetching) {
+            descriptionLoader.setVisibility(View.VISIBLE);
+        } else {
+            descriptionLoader.setVisibility(View.GONE);
+        }
+    }
 
     private void stopEarlyAutoLoad(String defaultValue, final int loader, final int field, int hint, final int loaderId) {
         if ("".equals(defaultValue)) {
-            findViewById(loader).setVisibility(View.VISIBLE);
             ((EditText) findViewById(field)).setHint(hint);
 
             // If in the meanwhile the user type text in the field, stop retrieving the data
@@ -359,27 +372,71 @@ public class ShareActivity extends AppCompatActivity {
     }
 
     private void updateTitle(String title, boolean isError) {
-        ((EditText) findViewById(R.id.title)).setHint(R.string.title_hint);
+        EditText titleEdit = findViewById(R.id.title);
+
+        titleEdit.setHint(R.string.title_hint);
 
         if (isError) {
-            ((EditText) findViewById(R.id.title)).setHint(R.string.error_retrieving_title);
+            titleEdit.setHint(R.string.error_retrieving_title);
         } else {
-            ((EditText) findViewById(R.id.title)).setText(title);
+            titleEdit.setText(title);
         }
 
-        findViewById(R.id.loading_title).setVisibility(View.GONE);
+        updateLoadersVisibility();
     }
 
-    private void updateDescription(String description, boolean isError){
-        ((EditText) findViewById(R.id.description)).setHint(R.string.description_hint);
+    private void updateDescription(String description, boolean isError) {
+        EditText descriptionEdit = findViewById(R.id.description);
+        descriptionEdit.setHint(R.string.description_hint);
+
 
         if (isError) {
-            ((EditText) findViewById(R.id.description)).setHint(R.string.error_retrieving_description);
+            descriptionEdit.setHint(R.string.error_retrieving_description);
         } else {
-            ((EditText) findViewById(R.id.description)).setText(description);
+            descriptionEdit.setText(description);
         }
+        updateLoadersVisibility();
 
-        findViewById(R.id.loading_description).setVisibility(View.GONE);
+    }
+
+    private void updateTags(String tags, boolean isError) {
+        EditText tagsEdit = findViewById(R.id.tags);
+
+        if (isError) {
+            // Display nothing
+            Log.e("ERROR", "error retrieving tags");
+        } else {
+            tagsEdit.setText(tags);
+        }
+    }
+
+    private void updatePrivate(boolean isPrivate) {
+        Checkable tagsEdit = findViewById(R.id.private_share);
+        tagsEdit.setChecked(isPrivate);
+    }
+
+    private void updateTweet(boolean tweet) {
+        Checkable tweetCheck = findViewById(R.id.tweet);
+        tweetCheck.setChecked(tweet);
+    }
+
+    /**
+     * Load everithing from the interface and share the link
+     */
+    private void saveAndShare() {
+        Link link = new Link(
+                ((EditText) findViewById(R.id.url)).getText().toString(),
+                ((EditText) findViewById(R.id.title)).getText().toString(),
+                ((EditText) findViewById(R.id.description)).getText().toString(),
+                ((EditText) findViewById(R.id.tags)).getText().toString(),
+                ((Checkable) findViewById(R.id.private_share)).isChecked(),
+                (ShaarliAccount) ((Spinner) findViewById(R.id.chooseAccount)).getSelectedItem(),
+                ((Checkable) findViewById(R.id.tweet)).isChecked(),
+                null,
+                null
+        );
+        sendLink(link);
+        finish();
     }
 
     @Override
@@ -396,27 +453,13 @@ public class ShareActivity extends AppCompatActivity {
 
     }
 
-    private void saveAndShare() {
-       Link link = new Link(
-               ((EditText) findViewById(R.id.url)).getText().toString(),
-               ((EditText) findViewById(R.id.title)).getText().toString(),
-               ((EditText) findViewById(R.id.description)).getText().toString(),
-               ((EditText) findViewById(R.id.tags)).getText().toString(),
-               ((Checkable) findViewById(R.id.private_share)).isChecked(),
-               (ShaarliAccount) ((Spinner) findViewById(R.id.chooseAccount)).getSelectedItem(),
-               ((Checkable) findViewById(R.id.tweet)).isChecked()
-       );
-       sendLink(link);
-       finish();
-    }
-
     /**
      * Start the network service to send the link
      * @param link link to send
      */
-    private void sendLink(Link link) {
+    private void sendLink(@NonNull Link link) {
         Intent networkIntent = new Intent(this, NetworkService.class);
-        networkIntent.putExtra("action", "postLink");
+        networkIntent.putExtra("action", NetworkService.INTENT_POST);
         networkIntent.putExtra("sharedUrl", link.getUrl());
         networkIntent.putExtra("title", link.getTitle());
         networkIntent.putExtra("description", link.getDescription());
@@ -430,5 +473,77 @@ public class ShareActivity extends AppCompatActivity {
         );
 
         startService(networkIntent);
+    }
+
+    private class networkHandler extends Handler {
+        /**
+         * Handle the arrival of a message coming from the network service.
+         *
+         * @param msg the message given by the service
+         */
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.arg1) {
+                case NetworkService.RETRIEVE_TITLE_ID:
+                    Log.i("NETWORK_MSG", "Title or description retrieved");
+                    if (userPrefs.isOpenDialog()) {
+                        String title = ((String[]) msg.obj)[0];
+                        String description = ((String[]) msg.obj)[1];
+
+                        if (isLoadingTitle && userPrefs.isAutoTitle()) {
+                            if ("".equals(title)) {
+                                updateTitle(title, true);
+                            } else {
+                                updateTitle(title, false);
+                            }
+                        }
+                        if (isLoadingDescription && userPrefs.isAutoDescription()) {
+                            if ("".equals(description)) {
+                                updateDescription(description, true);
+                            } else {
+                                updateDescription(description, false);
+                            }
+                        }
+                        setLoading(LOADER_TITLE, false);
+                        setLoading(LOADER_DESCRIPTION, false);
+                        updateLoadersVisibility();
+                    }
+                    break;
+                case NetworkService.PREFETCH_LINK:
+                    Log.i("NETWORK_MSG", "Link prefetched");
+
+                    setLoading(LOADER_PREFETCH, false);
+                    if (userPrefs.isOpenDialog()) {
+                        Link prefetchedLink = (Link) msg.obj;
+
+                        isNotNewLink = prefetchedLink.seemsNotNew();
+                        if (isNotNewLink) {
+                            defaults = prefetchedLink;
+
+                            // prefetching success: stop other loaders
+                            setLoading(LOADER_TITLE, false);
+                            setLoading(LOADER_DESCRIPTION, false);
+
+                            // Update the interface
+                            updateTitle(defaults.getTitle(), false);
+                            updateDescription(defaults.getDescription(), false);
+                            updateTags(defaults.getTags(), false);
+                            updatePrivate(defaults.isPrivate());
+                            updateTweet(defaults.isTweet());
+
+
+                            // Show that we are editing an existing entry
+                            MenuItem isNotNewIcon = menu.findItem(R.id.editing);
+                            isNotNewIcon.setVisible(true);
+                        }
+                        updateLoadersVisibility();
+                    }
+                    break;
+                default:
+                    Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+                    Log.e("NETWORK_MSG", "Unknown network intent received: " + msg.arg1);
+                    break;
+            }
+        }
     }
 }
