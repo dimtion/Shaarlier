@@ -1,12 +1,11 @@
-I know, a todo file is not always
 
 ## To do ASAP
-- Feature : Handle redirection (E.g : shaarli.fr)
-- Bug : autocomplete field for tags is hidden by keyboard when a description is too long (help needed!)
+- Improve automated testing
 
 ## Planned for future releases
+- Using new Shaarli API
 - Save link in a draft in case of an error
-- Nicer UI
+- Feature: Handle redirection (E.g : shaarli.fr)
 
 ## Q&A
 - Try app on as many apps as possible
