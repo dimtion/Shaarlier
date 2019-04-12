@@ -34,6 +34,7 @@ public class NetworkManager {
             "meta[property=og:description]",
             "meta[name=description]",
             "meta[name=twitter:description]",
+            "meta[name=mastodon:description]",
     };
 
     private final String mShaarliUrl;
@@ -261,7 +262,7 @@ public class NetworkManager {
      * Assume being logged in
      * TODO: use the prefetch function
      */
-    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet)
+    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet, boolean toot)
             throws IOException {
         String encodedShareUrl = URLEncoder.encode(sharedUrl, "UTF-8");
         retrievePostLinkToken(encodedShareUrl);
@@ -282,6 +283,7 @@ public class NetworkManager {
                 .data("lf_description", sharedDescription);
         if (privateShare) postPageConn.data("lf_private", "on");
         if (tweet) postPageConn.data("tweet", "on");
+        if (toot) postPageConn.data("toot", "on");
         postPageConn.execute(); // Then we post
     }
 

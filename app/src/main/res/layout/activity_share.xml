@@ -111,6 +111,13 @@
             android:padding="16dp"
             android:text="@string/tweet" />
 
+        <Switch
+            android:id="@+id/toot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/toot" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
