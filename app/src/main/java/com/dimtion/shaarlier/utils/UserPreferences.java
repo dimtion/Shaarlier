@@ -13,6 +13,7 @@ public class UserPreferences {
     private boolean autoTitle;
     private boolean autoDescription;
     private boolean tweet;
+    private boolean toot;
 
     public static UserPreferences load(Activity a) {
         UserPreferences p = new UserPreferences();
@@ -22,6 +23,7 @@ public class UserPreferences {
         p.autoTitle = pref.getBoolean(a.getString(R.string.p_auto_title), true);
         p.autoDescription = pref.getBoolean(a.getString(R.string.p_auto_description), false);
         p.tweet = pref.getBoolean(a.getString(R.string.p_shaarli2twitter), false);
+        p.toot = pref.getBoolean(a.getString(R.string.p_shaarli2mastodon), false);
 
         return p;
     }
@@ -58,12 +60,18 @@ public class UserPreferences {
         this.autoDescription = m_autoDescription;
     }
 
-    public boolean isTweet() {
-        return tweet;
-    }
+    public boolean isTweet() { return tweet; }
 
     public void setTweet(boolean tweet) {
         this.tweet = tweet;
+    }
+
+    public boolean isToot() {
+        return toot;
+    }
+
+    public void setToot(boolean toot) {
+        this.toot = toot;
     }
 }
 

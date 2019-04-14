@@ -100,6 +100,13 @@
             android:checked="false"
             android:text="@string/use_twitter" />
 
+        <CheckBox
+            android:id="@+id/handle_mastodon_plugin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:checked="false"
+            android:text="@string/use_mastodon" />
 
         <!-- Footer -->
         <TextView

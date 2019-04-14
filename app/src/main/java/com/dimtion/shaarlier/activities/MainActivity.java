@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isAutoDescription = ((CheckBox) findViewById(R.id.auto_load_description)).isChecked();
         boolean isHandlingHttpScheme = ((CheckBox) findViewById(R.id.handle_http_scheme)).isChecked();
         boolean useShaarli2twitter = ((CheckBox) findViewById(R.id.handle_twitter_plugin)).isChecked();
+        boolean useShaarli2mastodon = ((CheckBox) findViewById(R.id.handle_mastodon_plugin)).isChecked();
 
         // Save data :
         SharedPreferences pref = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(getString(R.string.p_auto_title), isAutoTitle)
                 .putBoolean(getString(R.string.p_auto_description), isAutoDescription)
                 .putBoolean(getString(R.string.p_shaarli2twitter), useShaarli2twitter)
+                .putBoolean(getString(R.string.p_shaarli2mastodon), useShaarli2mastodon)
                 .apply();
 
         setHandleHttpScheme(isHandlingHttpScheme);
@@ -120,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isAutoDescription = pref.getBoolean(getString(R.string.p_auto_description), false);
         boolean isHandlingHttpScheme = isHandlingHttpScheme();
         boolean isShaarli2twitter = pref.getBoolean(getString(R.string.p_shaarli2twitter), false);
+        boolean isShaarli2mastodon = pref.getBoolean(getString(R.string.p_shaarli2mastodon), false);
 
         // Retrieve interface :
         CheckBox privateCheck = findViewById(R.id.default_private);
@@ -128,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         CheckBox autoDescriptionCheck = findViewById(R.id.auto_load_description);
         CheckBox handleHttpSchemeCheck = findViewById(R.id.handle_http_scheme);
         CheckBox shaarli2twitter = findViewById(R.id.handle_twitter_plugin);
+        CheckBox shaarli2mastodon = findViewById(R.id.handle_mastodon_plugin);
 
         // Display user previous settings :
         privateCheck.setChecked(prv);
@@ -136,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         handleHttpSchemeCheck.setChecked(isHandlingHttpScheme);
         shareDialogCheck.setChecked(sherDial);
         shaarli2twitter.setChecked(isShaarli2twitter);
+        shaarli2mastodon.setChecked(isShaarli2mastodon);
     }
 
     @Override

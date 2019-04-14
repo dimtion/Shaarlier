@@ -10,11 +10,12 @@ public class Link implements Serializable {
     private boolean isPrivate;
     private ShaarliAccount account;
     private boolean tweet;
+    private boolean toot;
 
     private String datePostLink;
     private String token;
 
-    public Link(String url, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet, String datePostLink, String token) {
+    public Link(String url, String title, String description, String tags, boolean isPrivate, ShaarliAccount account, boolean tweet, boolean toot, String datePostLink, String token) {
         this.url = url;
         this.title = title;
         this.description = description;
@@ -22,6 +23,7 @@ public class Link implements Serializable {
         this.isPrivate = isPrivate;
         this.account = account;
         this.tweet = tweet;
+        this.toot = toot;
         this.datePostLink = datePostLink;
         this.token = token;
     }
@@ -34,6 +36,7 @@ public class Link implements Serializable {
         this.isPrivate = other.isPrivate;
         this.account = other.account;
         this.tweet = other.tweet;
+        this.toot = other.toot;
         this.datePostLink = other.datePostLink;
         this.token = other.token;
     }
@@ -92,6 +95,14 @@ public class Link implements Serializable {
 
     public void setTweet(boolean tweet) {
         this.tweet = tweet;
+    }
+
+    public boolean isToot() {
+        return toot;
+    }
+
+    public void setToot(boolean toot) {
+        this.toot = toot;
     }
 
     public String getDatePostLink() {

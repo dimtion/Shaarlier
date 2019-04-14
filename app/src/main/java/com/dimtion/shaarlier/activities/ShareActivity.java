@@ -110,6 +110,7 @@ public class ShareActivity extends AppCompatActivity {
                 userPrefs.isPrivateShare(),
                 selectedAccount,
                 userPrefs.isTweet(),
+                userPrefs.isToot(),
                 null,
                 null
         );
@@ -176,6 +177,15 @@ public class ShareActivity extends AppCompatActivity {
             tweetCheckBox.setVisibility(View.GONE);
         } else {
             tweetCheckBox.setVisibility(View.VISIBLE);
+        }
+
+        // Init the toot button if necessary:
+        Switch tootCheckBox = findViewById(R.id.toot);
+        tootCheckBox.setChecked(userPrefs.isToot());
+        if (!userPrefs.isToot()) {
+            tootCheckBox.setVisibility(View.GONE);
+        } else {
+            tootCheckBox.setVisibility(View.VISIBLE);
         }
     }
 
@@ -420,6 +430,11 @@ public class ShareActivity extends AppCompatActivity {
         tweetCheck.setChecked(tweet);
     }
 
+    private void updateToot(boolean toot) {
+        Checkable tootCheck = findViewById(R.id.toot);
+        tootCheck.setChecked(toot);
+    }
+
     /**
      * Load everithing from the interface and share the link
      */
@@ -432,6 +447,7 @@ public class ShareActivity extends AppCompatActivity {
                 ((Checkable) findViewById(R.id.private_share)).isChecked(),
                 (ShaarliAccount) ((Spinner) findViewById(R.id.chooseAccount)).getSelectedItem(),
                 ((Checkable) findViewById(R.id.tweet)).isChecked(),
+                ((Checkable) findViewById(R.id.toot)).isChecked(),
                 null,
                 null
         );
@@ -466,6 +482,7 @@ public class ShareActivity extends AppCompatActivity {
         networkIntent.putExtra("tags", link.getTags());
         networkIntent.putExtra("privateShare", link.isPrivate());
         networkIntent.putExtra("tweet", link.isTweet());
+        networkIntent.putExtra("toot", link.isToot());
         networkIntent.putExtra("chosenAccountId", link.getAccount().getId());
         networkIntent.putExtra(
                 NetworkService.EXTRA_MESSENGER,
@@ -530,6 +547,7 @@ public class ShareActivity extends AppCompatActivity {
                             updateTags(defaults.getTags(), false);
                             updatePrivate(defaults.isPrivate());
                             updateTweet(defaults.isTweet());
+                            updateToot(defaults.isToot());
 
 
                             // Show that we are editing an existing entry

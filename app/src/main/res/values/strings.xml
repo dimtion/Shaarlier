@@ -93,8 +93,11 @@
     <string name="handle_http_scheme">Show Shaarlier in the list of web browsers</string>
     <string name="version">"Version %1$s"</string>
     <string name="p_shaarli2twitter" translatable="false">com.dimtion.shaarlier.shaarli2twitter</string>
+    <string name="p_shaarli2mastodon" translatable="false">com.dimtion.shaarlier.shaarli2mastodon</string>
     <string name="tweet">Tweet</string>
+    <string name="toot">Toot</string>
     <string name="use_twitter">Use twitter (needs shaarli2twitter plugin)</string>
+    <string name="use_mastodon">Use mastodon (needs shaarli2mastodon plugin)</string>
     <string name="advanced">Advanced</string>
     <string name="action_open_shaarli">Open Shaarli</string>
     <string name="is_not_new_link">editing</string>
