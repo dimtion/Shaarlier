@@ -29,7 +29,8 @@
     <string name="user_password">Mot de passe :</string>
     <string name="your_shaarli_url">Url de votre Shaarli :</string>
     <string name="text_about_details">Pour utiliser cette application vous avez besoin d\'un <a href="https://github.com/shaarli/Shaarli">Shaarli</a>, un clone minimaliste de delicious.
-Cette application est fièrement développée par dimtion, vous pouvez me trouver sur <a href="https://github.com/dimtion/Shaarlier">GitHub</a> (et d\'autres recoins d\'internet).</string>
+        Framasoft propose des <a href="https://my.framasoft.org/">instances gratuites</a>.
+        \n\nCette application est fièrement développée par dimtion, vous pouvez retrouver mes autres projets <a href="https://dimtion.fr">site web</a>.</string>
     <string name="loading_title_hint">Chargement du title…</string>
     <string name="error_retrieving_title">Erreur chargement titre</string>
     <string name="auto_load_title">Charger automatiquement le titre de la page</string>

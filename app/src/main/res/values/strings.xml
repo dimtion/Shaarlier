@@ -47,8 +47,9 @@
 
     <string name="share">Share a link</string>
     <string name="text_about">About</string>
-    <string name="text_about_details">To use this app your need a <a href="https://github.com/shaarli/Shaarli">Shaarli</a>, a minimalist delicious clone.
-    This app is proudly developed by dimtion, find me on <a href="https://github.com/dimtion/Shaarlier">GitHub</a> (and on other places on the Internet).</string>
+    <string name="text_about_details">To use this app your need a <a href="https://github.com/shaarli/Shaarli">Shaarli</a> instance.
+        Framasoft provides <a href="https://my.framasoft.org/">free managed instances</a>.
+        \n\nThis app is proudly developed by dimtion, find me on my <a href="https://dimtion.fr">website</a>.</string>
     <string-array name="select_protocol" translatable="false">
         <item>http://</item>
         <item>https://</item>
@@ -58,7 +59,7 @@
     <string name="error_retrieving_description">Description could not be loaded</string>
     <string name="auto_load_title">Automatically load page title</string>
     <string name="username_hint" translatable="false">Batman</string>
-    <string name="url_hint">http://shaarli.myserver.org</string>
+    <string name="url_hint">https://shaarli.myserver.org</string>
     <string name="action_go_to_shaarli">Open my Shaarli</string>
     <string name="developer_shaarli" translatable="false">https://shaarli.dimtion.fr</string>
     <string name="developer_mail" translatable="false">zizou.xena@gmail.com</string>
@@ -66,11 +67,11 @@
     <string name="text_version">Version unknown</string>
     <string name="hint_new_url">(empty for a new note)</string>
     <string name="text_new_url">Link to share:</string>
-    <string name="text_url" translatable="false">Url :</string>
+    <string name="text_url" translatable="false">Url:</string>
     <string name="text_url_hint">(leave empty for a new note)</string>
-    <string name="title">Title :</string>
+    <string name="title">Title:</string>
     <string name="title_hint">Title</string>
-    <string name="text_description">Description :</string>
+    <string name="text_description">Description:</string>
     <string name="title_activity_accounts_management">Accounts</string>
 
     <string name="text_add">Add</string>
