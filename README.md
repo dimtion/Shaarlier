@@ -27,7 +27,7 @@ See [the next milestones](https://github.com/dimtion/Shaarlier/milestones)
 - Main and recommended fork of the Shaarli project: https://github.com/shaarli/Shaarli/
 - Managed Shaarli instances using: https://my.framasoft.org/
 - Thanks Jonathan Hedley for [jsoup](http://jsoup.org/) under [MIT Licence](http://jsoup.org/license)
-- Please swing by personal [Shaarli](https://shaarli.dimtion.fr)
+- Please swing by my personal [Shaarli](https://shaarli.dimtion.fr)
 
 --------
 
