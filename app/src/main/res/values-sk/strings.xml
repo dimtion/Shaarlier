@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shaarlier</string>
+    <string name="action_settings">Nastavenia</string>
+    <string name="add_error">Pri zdieľaní nastala chyba</string>
+    <string name="add_not_handle">Nespracovaný obsah</string>
+    <string name="add_success">Váš odkaz bol zdieľaný</string>
+    <string name="default_private">Nové odkazy sú automaticky súkromné</string>
+    <string name="description_hint">Popis</string>
+    <string name="error_connecting">Adresa odkazu nefunguje</string>
+    <string name="error_internet_connection">Žiadne internetové pripojenie</string>
+    <string name="error_login">Nesprávne používateľské meno a/alebo heslo</string>
+    <string name="error_parsing_token">Adresa odkazu nie je kompatibilná so Shaarli</string>
+    <string name="error_url">Adresa odkazu je neplatná</string>
+    <string name="error_retrieving_tags">Nepodarilo sa načítať značky</string>
+    <string name="logo_description">Logo Shaarli</string>
+    <string name="more">Viac v pláne…</string>
+    <string name="private_share">Súkromné</string>
+    <string name="success_test">Nastavenia sú OK</string>
+    <string name="tags_hint">značky (oddelené medzerami)</string>
+    <string name="test_connection">Vyskúšať a uložiť</string>
+    <string name="text_behaviour">Správanie</string>
+    <string name="text_show_share_dialog">Pri zdielaní zobraziť dialógové okno</string>
+    <string name="title_activity_add">Pridať do Shaarli</string>
+    <string name="title_activity_share">Pridať do Shaarli</string>
+    <string name="user_name">Meno:</string>
+    <string name="user_password">Heslo:</string>
+    <string name="basic_auth">Základné prihlásenie cez HTTP</string>
+    <string name="your_shaarli_url">Adresa vášho Shaarli:</string>
+
+    <string name="params" translatable="false">com.dimtion.shaarliposter.parms</string>
+    <string name="p_url_shaarli" translatable="false">com.dimtion.shaarliposter.p_url_shaarli</string>
+    <string name="p_username" translatable="false">com.dimtion.shaarliposter.p_username</string>
+    <string name="p_password" translatable="false">com.dimtion.shaarliposter.p_password</string>
+    <string name="p_basic_username" translatable="false">com.dimtion.shaarliposter.p_basic_username</string>
+    <string name="p_basic_password" translatable="false">com.dimtion.shaarliposter.p_basic_password</string>
+    <string name="p_validated" translatable="false">com.dimtion.shaarliposter.p_validated</string>
+    <string name="p_default_private" translatable="false">com.dimtion.shaarlier.p_default_private</string>
+    <string name="p_show_share_dialog" translatable="false">com.dimtion.shaarlier.p_show_share_dialog</string>
+    <string name="p_protocol" translatable="false">com.dimtion.shaarlier.p_protocol</string>
+    <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
+    <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
+    <string name="p_auto_description" translatable="false">com.dimtion.shaarlier.auto_description</string>
+    <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
+    <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
+    <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
+
+    <string name="share">Zdielať odkaz</string>
+    <string name="text_about">O aplikácii</string>
+    <string name="text_about_details">Na použitie tejto aplikácie potrebujete nainštalovaný <a href="https://github.com/shaarli/Shaarli">Shaarli</a>.
+        Framasoft poskytuje <a href="https://my.framasoft.org/">zdarma dostupnú inštaláciu</a>.
+        \n\nTúto aplikáciu hrdo vyvíja dimtion, nájdete ho na <a href="https://dimtion.fr">dimtion.fr</a>.</string>
+    <string-array name="select_protocol" translatable="false">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="loading_title_hint">Načítava sa názov…</string>
+    <string name="error_retrieving_title">Názov sa nepodarilo načítať</string>
+    <string name="error_retrieving_description">Popis sa nepodarilo načítať</string>
+    <string name="auto_load_title">Automaticky načítať názov stránky</string>
+    <string name="username_hint" translatable="false">Batman</string>
+    <string name="url_hint">https://shaarli.myserver.org</string>
+    <string name="action_go_to_shaarli">Otvoriť moje Shaarli</string>
+    <string name="developer_shaarli" translatable="false">https://shaarli.dimtion.fr</string>
+    <string name="developer_mail" translatable="false">zizou.xena@gmail.com</string>
+    <string name="action_share">Zdielať odkaz</string>
+    <string name="text_version">Neznáma verzia</string>
+    <string name="hint_new_url">(nevypĺňajte, ak chcete pridať poznámku)</string>
+    <string name="text_new_url">Zdielať odkaz:</string>
+    <string name="text_url" translatable="false">Url:</string>
+    <string name="text_url_hint">(nevypĺňajte, ak chcete pridať poznámku)</string>
+    <string name="title">Nadpis:</string>
+    <string name="title_hint">Nadpis</string>
+    <string name="text_description">Popis:</string>
+    <string name="title_activity_accounts_management">Účty</string>
+
+    <string name="text_add">Pridať</string>
+    <string name="text_validate">Overiť</string>
+    <string name="text_no_account">Žiadne účty</string>
+    <string name="button_manage_accounts">Správca účtov</string>
+    <string name="text_account_name">Názov účtu:</string>
+    <string name="check_default_account">Prednastavený účet</string>
+    <string name="button_delete_account">Vymazať účet</string>
+    <string name="title_activity_add_account">Nový účet</string>
+    <string name="text_confirm_deletion_account">Určite chcete vymazať tento účet?</string>
+    <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
+    <string name="check_disable_cert_validation">Zakázať overenie certifikátu (nezabezpečené)</string>
+    <string name="error_unknown">Vyskytla sa chyba</string>
+    <string name="add_account">Pridať účet</string>
+    <string name="send_report">Myslíte si, že ide o chybu?</string>
+    <string name="report_issue">Chcete tento problém nahlásiť?</string>
+    <string name="loading_description_hint">Načítava sa popis…</string>
+    <string name="auto_load_description">Automaticky načítať popis stránky</string>
+    <string name="handle_http_scheme">Zobraziť Shaarlier v zozname webových prehliadačov</string>
+    <string name="version">"Verzia %1$s"</string>
+    <string name="p_shaarli2twitter" translatable="false">com.dimtion.shaarlier.shaarli2twitter</string>
+    <string name="p_shaarli2mastodon" translatable="false">com.dimtion.shaarlier.shaarli2mastodon</string>
+    <string name="tweet">Tweetnuť</string>
+    <string name="toot">Tootnuť</string>
+    <string name="use_twitter">Použiť twitter (vyžaduje rozšírenie shaarli2twitter)</string>
+    <string name="use_mastodon">Použiť mastodon (vyžaduje rozšírenie shaarli2mastodon)</string>
+    <string name="advanced">Rozšírené</string>
+    <string name="action_open_shaarli">Otvoriť Shaarli</string>
+    <string name="is_not_new_link">upraviť</string>
+</resources>
