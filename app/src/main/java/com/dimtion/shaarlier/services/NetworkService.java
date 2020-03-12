@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.helpers.AccountsSource;
 import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.helpers.NetworkUtils;
 import com.dimtion.shaarlier.utils.Link;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
 
@@ -175,10 +176,9 @@ public class NetworkService extends IntentService {
      * @return NO_ERROR if nothing is wrong
      */
     private int checkShaarli(ShaarliAccount account){
-
-        NetworkManager manager = new NetworkManager(account);
+        NetworkManager manager = NetworkUtils.getNetworkManager(account);
         try {
-            if (!manager.retrieveLoginToken()) {
+            if (!manager.isCompatibleShaarli()) {
                 return TOKEN_ERROR;
             }
             if (!manager.login()) {
@@ -187,7 +187,6 @@ public class NetworkService extends IntentService {
         } catch (IOException e) {
             mError = e;
             return NETWORK_ERROR;
-
         }
         return NO_ERROR;
     }
@@ -203,10 +202,9 @@ public class NetworkService extends IntentService {
     private Link prefetchLink(Link sharedLink) {
         Link prefetchedLink = new Link(sharedLink);
         try {
-            NetworkManager manager = new NetworkManager(sharedLink.getAccount());
-            manager.setTimeout(MANAGER_TIMEOUT);
+            NetworkManager manager = NetworkUtils.getNetworkManager(sharedLink.getAccount());
 
-            if (manager.retrieveLoginToken() && manager.login()) {
+            if (manager.isCompatibleShaarli() && manager.login()) {
                 prefetchedLink = manager.prefetchLinkData(sharedLink);
             } else {
                 mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
@@ -224,9 +222,8 @@ public class NetworkService extends IntentService {
         boolean posted = true;  // Assume it is shared
         try {
             // Connect the user to the site :
-            NetworkManager manager = new NetworkManager(mShaarliAccount);
-            manager.setTimeout(MANAGER_TIMEOUT);
-            if(manager.retrieveLoginToken() && manager.login()) {
+            NetworkManager manager = NetworkUtils.getNetworkManager(mShaarliAccount);
+            if (manager.isCompatibleShaarli() && manager.login()) {
                 manager.postLink(sharedUrl, title, description, tags, privateShare, tweet, toot);
             } else {
                 mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
@@ -253,7 +250,7 @@ public class NetworkService extends IntentService {
      */
     @NonNull
     private String[] getPageTitleAndDescription(String url){
-        return NetworkManager.loadTitleAndDescription(url);
+        return NetworkUtils.loadTitleAndDescription(url);
     }
 
     private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare, boolean tweet, boolean toot){

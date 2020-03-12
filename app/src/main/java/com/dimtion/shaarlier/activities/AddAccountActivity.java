@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.helpers.AccountsSource;
 import com.dimtion.shaarlier.helpers.DebugHelper;
-import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.helpers.NetworkUtils;
 import com.dimtion.shaarlier.services.NetworkService;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
 
@@ -285,7 +285,7 @@ public class AddAccountActivity extends AppCompatActivity {
         this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
         this.isValidateCert = !((CheckBox) findViewById(R.id.disableCertValidation)).isChecked();
 
-        this.urlShaarli = NetworkManager.toUrl(urlShaarliInput);
+        this.urlShaarli = NetworkUtils.toUrl(urlShaarliInput);
 
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 

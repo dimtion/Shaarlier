@@ -3,6 +3,7 @@ package com.dimtion.shaarlier.utils;
 import java.io.Serializable;
 
 public class Link implements Serializable {
+    private Integer id;
     private String url;
     private String title;
     private String description;
@@ -29,6 +30,7 @@ public class Link implements Serializable {
     }
 
     public Link(Link other) {
+        this.id = other.id;
         this.url = other.url;
         this.title = other.title;
         this.description = other.description;
@@ -39,6 +41,14 @@ public class Link implements Serializable {
         this.toot = other.toot;
         this.datePostLink = other.datePostLink;
         this.token = other.token;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUrl() {
@@ -122,8 +132,10 @@ public class Link implements Serializable {
     }
 
     public boolean seemsNotNew() {
-        return ((description != null && !description.trim().equals(""))
+        return (
+                (description != null && !description.trim().equals(""))
                 || (tags != null && !tags.trim().equals(""))
+                        || id != null
         );
     }
 

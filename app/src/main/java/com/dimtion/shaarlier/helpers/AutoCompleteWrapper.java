@@ -67,50 +67,33 @@ public class AutoCompleteWrapper {
             AccountsSource accountsSource = new AccountsSource(a_context);
             accountsSource.rOpen();
             List<ShaarliAccount> accounts = accountsSource.getAllAccounts();
+            TagsSource tagsSource = new TagsSource(a_context);
+            tagsSource.wOpen();
 
             boolean success = true;
             /* For the moment we keep all the tags, if later somebody wants to have the tags
             ** separated for each accounts, we will see
             */
             for (ShaarliAccount account : accounts) {
-                // Download tags :
-                NetworkManager manager = new NetworkManager(account);
-                TagsSource tagsSource = new TagsSource(a_context);
+                // Download tags:
+                NetworkManager manager = NetworkUtils.getNetworkManager(account);
                 try {
-                    if(manager.retrieveLoginToken() && manager.login()) {
-                        String[] awesompleteTags = manager.retrieveTagsFromAwesomplete();
-                        String[] wsTags = manager.retrieveTagsFromWs();  // Keep for compatibility
-                        if (awesompleteTags == null && wsTags == null) {
-                            mError = manager.getLastError();
-                            success = false;
-                        } else {
-                            tagsSource.wOpen();
-                            if(awesompleteTags!= null) {
-                                for (String tagValue : awesompleteTags) {
-                                    tagsSource.createTag(account, tagValue.trim());
-                                }
-                            }
-                            if(wsTags != null) {
-                                for (String tagValue : wsTags) {
-                                    tagsSource.createTag(account, tagValue);
-                                }
-                            }
-                            tagsSource.close();
-                        }
-                    } else {
-                        mError = new Exception("Could not login");
-                        success = false;
+                    if (!manager.isCompatibleShaarli() || !manager.login()) {
+                        throw new Exception("Login Error");
                     }
-
+                    List<String> tags = manager.retrieveTags();
+                    Log.d("TAGS", tags.toString());
+                    for (String tag : tags) {
+                        tagsSource.createTag(account, tag.trim());
+                    }
                 } catch (Exception e) {
                     mError = e;
                     success = false;
                     Log.e("ERROR", e.toString());
-                } finally {
-                    tagsSource.close();
                 }
             }
 
+            tagsSource.close();
             accountsSource.close();
             return success;
         }

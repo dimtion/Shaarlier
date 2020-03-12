@@ -15,6 +15,7 @@ public class ShaarliAccount implements Serializable {
     private String basicAuthUsername;
     private String basicAuthPassword;
     private String shortName;
+    private String restAPIKey;
     private byte[] initialVector;
     private boolean validateCert;
 
@@ -95,5 +96,13 @@ public class ShaarliAccount implements Serializable {
 
     public void setValidateCert(boolean validateCert) {
         this.validateCert = validateCert;
+    }
+
+    public String getRestAPIKey() {
+        return restAPIKey;
+    }
+
+    public void setRestAPIKey(String restAPIKey) {
+        this.restAPIKey = restAPIKey;
     }
 }

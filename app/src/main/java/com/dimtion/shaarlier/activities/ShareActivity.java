@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.helpers.AccountsSource;
 import com.dimtion.shaarlier.helpers.AutoCompleteWrapper;
-import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.helpers.NetworkUtils;
 import com.dimtion.shaarlier.services.NetworkService;
 import com.dimtion.shaarlier.utils.Link;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
@@ -155,7 +155,7 @@ public class ShareActivity extends AppCompatActivity {
 
         initAccountSpinner();
 
-        if (NetworkManager.isUrl(defaults.getUrl())) {
+        if (NetworkUtils.isUrl(defaults.getUrl())) {
             prefetchLink(defaults);
             autoLoadTitleAndDescription(defaults);
             updateLoadersVisibility();
@@ -204,7 +204,7 @@ public class ShareActivity extends AppCompatActivity {
         String[] possible_urls = finalUrl.split(" ");
 
         for (String url : possible_urls){
-            if(NetworkManager.isUrl(url)){
+            if (NetworkUtils.isUrl(url)) {
                 finalUrl = url;
                 break;
             }
@@ -214,7 +214,7 @@ public class ShareActivity extends AppCompatActivity {
         finalUrl = finalUrl.substring(finalUrl.lastIndexOf("\n") + 1);
 
         // If the url is incomplete:
-        if (NetworkManager.isUrl("http://" + finalUrl) && !NetworkManager.isUrl(finalUrl)) {
+        if (NetworkUtils.isUrl("http://" + finalUrl) && !NetworkUtils.isUrl(finalUrl)) {
             finalUrl = "http://" + finalUrl;
         }
         // Delete trackers:
@@ -237,7 +237,7 @@ public class ShareActivity extends AppCompatActivity {
      * @return Title
      */
     private String extractTitle(String subject) {
-        if (subject != null && !NetworkManager.isUrl(subject)){
+        if (subject != null && !NetworkUtils.isUrl(subject)) {
             return subject;
         }
 
