@@ -108,45 +108,52 @@ public class RestAPINetworkManager implements NetworkManager {
     }
 
     @Override
-    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet, boolean toot) throws IOException {
-        String url = new URL(this.mAccount.getUrlShaarli() + LINK_URL).toExternalForm();
+    public void pushLink(Link link) throws IOException {
+        String url = new URL(link.getAccount().getUrlShaarli() + LINK_URL).toExternalForm();
+
+        // Create the request body:
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("url", sharedUrl);
-            requestBody.put("title", sharedTitle);
-            requestBody.put("description", sharedDescription);
-            requestBody.put("tags", sharedTags.split(","));
-            requestBody.put("private", privateShare);
-            if (tweet) { // TODO tweet
+            requestBody.put("url", link.getUrl());
+            requestBody.put("title", link.getTitle());
+            requestBody.put("description", link.getDescription());
+            requestBody.put("tags", link.getTags().split(","));
+            requestBody.put("private", link.isPrivate());
+            if (link.isTweet()) { // TODO tweet
                 Log.e("RequestAPI:post", "Tweet feature not implemented");
             }
-            if (toot) { // TODO toot
+            if (link.isToot()) { // TODO toot
                 Log.e("RequestAPI:post", "Toot feature not implemented");
             }
         } catch (JSONException e) {
             Log.e("RequestAPI:post", e.toString());
         }
-        Connection.Response resp = this.newConnection(url, Connection.Method.POST)
-                .requestBody(requestBody.toString())
-                .ignoreHttpErrors(true)
-                .execute();
-        if (200 <= resp.statusCode() && resp.statusCode() <= 201) { // HTTP Ok
-            return; // We are done here
-        } else if (resp.statusCode() != 409) { // 409 HTTP Conflict
-            // every other error we raise again
-            throw new HttpStatusException("Error requesting: " + url + " : " + resp.statusCode(), resp.statusCode(), url);
+
+        // 1. Try POST only if link id is null
+        if (link.getId() == null) {
+            Connection.Response resp = this.newConnection(url, Connection.Method.POST)
+                    .requestBody(requestBody.toString())
+                    .ignoreHttpErrors(true)
+                    .execute();
+            if (200 <= resp.statusCode() && resp.statusCode() <= 201) { // HTTP Ok after redirect
+                return; // We are done here
+            } else if (resp.statusCode() != 409) { // 409 HTTP Conflict
+                // every other error we bubble up
+                throw new HttpStatusException("Error requesting: " + url + " : " + resp.statusCode(), resp.statusCode(), url);
+            }
+            // On conflict, we update our id
+            try {
+                link.setId(new JSONObject(resp.body()).getInt("id"));
+            } catch (JSONException e) {
+                throw new IOException("Invalid id sent by Shaarli: " + e.toString());
+            }
         }
 
-        // HTTP Conflict: try again using a PUT request
-        try {
-            Integer linkId = new JSONObject(resp.body()).getInt("id");
-            this.newConnection(url + "/" + linkId, Connection.Method.PUT)
-                    .requestBody(requestBody.toString())
-                    .ignoreHttpErrors(false)
-                    .execute();
-        } catch (JSONException e) {
-            Log.e("RequestAPI:post", e.toString());
-        }
+        // 2. If POST failed or link had id try PUT:
+        this.newConnection(url + "/" + link.getId(), Connection.Method.PUT)
+                .requestBody(requestBody.toString())
+                .ignoreHttpErrors(false)
+                .execute();
     }
 
     /**

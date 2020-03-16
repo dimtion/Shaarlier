@@ -77,81 +77,6 @@ public class AddAccountActivity extends AppCompatActivity {
         }
     }
 
-    private class networkHandler extends Handler{
-        private final Activity mParent;
-
-        public networkHandler(Activity parent){
-            this.mParent = parent;
-        }
-
-        /**
-         * Handle the arrival of a message coming from the network service.
-         * @param msg the message given by the service
-         */
-        @Override
-        public void handleMessage(Message msg){
-            findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
-
-            // Show the returned error
-            switch (msg.arg1) {
-                case NetworkService.NO_ERROR:
-                    Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
-                    saveAccount();
-                    finish();
-                    break;
-                case NetworkService.NETWORK_ERROR:
-                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_connecting));
-                    enableSendReport((Exception) msg.obj);
-                    break;
-                case NetworkService.TOKEN_ERROR:
-                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_parsing_token));
-                    enableSendReport(new Exception("TOKEN ERROR"));
-                    break;
-                case NetworkService.LOGIN_ERROR:
-                    ((EditText) findViewById(R.id.usernameView)).setError(getString(R.string.error_login));
-                    ((EditText) findViewById(R.id.passwordView)).setError(getString(R.string.error_login));
-                    enableSendReport(new Exception("LOGIN ERROR"));
-                    break;
-                default:
-                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_unknown));
-                    Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
-                    enableSendReport(new Exception("UNKNOWN ERROR"));
-                    break;
-            }
-        }
-
-        private void enableSendReport(final Exception error) {
-            Button reportButton = findViewById(R.id.sendReportButton);
-            reportButton.setVisibility(View.VISIBLE);
-            reportButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
-
-                    builder.setMessage(R.string.report_issue).setTitle("REPORT - Shaarlier");
-
-                    final String extra = "Url Shaarli: " + urlShaarli;
-
-                    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(error, mParent, extra));
-                        }
-                    });
-                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            });
-
-        }
-    }
-
-
     /**
     * Fill the fields with the selected account when editing a new account
     */
@@ -161,6 +86,7 @@ public class AddAccountActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.usernameView)).setText(account.getUsername());
         ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
         ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
+        ((EditText) findViewById(R.id.restapiView)).setText(account.getRestAPIKey());
 
         if (!"".equals(account.getBasicAuthUsername())) {
             ((EditText) findViewById(R.id.basicUsernameView)).setText(account.getBasicAuthUsername());
@@ -169,12 +95,60 @@ public class AddAccountActivity extends AppCompatActivity {
             enableBasicAuth(findViewById(R.id.basicAuthSwitch));
         }
 
-        // Is it the default account ?
+        // default account?
         SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
         this.isDefaultAccount = (prefs.getLong(getString(R.string.p_default_account), -1) == account.getId());
         ((CheckBox) findViewById(R.id.defaultAccountCheck)).setChecked(this.isDefaultAccount);
 
         findViewById(R.id.deleteAccountButton).setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Action which handle the press on the try and save button
+     *
+     * @param view: needed for binding with interface actions
+     */
+    public void tryAndSaveAction(View view) {
+        hideKeyboard();
+        findViewById(R.id.tryingConfSpinner).setVisibility(View.VISIBLE);
+        findViewById(R.id.tryConfButton).setVisibility(View.GONE);
+
+        // Get the user inputs:
+        final String urlShaarliInput = ((EditText) findViewById(R.id.urlShaarliView)).getText().toString();
+        this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
+        this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
+        this.restAPIKey = ((EditText) findViewById(R.id.restapiView)).getText().toString();
+        if (((Switch) findViewById(R.id.basicAuthSwitch)).isChecked()) {
+            this.basicAuthUsername = ((EditText) findViewById(R.id.basicUsernameView)).getText().toString();
+            this.basicAuthPassword = ((EditText) findViewById(R.id.basicPasswordView)).getText().toString();
+        } else {
+            this.basicAuthUsername = "";
+            this.basicAuthPassword = "";
+        }
+        this.shortName = ((EditText) findViewById(R.id.shortNameView)).getText().toString();
+        this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
+        this.isValidateCert = !((CheckBox) findViewById(R.id.disableCertValidation)).isChecked();
+
+        this.urlShaarli = NetworkUtils.toUrl(urlShaarliInput);
+
+        ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
+
+        // Create a fake account:
+        ShaarliAccount accountToTest = new ShaarliAccount();
+        accountToTest.setUrlShaarli(this.urlShaarli);
+        accountToTest.setUsername(this.username);
+        accountToTest.setPassword(this.password);
+        accountToTest.setRestAPIKey(this.restAPIKey);
+        accountToTest.setValidateCert(this.isValidateCert);
+        accountToTest.setBasicAuthUsername(this.basicAuthUsername);
+        accountToTest.setBasicAuthPassword(this.basicAuthPassword);
+
+        // Try the configuration
+        Intent i = new Intent(this, NetworkService.class);
+        i.putExtra("action", NetworkService.INTENT_CHECK);
+        i.putExtra("account", accountToTest);
+        i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
+        startService(i);
     }
 
     /**
@@ -254,52 +228,80 @@ public class AddAccountActivity extends AppCompatActivity {
         findViewById(R.id.basicPasswordView).setVisibility(checked ? View.VISIBLE : View.GONE);
     }
 
+    private class networkHandler extends Handler {
+        private final Activity mParent;
 
-    /**
-     * Action which handle the press on the try and save button
-     * @param view: needed for binding with interface actions
-     */
-    public void tryAndSaveAction(View view) {
-        hideKeyboard();
-        findViewById(R.id.tryingConfSpinner).setVisibility(View.VISIBLE);
-        findViewById(R.id.tryConfButton).setVisibility(View.GONE);
-
-        // Get the user inputs:
-        final String urlShaarliInput = ((EditText) findViewById(R.id.urlShaarliView)).getText().toString();
-        this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
-        this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
-        this.restAPIKey = ((EditText) findViewById(R.id.restapiView)).getText().toString();
-        if (((Switch)findViewById(R.id.basicAuthSwitch)).isChecked()) {
-            this.basicAuthUsername = ((EditText) findViewById(R.id.basicUsernameView)).getText().toString();
-            this.basicAuthPassword = ((EditText) findViewById(R.id.basicPasswordView)).getText().toString();
+        public networkHandler(Activity parent) {
+            this.mParent = parent;
         }
-        else {
-            this.basicAuthUsername = "";
-            this.basicAuthPassword = "";
+
+        /**
+         * Handle the arrival of a message coming from the network service.
+         *
+         * @param msg the message given by the service
+         */
+        @Override
+        public void handleMessage(Message msg) {
+            findViewById(R.id.tryConfButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.tryingConfSpinner).setVisibility(View.GONE);
+
+            // Show the returned error
+            switch (msg.arg1) {
+                case NetworkService.NO_ERROR:
+                    Toast.makeText(getApplicationContext(), R.string.success_test, Toast.LENGTH_LONG).show();
+                    saveAccount();
+                    finish();
+                    break;
+                case NetworkService.NETWORK_ERROR:
+                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_connecting));
+                    enableSendReport((Exception) msg.obj);
+                    break;
+                case NetworkService.TOKEN_ERROR:
+                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_parsing_token));
+                    enableSendReport(new Exception("TOKEN ERROR"));
+                    break;
+                case NetworkService.LOGIN_ERROR:
+                    ((EditText) findViewById(R.id.usernameView)).setError(getString(R.string.error_login));
+                    ((EditText) findViewById(R.id.passwordView)).setError(getString(R.string.error_login));
+                    ((EditText) findViewById(R.id.restapiView)).setError(getString(R.string.error_login));
+                    enableSendReport(new Exception("LOGIN ERROR"));
+                    break;
+                default:
+                    ((EditText) findViewById(R.id.urlShaarliView)).setError(getString(R.string.error_unknown));
+                    Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+                    enableSendReport(new Exception("UNKNOWN ERROR"));
+                    break;
+            }
         }
-        this.shortName = ((EditText) findViewById(R.id.shortNameView)).getText().toString();
-        this.isDefaultAccount = ((CheckBox) findViewById(R.id.defaultAccountCheck)).isChecked();
-        this.isValidateCert = !((CheckBox) findViewById(R.id.disableCertValidation)).isChecked();
 
-        this.urlShaarli = NetworkUtils.toUrl(urlShaarliInput);
+        private void enableSendReport(final Exception error) {
+            Button reportButton = findViewById(R.id.sendReportButton);
+            reportButton.setVisibility(View.VISIBLE);
+            reportButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mParent);
 
-        ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
+                    builder.setMessage(R.string.report_issue).setTitle("REPORT - Shaarlier");
 
-        // Create a fake account:
-        ShaarliAccount accountToTest = new ShaarliAccount();
-        accountToTest.setUrlShaarli(this.urlShaarli);
-        accountToTest.setUsername(this.username);
-        accountToTest.setPassword(this.password);
-        accountToTest.setValidateCert(this.isValidateCert);
-        accountToTest.setBasicAuthUsername(this.basicAuthUsername);
-        accountToTest.setBasicAuthPassword(this.basicAuthPassword);
+                    final String extra = "Url Shaarli: " + urlShaarli;
 
-        // Try the configuration
-        Intent i = new Intent(this, NetworkService.class);
-        i.putExtra("action", NetworkService.INTENT_CHECK);
-        i.putExtra("account", accountToTest);
-        i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
-        startService(i);
+                    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(error, mParent, extra));
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+
+        }
     }
 
     /**

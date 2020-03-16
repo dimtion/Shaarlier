@@ -26,8 +26,7 @@ public class MockNetworkManager implements NetworkManager {
     }
 
     @Override
-    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet, boolean toot) throws IOException {
-
+    public void pushLink(Link link) {
     }
 
     @Override

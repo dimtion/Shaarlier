@@ -436,7 +436,7 @@ public class ShareActivity extends AppCompatActivity {
     }
 
     /**
-     * Load everithing from the interface and share the link
+     * Load everything from the interface and share the link
      */
     private void saveAndShare() {
         Link link = new Link(
@@ -476,14 +476,7 @@ public class ShareActivity extends AppCompatActivity {
     private void sendLink(@NonNull Link link) {
         Intent networkIntent = new Intent(this, NetworkService.class);
         networkIntent.putExtra("action", NetworkService.INTENT_POST);
-        networkIntent.putExtra("sharedUrl", link.getUrl());
-        networkIntent.putExtra("title", link.getTitle());
-        networkIntent.putExtra("description", link.getDescription());
-        networkIntent.putExtra("tags", link.getTags());
-        networkIntent.putExtra("privateShare", link.isPrivate());
-        networkIntent.putExtra("tweet", link.isTweet());
-        networkIntent.putExtra("toot", link.isToot());
-        networkIntent.putExtra("chosenAccountId", link.getAccount().getId());
+        networkIntent.putExtra("link", link);
         networkIntent.putExtra(
                 NetworkService.EXTRA_MESSENGER,
                 new Messenger(new networkHandler())

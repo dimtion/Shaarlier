@@ -103,13 +103,12 @@ public abstract class NetworkUtils {
 
     /**
      * Select the correct network manager based on the passed account
-     *
-     * @param account
-     * @return
      */
     public static NetworkManager getNetworkManager(ShaarliAccount account) {
-        // TODO: for debugging purposes
-        account.setRestAPIKey("dummy test token");
+        if (1 == 0) { // Enabled only for debugging purposes
+            return new MockNetworkManager();
+        }
+
         if (account.getRestAPIKey() != null && account.getRestAPIKey().length() > 0) {
             return new RestAPINetworkManager(account);
         } else {

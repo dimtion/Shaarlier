@@ -27,15 +27,7 @@ public interface NetworkManager {
 
     Link prefetchLinkData(Link link) throws IOException;
 
-    void postLink(
-            String sharedUrl,
-            String sharedTitle,
-            String sharedDescription,
-            String sharedTags,
-            boolean privateShare,
-            boolean tweet,
-            boolean toot
-    ) throws IOException;
+    void pushLink(Link link) throws IOException;
 
     List<String> retrieveTags() throws Exception;
 }

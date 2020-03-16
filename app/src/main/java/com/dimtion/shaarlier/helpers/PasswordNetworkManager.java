@@ -160,13 +160,12 @@ public class PasswordNetworkManager implements NetworkManager {
      * TODO: use the prefetch function
      */
     @Override
-    public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet, boolean toot)
-            throws IOException {
-        String encodedShareUrl = URLEncoder.encode(sharedUrl, "UTF-8");
+    public void pushLink(Link link) throws IOException {
+        String encodedShareUrl = URLEncoder.encode(link.getUrl(), "UTF-8");
         retrievePostLinkToken(encodedShareUrl);
 
-        if (NetworkUtils.isUrl(sharedUrl)) { // In case the url isn't really one, just post the one chosen by the server.
-            this.mSharedUrl = sharedUrl;
+        if (NetworkUtils.isUrl(link.getUrl())) { // In case the url isn't really one, just post the one chosen by the server.
+            this.mSharedUrl = link.getUrl();
         }
 
         final String postUrl = this.mShaarliUrl + "?post=" + encodedShareUrl;
@@ -174,14 +173,14 @@ public class PasswordNetworkManager implements NetworkManager {
         Connection postPageConn = this.newConnection(postUrl, Connection.Method.POST)
                 .data("save_edit", "Save")
                 .data("token", this.mToken)
-                .data("lf_tags", sharedTags)
+                .data("lf_tags", link.getTags())
                 .data("lf_linkdate", this.mDatePostLink)
                 .data("lf_url", this.mSharedUrl)
-                .data("lf_title", sharedTitle)
-                .data("lf_description", sharedDescription);
-        if (privateShare) postPageConn.data("lf_private", "on");
-        if (tweet) postPageConn.data("tweet", "on");
-        if (toot) postPageConn.data("toot", "on");
+                .data("lf_title", link.getTitle())
+                .data("lf_description", link.getDescription());
+        if (link.isPrivate()) postPageConn.data("lf_private", "on");
+        if (link.isTweet()) postPageConn.data("tweet", "on");
+        if (link.isToot()) postPageConn.data("toot", "on");
         postPageConn.execute(); // Then we post
     }
 
