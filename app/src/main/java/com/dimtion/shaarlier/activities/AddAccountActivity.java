@@ -37,6 +37,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private String urlShaarli;
     private String username;
     private String password;
+    private String restAPIKey;
     private String basicAuthUsername;
     private String basicAuthPassword;
     private String shortName;
@@ -65,7 +66,6 @@ public class AddAccountActivity extends AppCompatActivity {
             }
             fillFields();
         } else {
-
             AccountsSource source = new AccountsSource(getApplicationContext());
             source.rOpen();
             List<ShaarliAccount> allAccounts = source.getAllAccounts();
@@ -178,7 +178,7 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
     /**
-     * Handle the action of deletion : show a confirmation dialog then delete (if wanted)
+     * Handle the action of deletion: show a confirmation dialog then delete (if wanted)
      * @param view : The view needed for handling interface actions
      */
     public void deleteAccountAction(View view) {
@@ -235,7 +235,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
     /**
     * Obviously hide the keyboard
-    * From : http://stackoverflow.com/a/7696791/1582589
+     * From: http://stackoverflow.com/a/7696791/1582589
     */
     private void hideKeyboard() {
         // Check if no view has focus:
@@ -250,10 +250,6 @@ public class AddAccountActivity extends AppCompatActivity {
         boolean checked = ((Switch) toggle).isChecked();
         findViewById(R.id.basicUsernameView).setEnabled(checked);
         findViewById(R.id.basicPasswordView).setEnabled(checked);
-        findViewById(R.id.basicUsernameTextView).setEnabled(checked);
-        findViewById(R.id.basicPasswordTextView).setEnabled(checked);
-        findViewById(R.id.basicUsernameTextView).setVisibility(checked ? View.VISIBLE : View.GONE);
-        findViewById(R.id.basicPasswordTextView).setVisibility(checked ? View.VISIBLE : View.GONE);
         findViewById(R.id.basicUsernameView).setVisibility(checked ? View.VISIBLE : View.GONE);
         findViewById(R.id.basicPasswordView).setVisibility(checked ? View.VISIBLE : View.GONE);
     }
@@ -261,18 +257,18 @@ public class AddAccountActivity extends AppCompatActivity {
 
     /**
      * Action which handle the press on the try and save button
-     * @param view : needed for binding with interface actions
+     * @param view: needed for binding with interface actions
      */
     public void tryAndSaveAction(View view) {
-
         hideKeyboard();
         findViewById(R.id.tryingConfSpinner).setVisibility(View.VISIBLE);
         findViewById(R.id.tryConfButton).setVisibility(View.GONE);
 
-        // Get the user inputs :
+        // Get the user inputs:
         final String urlShaarliInput = ((EditText) findViewById(R.id.urlShaarliView)).getText().toString();
         this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
         this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
+        this.restAPIKey = ((EditText) findViewById(R.id.restapiView)).getText().toString();
         if (((Switch)findViewById(R.id.basicAuthSwitch)).isChecked()) {
             this.basicAuthUsername = ((EditText) findViewById(R.id.basicUsernameView)).getText().toString();
             this.basicAuthPassword = ((EditText) findViewById(R.id.basicPasswordView)).getText().toString();
@@ -289,7 +285,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
-        // Create a fake account :
+        // Create a fake account:
         ShaarliAccount accountToTest = new ShaarliAccount();
         accountToTest.setUrlShaarli(this.urlShaarli);
         accountToTest.setUsername(this.username);
@@ -298,7 +294,7 @@ public class AddAccountActivity extends AppCompatActivity {
         accountToTest.setBasicAuthUsername(this.basicAuthUsername);
         accountToTest.setBasicAuthPassword(this.basicAuthPassword);
 
-        // Try the configuration :
+        // Try the configuration
         Intent i = new Intent(this, NetworkService.class);
         i.putExtra("action", NetworkService.INTENT_CHECK);
         i.putExtra("account", accountToTest);
@@ -322,15 +318,24 @@ public class AddAccountActivity extends AppCompatActivity {
                 account.setBasicAuthPassword(this.basicAuthPassword);
                 account.setShortName(this.shortName);
                 account.setValidateCert(this.isValidateCert);
+                account.setRestAPIKey(this.restAPIKey);
                 accountsSource.editAccount(account);
             } else {
-                this.account = accountsSource.createAccount(this.urlShaarli, this.username, this.password, this.basicAuthUsername, this.basicAuthPassword, this.shortName, this.isValidateCert);
+                this.account = accountsSource.createAccount(
+                        this.urlShaarli,
+                        this.username,
+                        this.password,
+                        this.basicAuthUsername,
+                        this.basicAuthPassword,
+                        this.shortName,
+                        this.isValidateCert,
+                        this.restAPIKey
+                );
             }
         } catch (Exception e) {
             Log.e("ENCRYPTION ERROR", e.getMessage());
         } finally {
             accountsSource.close();
-
         }
 
         // Set the default account if needed

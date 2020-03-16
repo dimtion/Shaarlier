@@ -1,10 +1,12 @@
 package com.dimtion.shaarlier.services;
 
 import android.app.IntentService;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -42,6 +44,9 @@ public class NetworkService extends IntentService {
     public static final int INTENT_PREFETCH = 203;
     public static final int INTENT_RETRIEVE_TITLE_AND_DESCRIPTION = 204;
 
+    // Notification channels
+    public static final String CHANNEL_ID = "error_channel";
+
     private String loadedTitle;
 
     private Context mContext;
@@ -59,6 +64,7 @@ public class NetworkService extends IntentService {
         super.onCreate();
         mContext = this;
         mToastHandler = new Handler(Looper.getMainLooper());
+        this.createNotificationChannel();
     }
 
     @Override
@@ -255,7 +261,7 @@ public class NetworkService extends IntentService {
 
     private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare, boolean tweet, boolean toot){
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Failed to share " + title)
                         .setContentText("Press to try again")
@@ -292,5 +298,21 @@ public class NetworkService extends IntentService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(sharedUrl.hashCode(), mBuilder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notification_channel_error_name);
+            String description = getString(R.string.notification_channel_error_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

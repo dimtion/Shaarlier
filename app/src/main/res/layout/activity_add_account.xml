@@ -24,12 +24,6 @@
             android:text="@string/send_report"
             android:visibility="gone" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/your_shaarli_url"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <EditText
             android:id="@+id/urlShaarliView"
             android:layout_width="match_parent"
@@ -37,44 +31,39 @@
             android:hint="@string/url_hint"
             android:inputType="textUri" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <EditText
             android:id="@+id/usernameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/username_hint"
+            android:hint="@string/user_name"
             android:inputType="textPersonName" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_password"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/passwordView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/user_password"
             android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/restapiView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_restAPIKey"
+            android:inputType="textNoSuggestions" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/text_account_name"
+            android:layout_marginTop="20dp"
+            android:text="@string/advanced"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/shortNameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/text_account_name"
             android:inputType="textCapWords" />
 
         <Space
@@ -103,32 +92,13 @@
                 android:onClick="enableBasicAuth" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_name"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/basicUsernameTextView"
-            android:enabled="false"
-            android:visibility="gone"/>
-
         <EditText
             android:id="@+id/basicUsernameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:enabled="false"
-            android:visibility="gone"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_password"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/basicPasswordTextView"
-            android:enabled="false"
+            android:hint="@string/user_name"
             android:visibility="gone"/>
 
         <EditText
@@ -137,6 +107,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:enabled="false"
+            android:hint="@string/user_password"
             android:visibility="gone" />
 
         <CheckBox

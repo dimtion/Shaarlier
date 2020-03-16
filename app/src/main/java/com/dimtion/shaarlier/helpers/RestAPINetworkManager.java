@@ -26,7 +26,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class RestAPINetworkManager implements NetworkManager {
     private static final String TAGS_URL = "api/v1/tags";
     private static final String INFO_URL = "api/v1/info";
-    private static final String LINK_SEARCH = "api/v1/links";
+    private static final String LINK_URL = "api/v1/links";
 
     private ShaarliAccount mAccount;
 
@@ -73,7 +73,7 @@ public class RestAPINetworkManager implements NetworkManager {
         // - If the scheme used is not the same that on the saved link
         // - If there are tracking tags that don't match
         // We might want to open an Issue on Shaarli to get feedback
-        String url = new URL(this.mAccount.getUrlShaarli() + LINK_SEARCH).toExternalForm();
+        String url = new URL(this.mAccount.getUrlShaarli() + LINK_URL).toExternalForm();
         String body = this.newConnection(url, Connection.Method.GET)
                 .data("offset", "0")
                 .data("limit", "1")
@@ -109,7 +109,44 @@ public class RestAPINetworkManager implements NetworkManager {
 
     @Override
     public void postLink(String sharedUrl, String sharedTitle, String sharedDescription, String sharedTags, boolean privateShare, boolean tweet, boolean toot) throws IOException {
-        // TODO
+        String url = new URL(this.mAccount.getUrlShaarli() + LINK_URL).toExternalForm();
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("url", sharedUrl);
+            requestBody.put("title", sharedTitle);
+            requestBody.put("description", sharedDescription);
+            requestBody.put("tags", sharedTags.split(","));
+            requestBody.put("private", privateShare);
+            if (tweet) { // TODO tweet
+                Log.e("RequestAPI:post", "Tweet feature not implemented");
+            }
+            if (toot) { // TODO toot
+                Log.e("RequestAPI:post", "Toot feature not implemented");
+            }
+        } catch (JSONException e) {
+            Log.e("RequestAPI:post", e.toString());
+        }
+        Connection.Response resp = this.newConnection(url, Connection.Method.POST)
+                .requestBody(requestBody.toString())
+                .ignoreHttpErrors(true)
+                .execute();
+        if (200 <= resp.statusCode() && resp.statusCode() <= 201) { // HTTP Ok
+            return; // We are done here
+        } else if (resp.statusCode() != 409) { // 409 HTTP Conflict
+            // every other error we raise again
+            throw new HttpStatusException("Error requesting: " + url + " : " + resp.statusCode(), resp.statusCode(), url);
+        }
+
+        // HTTP Conflict: try again using a PUT request
+        try {
+            Integer linkId = new JSONObject(resp.body()).getInt("id");
+            this.newConnection(url + "/" + linkId, Connection.Method.PUT)
+                    .requestBody(requestBody.toString())
+                    .ignoreHttpErrors(false)
+                    .execute();
+        } catch (JSONException e) {
+            Log.e("RequestAPI:post", e.toString());
+        }
     }
 
     /**
@@ -122,6 +159,7 @@ public class RestAPINetworkManager implements NetworkManager {
     private Connection newConnection(String url, Connection.Method method) {
         return Jsoup.connect(url)
                 .header("Authorization", "Bearer " + this.getJwt())
+                .header("Content-Type", "application/json")
                 .ignoreContentType(true) // application/json
                 .validateTLSCertificates(this.mAccount.isValidateCert())
                 .timeout(NetworkUtils.TIME_OUT)
