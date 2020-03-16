@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface NetworkManager {
-    // String[] static loadTitleAndDescription(@NonNull String url);
-
     /**
      * returns whether the distant Shaarli server is compatible with this network manager
      *
@@ -20,7 +18,7 @@ public interface NetworkManager {
      * Check if the provided credentials are valid
      * Can set some state in the NetworkManager (like a cookie if necessary)
      *
-     * @return
+     * @return true if the credentials are correct, false otherwise
      * @throws IOException
      */
     boolean login() throws IOException;
