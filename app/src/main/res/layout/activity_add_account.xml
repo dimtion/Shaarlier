@@ -24,12 +24,6 @@
             android:text="@string/send_report"
             android:visibility="gone" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/your_shaarli_url"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <EditText
             android:id="@+id/urlShaarliView"
             android:layout_width="match_parent"
@@ -37,81 +31,67 @@
             android:hint="@string/url_hint"
             android:inputType="textUri" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <EditText
             android:id="@+id/usernameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/username_hint"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_password"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:hint="@string/user_name"
+            android:inputType="textPersonName"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/passwordView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:hint="@string/user_password"
+            android:inputType="textPassword"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/restapiView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_restAPIKey"
+            android:inputType="textNoSuggestions" />
+
+        <Switch
+            android:id="@+id/passwordAuthCheckbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="togglePasswordAuth"
+            android:text="@string/use_username_password_deprecated" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/text_account_name"
+            android:layout_marginTop="20dp"
+            android:text="@string/advanced"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/shortNameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/text_account_name"
             android:inputType="textCapWords" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <Switch
+            android:id="@+id/basicAuthSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/basic_auth"
-                android:id="@+id/textView2" />
-
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/basicAuthSwitch"
-                android:checked="false"
-                android:layout_gravity="right"
-                android:onClick="enableBasicAuth" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_name"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/basicUsernameTextView"
-            android:enabled="false"
-            android:visibility="gone"/>
+            android:checked="false"
+            android:onClick="enableBasicAuth"
+            android:text="@string/basic_auth"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/basicUsernameView"
@@ -119,16 +99,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:enabled="false"
-            android:visibility="gone"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/user_password"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/basicPasswordTextView"
-            android:enabled="false"
+            android:hint="@string/user_name"
             android:visibility="gone"/>
 
         <EditText
@@ -137,6 +108,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:enabled="false"
+            android:hint="@string/user_password"
             android:visibility="gone" />
 
         <CheckBox
@@ -179,8 +151,6 @@
             android:onClick="deleteAccountAction"
             android:text="@string/button_delete_account"
             android:visibility="gone" />
-
-
 
     </LinearLayout>
 </ScrollView>

@@ -23,8 +23,8 @@
     <string name="text_show_share_dialog">Show dialog box when sharing</string>
     <string name="title_activity_add">Add to Shaarli</string>
     <string name="title_activity_share">Add to Shaarli</string>
-    <string name="user_name">Username :</string>
-    <string name="user_password">Password :</string>
+    <string name="user_name">Username</string>
+    <string name="user_password">Password</string>
     <string name="basic_auth">HTTP Basic Authentication</string>
     <string name="your_shaarli_url">Your Shaarli url :</string>
 
@@ -78,13 +78,13 @@
     <string name="text_validate">Validate</string>
     <string name="text_no_account">There is no account to show</string>
     <string name="button_manage_accounts">Manage accounts</string>
-    <string name="text_account_name">Account name :</string>
+    <string name="text_account_name">Account name</string>
     <string name="check_default_account">Default account</string>
     <string name="button_delete_account">Delete account</string>
     <string name="title_activity_add_account">New account</string>
     <string name="text_confirm_deletion_account">Are you sure you want to delete this account ?</string>
     <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
-    <string name="check_disable_cert_validation">Disable certificate validation (unsecured)</string>
+    <string name="check_disable_cert_validation">Disable certificate validation (unsecure)</string>
     <string name="error_unknown">An unknown error has occurred</string>
     <string name="add_account">Add account</string>
     <string name="send_report">You think this is a bug ?</string>
@@ -102,4 +102,9 @@
     <string name="advanced">Advanced</string>
     <string name="action_open_shaarli">Open Shaarli</string>
     <string name="is_not_new_link">editing</string>
+    <string name="user_restAPIKey">Rest API Secret</string>
+
+    <string name="notification_channel_error_name">Share error</string>
+    <string name="notification_channel_error_description">Channel dedicated to sharing errors</string>
+    <string name="use_username_password_deprecated">Use username/password (deprecated)</string>
 </resources>

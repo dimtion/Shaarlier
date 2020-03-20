@@ -1,5 +1,7 @@
 package com.dimtion.shaarlier.utils;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 
 /**
@@ -15,14 +17,19 @@ public class ShaarliAccount implements Serializable {
     private String basicAuthUsername;
     private String basicAuthPassword;
     private String shortName;
+    private String restAPIKey;
     private byte[] initialVector;
     private boolean validateCert;
 
+    @NonNull
     @Override
     public String toString() {
-        if (this.shortName.equals(""))
-            return username;
-        return shortName;
+        if (!this.shortName.equals("")) {
+            return shortName;
+        } else if (!this.username.equals("")) {
+            return this.username;
+        }
+        return this.urlShaarli;
     }
 
     public long getId() {
@@ -95,5 +102,13 @@ public class ShaarliAccount implements Serializable {
 
     public void setValidateCert(boolean validateCert) {
         this.validateCert = validateCert;
+    }
+
+    public String getRestAPIKey() {
+        return restAPIKey;
+    }
+
+    public void setRestAPIKey(String restAPIKey) {
+        this.restAPIKey = restAPIKey;
     }
 }

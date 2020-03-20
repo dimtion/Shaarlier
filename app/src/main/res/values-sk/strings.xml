@@ -23,8 +23,8 @@
     <string name="text_show_share_dialog">Pri zdielaní zobraziť dialógové okno</string>
     <string name="title_activity_add">Pridať do Shaarli</string>
     <string name="title_activity_share">Pridať do Shaarli</string>
-    <string name="user_name">Meno:</string>
-    <string name="user_password">Heslo:</string>
+    <string name="user_name">Meno</string>
+    <string name="user_password">Heslo</string>
     <string name="basic_auth">Základné prihlásenie cez HTTP</string>
     <string name="your_shaarli_url">Adresa vášho Shaarli:</string>
 
@@ -78,7 +78,7 @@
     <string name="text_validate">Overiť</string>
     <string name="text_no_account">Žiadne účty</string>
     <string name="button_manage_accounts">Správca účtov</string>
-    <string name="text_account_name">Názov účtu:</string>
+    <string name="text_account_name">Názov účtu</string>
     <string name="check_default_account">Prednastavený účet</string>
     <string name="button_delete_account">Vymazať účet</string>
     <string name="title_activity_add_account">Nový účet</string>
@@ -102,4 +102,7 @@
     <string name="advanced">Rozšírené</string>
     <string name="action_open_shaarli">Otvoriť Shaarli</string>
     <string name="is_not_new_link">upraviť</string>
+    <string name="notification_channel_error_name">Share error</string>
+    <string name="notification_channel_error_description">Channel dedicated to sharing errors</string>
+    <string name="use_username_password_deprecated">Use username/password (deprecated)</string>
 </resources>

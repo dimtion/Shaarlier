@@ -1,10 +1,12 @@
 package com.dimtion.shaarlier.services;
 
 import android.app.IntentService;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.helpers.AccountsSource;
 import com.dimtion.shaarlier.helpers.NetworkManager;
+import com.dimtion.shaarlier.helpers.NetworkUtils;
 import com.dimtion.shaarlier.utils.Link;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
 
@@ -34,12 +37,13 @@ public class NetworkService extends IntentService {
     public static final int RETRIEVE_TITLE_ID = 100;
     public static final int PREFETCH_LINK = 101;
 
-    public static final int MANAGER_TIMEOUT = 60_000; // 60 secs for mobile connections
-
     public static final int INTENT_CHECK = 201;
     public static final int INTENT_POST = 202;
     public static final int INTENT_PREFETCH = 203;
     public static final int INTENT_RETRIEVE_TITLE_AND_DESCRIPTION = 204;
+
+    // Notification channels
+    public static final String CHANNEL_ID = "error_channel";
 
     private String loadedTitle;
 
@@ -58,6 +62,7 @@ public class NetworkService extends IntentService {
         super.onCreate();
         mContext = this;
         mToastHandler = new Handler(Looper.getMainLooper());
+        this.createNotificationChannel();
     }
 
     @Override
@@ -73,20 +78,14 @@ public class NetworkService extends IntentService {
                 sendBackMessage(intent, shaarliLstatus, object);
                 break;
             case INTENT_POST:
-                String sharedUrl = intent.getStringExtra("sharedUrl");
-                String title = intent.getStringExtra("title");
-                String description = intent.getStringExtra("description");
-                String tags = intent.getStringExtra("tags");
-                boolean isPrivate = intent.getBooleanExtra("privateShare", true);
-                boolean tweet = intent.getBooleanExtra("tweet", true);
-                boolean toot = intent.getBooleanExtra("toot", true);
+                Link link = (Link) intent.getSerializableExtra("link");
 
-                if ("".equals(title) && this.loadedTitle != null) {
-                    title = this.loadedTitle;
+                if ("".equals(link.getTitle()) && this.loadedTitle != null) {
+                    link.setTitle(this.loadedTitle);
                     this.loadedTitle = null;
                 }
-                if ("".equals(description) && this.loadedDescription != null) {
-                    description = this.loadedDescription;
+                if ("".equals(link.getDescription()) && this.loadedDescription != null) {
+                    link.setDescription(this.loadedDescription);
                     this.loadedDescription = null;
                 }
                 long accountId = intent.getLongExtra("chosenAccountId", -1);
@@ -96,9 +95,9 @@ public class NetworkService extends IntentService {
                     mShaarliAccount = (accountId != -1 ? acs.getShaarliAccountById(accountId) : acs.getDefaultAccount());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    sendNotificationShareError(sharedUrl, title, description, tags, isPrivate, tweet, toot);
+                    sendNotificationShareError(link);
                 }
-                postLink(sharedUrl, title, description, tags, isPrivate, tweet, toot);
+                postLink(link);
                 stopSelf();
                 break;
             case INTENT_PREFETCH:
@@ -175,10 +174,9 @@ public class NetworkService extends IntentService {
      * @return NO_ERROR if nothing is wrong
      */
     private int checkShaarli(ShaarliAccount account){
-
-        NetworkManager manager = new NetworkManager(account);
+        NetworkManager manager = NetworkUtils.getNetworkManager(account);
         try {
-            if (!manager.retrieveLoginToken()) {
+            if (!manager.isCompatibleShaarli()) {
                 return TOKEN_ERROR;
             }
             if (!manager.login()) {
@@ -187,7 +185,6 @@ public class NetworkService extends IntentService {
         } catch (IOException e) {
             mError = e;
             return NETWORK_ERROR;
-
         }
         return NO_ERROR;
     }
@@ -203,10 +200,9 @@ public class NetworkService extends IntentService {
     private Link prefetchLink(Link sharedLink) {
         Link prefetchedLink = new Link(sharedLink);
         try {
-            NetworkManager manager = new NetworkManager(sharedLink.getAccount());
-            manager.setTimeout(MANAGER_TIMEOUT);
+            NetworkManager manager = NetworkUtils.getNetworkManager(sharedLink.getAccount());
 
-            if (manager.retrieveLoginToken() && manager.login()) {
+            if (manager.isCompatibleShaarli() && manager.login()) {
                 prefetchedLink = manager.prefetchLinkData(sharedLink);
             } else {
                 mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
@@ -220,14 +216,13 @@ public class NetworkService extends IntentService {
     }
 
 
-    private void postLink(String sharedUrl, String title, String description, String tags, boolean privateShare, boolean tweet, boolean toot){
+    private void postLink(Link link) {
         boolean posted = true;  // Assume it is shared
         try {
             // Connect the user to the site :
-            NetworkManager manager = new NetworkManager(mShaarliAccount);
-            manager.setTimeout(MANAGER_TIMEOUT);
-            if(manager.retrieveLoginToken() && manager.login()) {
-                manager.postLink(sharedUrl, title, description, tags, privateShare, tweet, toot);
+            NetworkManager manager = NetworkUtils.getNetworkManager(mShaarliAccount);
+            if (manager.isCompatibleShaarli() && manager.login()) {
+                manager.pushLink(link);
             } else {
                 mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
                 posted =  false;
@@ -239,7 +234,7 @@ public class NetworkService extends IntentService {
         }
 
         if (!posted) {
-            sendNotificationShareError(sharedUrl, title, description, tags, privateShare, tweet, toot);
+            sendNotificationShareError(link);
         } else {
             mToastHandler.post(new DisplayToast(getString(R.string.add_success)));
             Log.i("SUCCESS", "Success while sharing link");
@@ -253,14 +248,14 @@ public class NetworkService extends IntentService {
      */
     @NonNull
     private String[] getPageTitleAndDescription(String url){
-        return NetworkManager.loadTitleAndDescription(url);
+        return NetworkUtils.loadTitleAndDescription(url);
     }
 
-    private void sendNotificationShareError(String sharedUrl, String title, String description, String tags, boolean privateShare, boolean tweet, boolean toot){
+    private void sendNotificationShareError(Link link) {
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Failed to share " + title)
+                        .setContentTitle("Failed to share " + link.getTitle())
                         .setContentText("Press to try again")
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_LOW);
@@ -269,17 +264,10 @@ public class NetworkService extends IntentService {
         Intent resultIntent = new Intent(this, NetworkService.class);
 
         resultIntent.putExtra("action", NetworkService.INTENT_POST);
-        resultIntent.putExtra("sharedUrl", sharedUrl);
-        resultIntent.putExtra("title", title);
-        resultIntent.putExtra("description", description);
-        resultIntent.putExtra("tags", tags);
-        resultIntent.putExtra("privateShare", privateShare);
-        resultIntent.putExtra("tweet", tweet);
-        resultIntent.putExtra("toot", toot);
-        resultIntent.putExtra("chosenAccountId", this.mShaarliAccount.getId());
+        resultIntent.putExtra("link", link);
 
-        resultIntent.putExtra(Intent.EXTRA_TEXT, sharedUrl);
-        resultIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+        resultIntent.putExtra(Intent.EXTRA_TEXT, link.getUrl());
+        resultIntent.putExtra(Intent.EXTRA_SUBJECT, link.getTitle());
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
@@ -294,6 +282,22 @@ public class NetworkService extends IntentService {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(sharedUrl.hashCode(), mBuilder.build());
+        mNotificationManager.notify(link.getUrl().hashCode(), mBuilder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notification_channel_error_name);
+            String description = getString(R.string.notification_channel_error_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

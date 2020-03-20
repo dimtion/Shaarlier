@@ -37,6 +37,7 @@ public class AccountsSource {
             MySQLiteHelper.ACCOUNTS_COLUMN_VALIDATE_CERT,
             MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME,
             MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_PASSWORD_CYPHER,
+            MySQLiteHelper.ACCOUNTS_COLUMN_REST_API_KEY,
     };
     private final MySQLiteHelper dbHelper;
     private final Context mContext;
@@ -59,11 +60,12 @@ public class AccountsSource {
         dbHelper.close();
     }
 
-    public ShaarliAccount createAccount(String urlShaarli, String username, String password, String basicAuthUsername, String basicAuthPassword, String shortName, boolean validateCert) throws Exception {
+    public ShaarliAccount createAccount(String urlShaarli, String username, String password, String basicAuthUsername, String basicAuthPassword, String shortName, boolean validateCert, String restAPIKey) throws Exception {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, urlShaarli);
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, username);
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME, basicAuthUsername);
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_REST_API_KEY, restAPIKey);
 
         // Generate the iv :
         byte[] iv = EncryptionHelper.generateInitialVector();
@@ -144,6 +146,7 @@ public class AccountsSource {
         account.setInitialVector(cursor.getBlob(5));
         account.setValidateCert(cursor.getInt(6) == 1);  // Convert int to bool
         account.setBasicAuthUsername(cursor.getString(7));
+        account.setRestAPIKey(cursor.getString(9));
 
         byte[] password_cypher = cursor.getBlob(3);
         String password;
@@ -179,6 +182,7 @@ public class AccountsSource {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_URL_SHAARLI, account.getUrlShaarli());
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_USERNAME, account.getUsername());
+        values.put(MySQLiteHelper.ACCOUNTS_COLUMN_REST_API_KEY, account.getRestAPIKey());
         values.put(MySQLiteHelper.ACCOUNTS_COLUMN_BASIC_AUTH_USERNAME, account.getBasicAuthUsername());
 
         // Generate a new iv :
