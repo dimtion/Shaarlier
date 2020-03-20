@@ -47,7 +47,6 @@ public class AddAccountActivity extends AppCompatActivity {
 
     private Boolean isEditing = false;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +86,11 @@ public class AddAccountActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.passwordView)).setText(account.getPassword());
         ((EditText) findViewById(R.id.shortNameView)).setText(account.getShortName());
         ((EditText) findViewById(R.id.restapiView)).setText(account.getRestAPIKey());
+
+        ((Switch) findViewById(R.id.passwordAuthCheckbox)).setChecked(
+                !(account.getRestAPIKey().length() > 0)
+        );
+        togglePasswordAuth(findViewById(R.id.passwordAuthCheckbox));
 
         if (!"".equals(account.getBasicAuthUsername())) {
             ((EditText) findViewById(R.id.basicUsernameView)).setText(account.getBasicAuthUsername());
@@ -228,6 +232,21 @@ public class AddAccountActivity extends AppCompatActivity {
         findViewById(R.id.basicPasswordView).setVisibility(checked ? View.VISIBLE : View.GONE);
     }
 
+    public void togglePasswordAuth(View toggle) {
+        boolean checked = ((Switch) toggle).isChecked();
+        findViewById(R.id.usernameView).setEnabled(checked);
+        findViewById(R.id.usernameView).setVisibility(checked ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.passwordView).setEnabled(checked);
+        findViewById(R.id.passwordView).setVisibility(checked ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.basicAuthSwitch).setEnabled(checked);
+        findViewById(R.id.basicAuthSwitch).setVisibility(checked ? View.VISIBLE : View.GONE);
+
+        findViewById(R.id.restapiView).setEnabled(!checked);
+        findViewById(R.id.restapiView).setVisibility(!checked ? View.VISIBLE : View.GONE);
+    }
+
     private class networkHandler extends Handler {
         private final Activity mParent;
 
@@ -300,7 +319,6 @@ public class AddAccountActivity extends AppCompatActivity {
                     dialog.show();
                 }
             });
-
         }
     }
 

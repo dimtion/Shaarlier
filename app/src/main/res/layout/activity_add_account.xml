@@ -36,14 +36,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/user_name"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/passwordView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/user_password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/restapiView"
@@ -51,6 +53,18 @@
             android:layout_height="wrap_content"
             android:hint="@string/user_restAPIKey"
             android:inputType="textNoSuggestions" />
+
+        <Switch
+            android:id="@+id/passwordAuthCheckbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="togglePasswordAuth"
+            android:text="@string/use_username_password_deprecated" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
 
         <TextView
             android:layout_width="match_parent"
@@ -70,27 +84,14 @@
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <Switch
+            android:id="@+id/basicAuthSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/basic_auth"
-                android:id="@+id/textView2" />
-
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/basicAuthSwitch"
-                android:checked="false"
-                android:layout_gravity="right"
-                android:onClick="enableBasicAuth" />
-        </LinearLayout>
+            android:checked="false"
+            android:onClick="enableBasicAuth"
+            android:text="@string/basic_auth"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/basicUsernameView"
@@ -150,8 +151,6 @@
             android:onClick="deleteAccountAction"
             android:text="@string/button_delete_account"
             android:visibility="gone" />
-
-
 
     </LinearLayout>
 </ScrollView>
