@@ -60,7 +60,7 @@ public class AddAccountActivity extends AppCompatActivity {
             AccountsSource accountsSource = new AccountsSource(getApplicationContext());
             try {
                 account = accountsSource.getShaarliAccountById(accountId);
-            } catch (Exception e) {
+            } catch (Exception e) { // Editing an account that does not exist, creating a new one
                 account = null;
             }
             fillFields();

@@ -90,6 +90,7 @@
             android:layout_height="wrap_content"
             android:checked="false"
             android:onClick="enableBasicAuth"
+            android:visibility="gone"
             android:text="@string/basic_auth"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
