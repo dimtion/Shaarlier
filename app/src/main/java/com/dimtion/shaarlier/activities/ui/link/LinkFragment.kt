@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dimtion.shaarlier.R
+import com.dimtion.shaarlier.activities.MainActivity
 import com.dimtion.shaarlier.helpers.AccountsSource
 
 import com.dimtion.shaarlier.helpers.LinksSource
@@ -48,7 +49,13 @@ class LinkFragment : Fragment() {
         }
 
         val accountsSource = AccountsSource(this.context)
-        mShaarliAccount = accountsSource.defaultAccount
+        val defaultAccount = accountsSource.defaultAccount
+        if (defaultAccount != null) {
+            mShaarliAccount = accountsSource.defaultAccount
+        } else {
+            val intent = Intent(this.context, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -122,6 +129,7 @@ class LinkFragment : Fragment() {
 
     private fun updateLinks() {
         mRefreshLayout.isRefreshing = true
+        val accountsSource = AccountsSource(this.context)
         val intent = Intent(this.context, NetworkService::class.java)
         intent.putExtra("action", NetworkService.INTENT_GET_LINKS)
         intent.putExtra("account", mShaarliAccount)
