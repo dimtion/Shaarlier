@@ -1,6 +1,10 @@
 package com.dimtion.shaarlier.helpers;
 
+import android.support.annotation.Nullable;
+
 import com.dimtion.shaarlier.utils.Link;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,4 +32,6 @@ public interface NetworkManager {
     void pushLink(Link link) throws IOException;
 
     List<String> retrieveTags() throws Exception;
+
+    List<Link> getLinks(@Nullable Integer offset, @Nullable Integer limit) throws IOException, JSONException;
 }

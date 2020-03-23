@@ -12,6 +12,16 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.LinkListActivity"
+            android:label="@string/title_activity_link_list"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activities.ShareActivity"
             android:autoRemoveFromRecents="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -21,7 +31,9 @@
             android:taskAffinity="com.dimtion.Shaarlier.share">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
