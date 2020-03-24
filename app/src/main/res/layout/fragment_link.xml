@@ -8,6 +8,7 @@
     android:focusable="true"
     card_view:cardCornerRadius="4dp"
     card_view:cardUseCompatPadding="true"
+    android:foreground="?selectableItemBackground"
     card_view:contentPadding="8dp">
 
     <android.support.constraint.ConstraintLayout
@@ -36,7 +37,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="https://shaarli.dimtion.fr"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/CardUrl"
             card_view:layout_constraintEnd_toStartOf="@+id/thumbnail"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toBottomOf="@+id/title"
@@ -51,19 +52,19 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:text="Dummy content"
-            android:textAppearance="@style/CardTitleContent"
+            android:textAppearance="@style/CardContent"
             card_view:layout_constraintEnd_toEndOf='parent'
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toBottomOf="@+id/thumbnail" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Tag1, tag2"
             card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/content" />
+            android:orientation="horizontal"
+            card_view:layout_constraintTop_toBottomOf="@+id/content"></LinearLayout>
 
         <ImageView
             android:id="@+id/thumbnail"

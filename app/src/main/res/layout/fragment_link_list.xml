@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="8dp"
+    style="@style/AppTheme.LinkList"
     android:paddingRight="8dp">
 
     <android.support.v7.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"

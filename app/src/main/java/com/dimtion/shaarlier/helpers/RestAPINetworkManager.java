@@ -213,11 +213,16 @@ public class RestAPINetworkManager implements NetworkManager {
         JSONArray resp = new JSONArray(body);
         for (int i = 0; i < resp.length(); i++) {
             JSONObject jsonLink = resp.getJSONObject(i);
+            JSONArray jsonTags = jsonLink.getJSONArray("tags");
+            List<String> tags = new ArrayList<>();
+            for (int j = 0; j < jsonTags.length(); j++) {
+                tags.add(jsonTags.getString(j));
+            }
             Link link = new Link(
                     jsonLink.getString("url"),
                     jsonLink.getString("title"),
                     jsonLink.getString("description"),
-                    jsonLink.getString("tags"),
+                    StringUtil.join(tags, ", "),
                     jsonLink.getBoolean("private"),
                     null, // TODO
                     false,

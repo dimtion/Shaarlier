@@ -1,9 +1,11 @@
 package com.dimtion.shaarlier.activities.ui.link
 
+import android.support.v7.view.ContextThemeWrapper
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.dimtion.shaarlier.R
 
@@ -44,7 +46,11 @@ class MyLinkRecyclerViewAdapter(
         holder.mTitleView.text = link.title
         holder.mContentView.text = link.description
         holder.mUrlView.text = link.url
-        holder.mTagsView.text = link.tags
+        for (tag in link.tagList) {
+            val tagView = TextView(ContextThemeWrapper(holder.mTagsView.context, R.style.AppTheme_tag))
+            tagView.text = tag
+            holder.mTagsView.addView(tagView)
+        }
 
         with(holder.mView) {
             tag = link
@@ -58,7 +64,7 @@ class MyLinkRecyclerViewAdapter(
         val mTitleView: TextView = mView.title
         val mContentView: TextView = mView.content
         val mUrlView: TextView = mView.url
-        val mTagsView: TextView = mView.tags
+        val mTagsView: LinearLayout = mView.tags
 
         override fun toString(): String {
             return super.toString() + " '" + mContentView.text + "'"
