@@ -9,7 +9,7 @@
     <string name="description_hint">Description</string>
     <string name="error_connecting">The given url does not seems to work</string>
     <string name="error_internet_connection">No internet connection</string>
-    <string name="error_login">The username or the password is wrong</string>
+    <string name="error_login">Wrong credentials</string>
     <string name="error_parsing_token">The given url is not a compatible Shaarli</string>
     <string name="error_url">The url is wrong</string>
     <string name="error_retrieving_tags">Could not load tags</string>

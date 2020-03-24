@@ -42,11 +42,22 @@ public class RestAPINetworkManager implements NetworkManager {
                     .execute()
                     .body();
             Log.i("RestAPINetworkManager", body);
+            JSONObject resp = new JSONObject(body);
+
+            // For example check that the settings var exists
+            if (resp.getJSONObject("settings") == null) {
+                return false;
+            }
         } catch (HttpStatusException e) {
             Log.w("RestAPINetworkManager", e.toString());
             if (e.getStatusCode() == 404) {
                 return false;  // API V1 not supported
-            } else return e.getStatusCode() == 401;  // API V1 supported
+            } else {
+                return e.getStatusCode() == 401;  // API V1 supported
+            }
+        } catch (JSONException e) {
+            Log.w("RestAPINetworkManager", e.toString());
+            return false;
         }
         // assume a 2XX or 3XX means API V1 supported
         return true;
