@@ -56,7 +56,7 @@ public class RestAPINetworkManager implements NetworkManager {
                 return e.getStatusCode() == 401;  // API V1 supported
             }
         } catch (JSONException e) {
-            Log.w("RestAPINetworkManager", e.toString());
+            Log.e("RestAPINetworkManager", e.toString());
             return false;
         }
         // assume a 2XX or 3XX means API V1 supported
@@ -68,11 +68,14 @@ public class RestAPINetworkManager implements NetworkManager {
         // TODO: we could set some account parameters from here like default_private_links
         String url = new URL(this.mAccount.getUrlShaarli() + INFO_URL).toExternalForm();
         try {
+            Log.d("Login", this.mAccount.getRestAPIKey());
             String body = this.newConnection(url, Connection.Method.GET)
                     .execute()
                     .body();
-            Log.i("RestAPINetworkManager", body);
+            Log.i("Login", body);
         } catch (HttpStatusException e) {
+            Log.w("Login", e);
+            Log.w("Login", e.getMessage());
             return false;
         }
         return true;
@@ -207,8 +210,12 @@ public class RestAPINetworkManager implements NetworkManager {
      * @return JWT encoded in base 64
      */
     String getJwt() {
-        // The date the token is issued at, will be mapped to the key "iat" in the payload
+        // iat in the payload
         Date date = new Date();
+        // During debugging I found that given that some servers and phones are not absolutly in sync
+        // It happens that the token would looked like being generated in the future
+        // To compensate that we remove 5 from the actual date.
+        date.setTime(date.getTime() - 5000);
         // The key used to sign the token, you can find it by logging to your Shaarli instance
         // and then going to "Tools"
         byte[] signingKey = this.mAccount.getRestAPIKey().getBytes();
