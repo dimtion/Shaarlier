@@ -128,6 +128,12 @@ class LinkFragment : Fragment() {
     }
 
     private fun updateLinks() {
+        if (!::mShaarliAccount.isInitialized) {
+            // If the account is not init, we go to the settings
+            // TODO: probably print a toast
+            val intent = Intent(this.context, MainActivity::class.java)
+            startActivity(intent)
+        }
         mRefreshLayout.isRefreshing = true
         val accountsSource = AccountsSource(this.context)
         val intent = Intent(this.context, NetworkService::class.java)
