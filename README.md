@@ -6,11 +6,12 @@
 
 A simple Android app for publishing links on your Shaarli instance from android share menu
 
+![Share screenshot](.github/img/share_screenshot.jpg)
+
 ## Installation
 - From the [Play Store](https://play.google.com/store/apps/details?id=com.dimtion.shaarlier)
 - From [F-Droid](https://f-droid.org/en/packages/com.dimtion.shaarlier/)
 - From the [release tab](https://github.com/dimtion/Shaarlier/releases)
-- From the [Aptoide Store](https://f-droid.org/en/packages/com.dimtion.shaarlier/)
 
 ## Features
 - Publish links on your Shaarli from the Android Share menu
@@ -19,6 +20,7 @@ A simple Android app for publishing links on your Shaarli instance from android 
 - Autocomplete tags
 - Edit existing shares
 - Multiple Shaarli accounts
+- Works either via Shaarli REST API or via username/password combo
 
 ## Planned features
 See [the next milestones](https://github.com/dimtion/Shaarlier/milestones)
