@@ -79,11 +79,20 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        Log.i(
+                "MySQLiteHelper",
+                "Init dbHelper Name:" + DATABASE_NAME + " Version: " + DATABASE_VERSION
+        );
+
         this.mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.i(
+                "MySQLiteHelper",
+                "Creating db Name:" + DATABASE_NAME + " Version: " + DATABASE_VERSION
+        );
         db.execSQL(CREATE_TABLE_ACCOUNTS);
         db.execSQL(CREATE_TABLE_TAGS);
 
@@ -92,6 +101,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SharedPreferences prefs = this.mContext.getSharedPreferences(id, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         SecretKey key;
+        Log.i("MySQLiteHelper", "New db secret key");
         try {
             key = EncryptionHelper.generateKey();
             String sKey = EncryptionHelper.secretKeyToString(key);
@@ -150,12 +160,12 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(MySQLiteHelper.class.getName(),
-                "Upgrading database from version " + oldVersion + " to "
-                        + newVersion + ", which will destroy all old data");
+        Log.w(
+                MySQLiteHelper.class.getName(),
+                "Upgrading database from version " + oldVersion + " to " + newVersion
+        );
         for (int i = oldVersion - 1; i < newVersion - 1; i++) {
-            for (String query :
-                    UPDATE_DB[i]) {
+            for (String query : UPDATE_DB[i]) {
                 db.execSQL(query);
             }
         }

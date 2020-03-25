@@ -1,6 +1,7 @@
 package com.dimtion.shaarlier.helpers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Log;
 
@@ -200,6 +201,12 @@ public class PasswordNetworkManager implements NetworkManager {
             Log.w("TAG", e.toString());
         }
         return tags;
+    }
+
+    @Override
+    public List<Link> getLinks(@Nullable Integer offset, @Nullable Integer limit) {
+        // FIXME: This Network manager cannot download links
+        return null;
     }
 
     /**

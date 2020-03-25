@@ -1,6 +1,7 @@
 package com.dimtion.shaarlier.helpers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.dimtion.shaarlier.utils.Link;
@@ -200,6 +201,39 @@ public class RestAPINetworkManager implements NetworkManager {
             tags.add(resp.getJSONObject(i).getString("name"));
         }
         return tags;
+    }
+
+    @Override
+    public List<Link> getLinks(@Nullable Integer offset, @Nullable Integer limit) throws IOException, JSONException {
+        String url = new URL(this.mAccount.getUrlShaarli() + LINK_URL).toExternalForm();
+        String body = this.newConnection(url, Connection.Method.GET)
+                .execute()
+                .body();
+        List<Link> links = new ArrayList<Link>();
+        JSONArray resp = new JSONArray(body);
+        for (int i = 0; i < resp.length(); i++) {
+            JSONObject jsonLink = resp.getJSONObject(i);
+            JSONArray jsonTags = jsonLink.getJSONArray("tags");
+            List<String> tags = new ArrayList<>();
+            for (int j = 0; j < jsonTags.length(); j++) {
+                tags.add(jsonTags.getString(j));
+            }
+            Link link = new Link(
+                    jsonLink.getString("url"),
+                    jsonLink.getString("title"),
+                    jsonLink.getString("description"),
+                    StringUtil.join(tags, ", "),
+                    jsonLink.getBoolean("private"),
+                    null, // TODO
+                    false,
+                    false,
+                    jsonLink.getString("created"),
+                    null
+            );
+            link.setId(jsonLink.getInt("id"));
+            links.add(link);
+        }
+        return links;
     }
 
     /**

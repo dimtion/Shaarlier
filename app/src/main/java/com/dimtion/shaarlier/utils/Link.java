@@ -1,6 +1,8 @@
 package com.dimtion.shaarlier.utils;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class Link implements Serializable {
     private Integer id;
@@ -75,8 +77,13 @@ public class Link implements Serializable {
         this.description = description;
     }
 
+    @Deprecated
     public String getTags() {
         return tags;
+    }
+
+    public List<String> getTagList() {
+        return Arrays.asList(tags.split(", "));
     }
 
     public void setTags(String tags) {

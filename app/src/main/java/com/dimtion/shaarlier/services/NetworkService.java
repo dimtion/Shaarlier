@@ -25,7 +25,10 @@ import com.dimtion.shaarlier.helpers.NetworkUtils;
 import com.dimtion.shaarlier.utils.Link;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
 
+import org.json.JSONException;
+
 import java.io.IOException;
+import java.util.List;
 
 public class NetworkService extends IntentService {
     public static final String EXTRA_MESSENGER="com.dimtion.shaarlier.networkservice.EXTRA_MESSENGER";
@@ -36,11 +39,14 @@ public class NetworkService extends IntentService {
 
     public static final int RETRIEVE_TITLE_ID = 100;
     public static final int PREFETCH_LINK = 101;
+    public static final int GET_LINKS = 102;
 
     public static final int INTENT_CHECK = 201;
     public static final int INTENT_POST = 202;
     public static final int INTENT_PREFETCH = 203;
     public static final int INTENT_RETRIEVE_TITLE_AND_DESCRIPTION = 204;
+
+    public static final int INTENT_GET_LINKS = 205;
 
     // Notification channels
     public static final String CHANNEL_ID = "error_channel";
@@ -130,6 +136,11 @@ public class NetworkService extends IntentService {
 
                 sendBackMessage(intent, RETRIEVE_TITLE_ID, pageTitleAndDescription);
                 break;
+            case INTENT_GET_LINKS:
+                mShaarliAccount = (ShaarliAccount) intent.getSerializableExtra("account");
+                List<Link> links = getLinks();
+                sendBackMessage(intent, GET_LINKS, links);
+                break;
             default:
                 // Do nothing
                 Log.e("NETWORK_ERROR", "Unknown intent action received: " + action);
@@ -148,7 +159,7 @@ public class NetworkService extends IntentService {
             assert messenger != null;
             messenger.send(msg);
         } catch (android.os.RemoteException | AssertionError e1) {
-            Log.w(getClass().getName(), "Exception sending message", e1);
+            Log.e(getClass().getName(), "Exception sending message", e1);
         }
     }
 
@@ -215,7 +226,6 @@ public class NetworkService extends IntentService {
         return prefetchedLink;
     }
 
-
     private void postLink(Link link) {
         boolean posted = true;  // Assume it is shared
         try {
@@ -239,6 +249,17 @@ public class NetworkService extends IntentService {
             mToastHandler.post(new DisplayToast(getString(R.string.add_success)));
             Log.i("SUCCESS", "Success while sharing link");
         }
+    }
+
+    private List<Link> getLinks() {
+        NetworkManager manager = NetworkUtils.getNetworkManager(mShaarliAccount);
+        try {
+            return manager.getLinks(null, null);
+        } catch (IOException | JSONException e) {
+            mError = e;
+            Log.e("NetworkService", mError.getMessage());
+        }
+        return null; // TODO
     }
 
     /**

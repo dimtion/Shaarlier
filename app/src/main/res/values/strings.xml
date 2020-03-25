@@ -107,4 +107,17 @@
     <string name="notification_channel_error_name">Share error</string>
     <string name="notification_channel_error_description">Channel dedicated to sharing errors</string>
     <string name="use_username_password_deprecated">Use username/password (deprecated)</string>
+    <string name="title_activity_link_list">LinkListActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <string name="home_second">Home Second</string>
+    <string name="menu_refresh">Refresh</string>
 </resources>

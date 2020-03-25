@@ -12,6 +12,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.LinkListActivity"
+            android:label="@string/title_activity_link_list"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activities.ShareActivity"
             android:autoRemoveFromRecents="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -29,11 +38,6 @@
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.HttpSchemeHandlerActivity"
