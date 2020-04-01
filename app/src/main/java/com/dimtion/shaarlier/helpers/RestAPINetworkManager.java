@@ -58,6 +58,10 @@ public class RestAPINetworkManager implements NetworkManager {
         } catch (JSONException e) {
             Log.e("RestAPINetworkManager", e.toString());
             return false;
+        } catch (IllegalArgumentException e) {
+            // This exception arises in a bug in JJWT module. I added that to help with the debugging
+            Log.e("RestAPINetworkManager", e.toString());
+            throw new IOException("isCompatibleShaarli: " + e.toString());
         }
         // assume a 2XX or 3XX means API V1 supported
         return true;
@@ -211,6 +215,8 @@ public class RestAPINetworkManager implements NetworkManager {
      * @return JWT encoded in base 64
      */
     String getJwt() {
+        // TODO: we are obligated to stay with jjwt 0.9.1 because of Shaarli week keys
+
         // iat in the payload
         Date date = new Date();
         // During debugging I found that given that some servers and phones are not absolutely in sync

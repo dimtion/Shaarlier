@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import com.dimtion.shaarlier.R;
 
@@ -21,12 +22,14 @@ import java.util.TimeZone;
 public class DebugHelper {
 
     public static void sendMailDev(Activity context, String subject, String content) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", context.getString(R.string.developer_mail), null));
+        Log.d("sendMailDev", content);
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{context.getString(R.string.developer_mail)});
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, content);
 
-        context.startActivity(Intent.createChooser(intent, "Debug report..."));
+        context.startActivity(intent);
     }
 
     public static String generateReport(Exception e, Activity activity, String extra) {
@@ -36,7 +39,7 @@ public class DebugHelper {
     }
 
     public static String generateReport(String[] errorMessage, Activity activity, String extra){
-        String message = "Feel free to add a little message : \n\n";
+        String message = "Feel free to add a little message: \n\n";
 
         message += "-----BEGIN REPORT-----\n";
         message += "Report type: DEBUG \n";
