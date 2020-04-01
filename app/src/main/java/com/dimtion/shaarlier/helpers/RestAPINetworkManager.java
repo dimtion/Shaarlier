@@ -131,7 +131,7 @@ public class RestAPINetworkManager implements NetworkManager {
             requestBody.put("url", link.getUrl());
             requestBody.put("title", link.getTitle());
             requestBody.put("description", link.getDescription());
-            requestBody.put("tags", link.getTags().split(","));
+            requestBody.put("tags", new JSONArray(link.getTagList()));
             requestBody.put("private", link.isPrivate());
             if (link.isTweet()) { // TODO tweet
                 Log.e("RequestAPI:post", "Tweet feature not implemented");
@@ -139,6 +139,7 @@ public class RestAPINetworkManager implements NetworkManager {
             if (link.isToot()) { // TODO toot
                 Log.e("RequestAPI:post", "Toot feature not implemented");
             }
+            Log.d("PushLink", requestBody.toString(2));
         } catch (JSONException e) {
             Log.e("RequestAPI:post", e.toString());
         }
@@ -212,7 +213,7 @@ public class RestAPINetworkManager implements NetworkManager {
     String getJwt() {
         // iat in the payload
         Date date = new Date();
-        // During debugging I found that given that some servers and phones are not absolutly in sync
+        // During debugging I found that given that some servers and phones are not absolutely in sync
         // It happens that the token would looked like being generated in the future
         // To compensate that we remove 5 from the actual date.
         date.setTime(date.getTime() - 5000);

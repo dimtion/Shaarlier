@@ -68,12 +68,14 @@
     <string name="advanced">Avancé</string>
     <string name="tweet">Tweeter</string>
     <string name="toot">Toot</string>
-    <string name="use_twitter">Twitter (nécessite shaarli2twitter)</string>
-    <string name="use_mastodon">Mastodon (nécessite shaarli2mastodon)</string>
+    <string name="use_twitter">Twitter via shaarli2twitter (obsolète)</string>
+    <string name="use_mastodon">Mastodon via shaarli2mastodon (obsolète)</string>
     <string name="action_open_shaarli">Ouvrir Shaarli</string>
     <string name="is_not_new_link">edition</string>
     <string name="user_restAPIKey">Rest API Secret</string>
     <string name="notification_channel_error_name">Share error</string>
     <string name="notification_channel_error_description">Channel dedicated to sharing errors</string>
     <string name="use_username_password_deprecated">Utiliser le mot de passe (obsolète)</string>
+    <string name="text_url" translatable="false">Url :</string>
+    <string name="username_hint">Batman</string>
 </resources>

@@ -28,23 +28,6 @@
     <string name="basic_auth">Základné prihlásenie cez HTTP</string>
     <string name="your_shaarli_url">Adresa vášho Shaarli:</string>
 
-    <string name="params" translatable="false">com.dimtion.shaarliposter.parms</string>
-    <string name="p_url_shaarli" translatable="false">com.dimtion.shaarliposter.p_url_shaarli</string>
-    <string name="p_username" translatable="false">com.dimtion.shaarliposter.p_username</string>
-    <string name="p_password" translatable="false">com.dimtion.shaarliposter.p_password</string>
-    <string name="p_basic_username" translatable="false">com.dimtion.shaarliposter.p_basic_username</string>
-    <string name="p_basic_password" translatable="false">com.dimtion.shaarliposter.p_basic_password</string>
-    <string name="p_validated" translatable="false">com.dimtion.shaarliposter.p_validated</string>
-    <string name="p_default_private" translatable="false">com.dimtion.shaarlier.p_default_private</string>
-    <string name="p_show_share_dialog" translatable="false">com.dimtion.shaarlier.p_show_share_dialog</string>
-    <string name="p_protocol" translatable="false">com.dimtion.shaarlier.p_protocol</string>
-    <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
-    <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
-    <string name="p_auto_description" translatable="false">com.dimtion.shaarlier.auto_description</string>
-    <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
-    <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
-    <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
-
     <string name="share">Zdielať odkaz</string>
     <string name="text_about">O aplikácii</string>
     <string name="text_about_details">Na použitie tejto aplikácie potrebujete nainštalovaný <a href="https://github.com/shaarli/Shaarli">Shaarli</a>.
@@ -61,8 +44,6 @@
     <string name="username_hint" translatable="false">Batman</string>
     <string name="url_hint">https://shaarli.myserver.org</string>
     <string name="action_go_to_shaarli">Otvoriť moje Shaarli</string>
-    <string name="developer_shaarli" translatable="false">https://shaarli.dimtion.fr</string>
-    <string name="developer_mail" translatable="false">zizou.xena@gmail.com</string>
     <string name="action_share">Zdielať odkaz</string>
     <string name="text_version">Neznáma verzia</string>
     <string name="hint_new_url">(nevypĺňajte, ak chcete pridať poznámku)</string>
@@ -83,7 +64,6 @@
     <string name="button_delete_account">Vymazať účet</string>
     <string name="title_activity_add_account">Nový účet</string>
     <string name="text_confirm_deletion_account">Určite chcete vymazať tento účet?</string>
-    <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
     <string name="check_disable_cert_validation">Zakázať overenie certifikátu (nezabezpečené)</string>
     <string name="error_unknown">Vyskytla sa chyba</string>
     <string name="add_account">Pridať účet</string>
@@ -93,8 +73,6 @@
     <string name="auto_load_description">Automaticky načítať popis stránky</string>
     <string name="handle_http_scheme">Zobraziť Shaarlier v zozname webových prehliadačov</string>
     <string name="version">"Verzia %1$s"</string>
-    <string name="p_shaarli2twitter" translatable="false">com.dimtion.shaarlier.shaarli2twitter</string>
-    <string name="p_shaarli2mastodon" translatable="false">com.dimtion.shaarlier.shaarli2mastodon</string>
     <string name="tweet">Tweetnuť</string>
     <string name="toot">Tootnuť</string>
     <string name="use_twitter">Použiť twitter (vyžaduje rozšírenie shaarli2twitter)</string>

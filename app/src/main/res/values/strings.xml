@@ -58,7 +58,7 @@
     <string name="error_retrieving_title">Title could not be loaded</string>
     <string name="error_retrieving_description">Description could not be loaded</string>
     <string name="auto_load_title">Automatically load page title</string>
-    <string name="username_hint" translatable="false">Batman</string>
+    <string name="username_hint">Batman</string>
     <string name="url_hint">https://shaarli.myserver.org</string>
     <string name="action_go_to_shaarli">Open my Shaarli</string>
     <string name="developer_shaarli" translatable="false">https://shaarli.dimtion.fr</string>
@@ -67,7 +67,7 @@
     <string name="text_version">Version unknown</string>
     <string name="hint_new_url">(empty for a new note)</string>
     <string name="text_new_url">Link to share:</string>
-    <string name="text_url" translatable="false">Url:</string>
+    <string name="text_url">Url:</string>
     <string name="text_url_hint">(leave empty for a new note)</string>
     <string name="title">Title:</string>
     <string name="title_hint">Title</string>
@@ -97,8 +97,8 @@
     <string name="p_shaarli2mastodon" translatable="false">com.dimtion.shaarlier.shaarli2mastodon</string>
     <string name="tweet">Tweet</string>
     <string name="toot">Toot</string>
-    <string name="use_twitter">Use twitter (needs shaarli2twitter plugin)</string>
-    <string name="use_mastodon">Use mastodon (needs shaarli2mastodon plugin)</string>
+    <string name="use_twitter">Use twitter via shaarli2twitter (deprecated)</string>
+    <string name="use_mastodon">Use mastodon via shaarli2mastodon (deprecated)</string>
     <string name="advanced">Advanced</string>
     <string name="action_open_shaarli">Open Shaarli</string>
     <string name="is_not_new_link">editing</string>
