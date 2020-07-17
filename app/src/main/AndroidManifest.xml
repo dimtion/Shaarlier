@@ -18,7 +18,8 @@
             android:excludeFromRecents="true"
             android:label="@string/title_activity_share"
             android:noHistory="true"
-            android:taskAffinity="com.dimtion.Shaarlier.share">
+            android:taskAffinity="com.dimtion.Shaarlier.share"
+            android:theme="@style/ProxyTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -40,7 +41,8 @@
             android:autoRemoveFromRecents="true"
             android:enabled="false"
             android:excludeFromRecents="true"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:theme="@style/ProxyTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
