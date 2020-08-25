@@ -145,5 +145,4 @@ public class Link implements Serializable {
                         || id != null
         );
     }
-
 }

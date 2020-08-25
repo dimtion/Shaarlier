@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Checkable;
 import android.widget.EditText;
@@ -46,7 +47,6 @@ public class ShareActivity extends AppCompatActivity {
     private boolean isLoadingDescription = false;
     private boolean isPrefetching = false;
 
-
     final int LOADER_TITLE = 0;
     final int LOADER_DESCRIPTION = 1;
     private boolean isNotNewLink = false;
@@ -77,7 +77,7 @@ public class ShareActivity extends AppCompatActivity {
 
         readIntent(intent);
 
-        if(userPrefs.isOpenDialog()) {
+        if (userPrefs.isOpenDialog()) {
             openDialog();
         } else {
             autoLoadTitleAndDescription(defaults);
@@ -264,17 +264,26 @@ public class ShareActivity extends AppCompatActivity {
 
     private void initAccountSpinner() {
         final Spinner accountSpinner = this.findViewById(R.id.chooseAccount);
-        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.tags_list, accounts);
+        ArrayAdapter<ShaarliAccount> adapter = new ArrayAdapter<>(this, R.layout.tags_list, accounts);
         accountSpinner.setAdapter(adapter);
-        if(accountSpinner.getCount() < 2) {
+        if (accountSpinner.getCount() < 2) {
             accountSpinner.setVisibility(View.GONE);
         }
+        AccountSpinnerListener listener = new AccountSpinnerListener();
+        accountSpinner.setOnItemSelectedListener(listener);
+    }
+
+    /**
+     * Load everything from the interface and share the link
+     */
+    private void saveAndShare() {
+        sendLink(linkFromUserInput());
+        finish();
     }
 
     private void autoLoadTitleAndDescription(Link defaults) {
-
         // Don't use network resources if not needed
-        if (!userPrefs.isAutoTitle() && !userPrefs.isAutoDescription()){
+        if (!userPrefs.isAutoTitle() && !userPrefs.isAutoDescription()) {
             return;
         }
         // Launch intent to retrieve the title and the description
@@ -406,7 +415,6 @@ public class ShareActivity extends AppCompatActivity {
             descriptionEdit.setText(description);
         }
         updateLoadersVisibility();
-
     }
 
     private void updateTags(String tags, boolean isError) {
@@ -435,11 +443,8 @@ public class ShareActivity extends AppCompatActivity {
         tootCheck.setChecked(toot);
     }
 
-    /**
-     * Load everything from the interface and share the link
-     */
-    private void saveAndShare() {
-        Link link = new Link(
+    private Link linkFromUserInput() {
+        return new Link(
                 ((EditText) findViewById(R.id.url)).getText().toString(),
                 ((EditText) findViewById(R.id.title)).getText().toString(),
                 ((EditText) findViewById(R.id.description)).getText().toString(),
@@ -451,8 +456,27 @@ public class ShareActivity extends AppCompatActivity {
                 null,
                 null
         );
-        sendLink(link);
-        finish();
+    }
+
+    class AccountSpinnerListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            setLoading(LOADER_DESCRIPTION, true);
+            setLoading(LOADER_TITLE, true);
+            updateLoadersVisibility();
+            Link defaults = linkFromUserInput();
+            // Override text values to avoid messing with `seemsNewLink`
+            defaults.setTitle("");
+            defaults.setDescription("");
+            defaults.setTags("");
+
+            prefetchLink(defaults);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            // pass
+        }
     }
 
     @Override
@@ -522,31 +546,38 @@ public class ShareActivity extends AppCompatActivity {
                 case NetworkService.PREFETCH_LINK:
                     Log.i("NETWORK_MSG", "Link prefetched");
 
+                    MenuItem isEditedIcon = menu.findItem(R.id.editing);
                     setLoading(LOADER_PREFETCH, false);
                     if (userPrefs.isOpenDialog()) {
                         Link prefetchedLink = (Link) msg.obj;
 
                         isNotNewLink = prefetchedLink.seemsNotNew();
+                        Log.i("PREFETCH_LINK", "SeemsNotNew? " + isNotNewLink);
                         if (isNotNewLink) {
                             defaults = prefetchedLink;
 
-                            // prefetching success: stop other loaders
-                            setLoading(LOADER_TITLE, false);
-                            setLoading(LOADER_DESCRIPTION, false);
-
                             // Update the interface
-                            updateTitle(defaults.getTitle(), false);
-                            updateDescription(defaults.getDescription(), false);
-                            updateTags(defaults.getTags(), false);
+                            if (defaults.getTitle().length() > 0) {
+                                updateTitle(defaults.getTitle(), false);
+                            }
+                            if (defaults.getDescription().length() > 0) {
+                                updateDescription(defaults.getDescription(), false);
+                            }
+                            if (defaults.getTagList().size() > 0) {
+                                updateTags(defaults.getTags(), false);
+                            }
                             updatePrivate(defaults.isPrivate());
                             updateTweet(defaults.isTweet());
                             updateToot(defaults.isToot());
 
-
                             // Show that we are editing an existing entry
-                            MenuItem isNotNewIcon = menu.findItem(R.id.editing);
-                            isNotNewIcon.setVisible(true);
+                            isEditedIcon.setVisible(true);
+                        } else {
+                            isEditedIcon.setVisible(false);
                         }
+                        // prefetch success: stop other loaders
+                        setLoading(LOADER_TITLE, false);
+                        setLoading(LOADER_DESCRIPTION, false);
                         updateLoadersVisibility();
                     }
                     break;

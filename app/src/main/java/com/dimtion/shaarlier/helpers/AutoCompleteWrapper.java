@@ -79,7 +79,7 @@ public class AutoCompleteWrapper {
                 NetworkManager manager = NetworkUtils.getNetworkManager(account);
                 try {
                     if (!manager.isCompatibleShaarli() || !manager.login()) {
-                        throw new Exception("Login Error");
+                        throw new Exception(account + ": Login Error");
                     }
                     List<String> tags = manager.retrieveTags();
                     Log.d("TAGS", tags.toString());
@@ -103,7 +103,7 @@ public class AutoCompleteWrapper {
         protected void onPostExecute(Boolean r) {
             if(!r) {
                 String error = (mError != null) ? mError.getMessage() : "";
-                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " -- " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(a_context, a_context.getString(R.string.error_retrieving_tags) + " - " + error, Toast.LENGTH_LONG).show();
             } else {
                 updateTagsView();
             }
