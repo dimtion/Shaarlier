@@ -24,12 +24,11 @@ public class ShaarliAccount implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        if (!this.shortName.equals("")) {
+        if (this.shortName != null && !this.shortName.equals("")) {
             return shortName;
-        } else if (!this.username.equals("")) {
-            return this.username;
+        } else {
+            return this.urlShaarli;
         }
-        return this.urlShaarli;
     }
 
     public long getId() {

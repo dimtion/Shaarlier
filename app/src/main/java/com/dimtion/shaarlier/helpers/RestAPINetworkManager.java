@@ -183,6 +183,7 @@ public class RestAPINetworkManager implements NetworkManager {
      * @return
      */
     private Connection newConnection(String url, Connection.Method method) {
+        Log.i("RestAPI", "Creating new connection " + url + " : " + method);
         return Jsoup.connect(url)
                 .header("Authorization", "Bearer " + this.getJwt())
                 .header("Content-Type", "application/json")
@@ -215,13 +216,14 @@ public class RestAPINetworkManager implements NetworkManager {
      * @return JWT encoded in base 64
      */
     String getJwt() {
-        // TODO: we are obligated to stay with jjwt 0.9.1 because of Shaarli week keys
+        // TODO: we are obligated to stay with jjwt 0.9.1 because of Shaarli weak keys
 
+        Log.i("JWT", "Generating JWT for account " + this.mAccount);
         // iat in the payload
         Date date = new Date();
         // During debugging I found that given that some servers and phones are not absolutely in sync
         // It happens that the token would looked like being generated in the future
-        // To compensate that we remove 5 from the actual date.
+        // To compensate that we remove 5 seconds from the actual date.
         date.setTime(date.getTime() - 5000);
         // The key used to sign the token, you can find it by logging to your Shaarli instance
         // and then going to "Tools"

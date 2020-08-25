@@ -19,7 +19,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
-import com.dimtion.shaarlier.helpers.AccountsSource;
 import com.dimtion.shaarlier.helpers.NetworkManager;
 import com.dimtion.shaarlier.helpers.NetworkUtils;
 import com.dimtion.shaarlier.utils.Link;
@@ -50,7 +49,6 @@ public class NetworkService extends IntentService {
     private Context mContext;
     private Handler mToastHandler;
     private Exception mError;
-    private ShaarliAccount mShaarliAccount;
     private String loadedDescription;
 
     public NetworkService() {
@@ -77,6 +75,7 @@ public class NetworkService extends IntentService {
                 Exception object = shaarliLstatus == NETWORK_ERROR ? mError : null;
                 sendBackMessage(intent, shaarliLstatus, object);
                 break;
+
             case INTENT_POST:
                 Link link = (Link) intent.getSerializableExtra("link");
 
@@ -88,26 +87,14 @@ public class NetworkService extends IntentService {
                     link.setDescription(this.loadedDescription);
                     this.loadedDescription = null;
                 }
-                long accountId = intent.getLongExtra("chosenAccountId", -1);
-
-                try {
-                    AccountsSource acs = new AccountsSource(this);
-                    mShaarliAccount = (accountId != -1 ? acs.getShaarliAccountById(accountId) : acs.getDefaultAccount());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    sendNotificationShareError(link);
-                }
                 postLink(link);
                 stopSelf();
                 break;
+
             case INTENT_PREFETCH:
                 Link sharedLink = (Link) intent.getSerializableExtra("link");
-                mShaarliAccount = sharedLink.getAccount();
-
                 Link prefetchedLink = prefetchLink(sharedLink);
-
                 sendBackMessage(intent, PREFETCH_LINK, prefetchedLink);
-
                 break;
 
             case INTENT_RETRIEVE_TITLE_AND_DESCRIPTION:
@@ -153,43 +140,6 @@ public class NetworkService extends IntentService {
     }
 
     /**
-     * Display Toast in the main thread
-     * Thanks : http://stackoverflow.com/a/3955826
-     */
-    private class DisplayToast implements Runnable{
-        private final String mText;
-
-        public DisplayToast(String text){
-            mText = text;
-        }
-
-        public void run(){
-            Toast.makeText(mContext, mText, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Check if the given credentials are correct
-     * @param account The account with the credentials
-     * @return NO_ERROR if nothing is wrong
-     */
-    private int checkShaarli(ShaarliAccount account){
-        NetworkManager manager = NetworkUtils.getNetworkManager(account);
-        try {
-            if (!manager.isCompatibleShaarli()) {
-                return TOKEN_ERROR;
-            }
-            if (!manager.login()) {
-                return LOGIN_ERROR;
-            }
-        } catch (IOException e) {
-            mError = e;
-            return NETWORK_ERROR;
-        }
-        return NO_ERROR;
-    }
-
-    /**
      * Try to prefetch the data of the link
      * Will return exactly the same link if the link does not exist
      * or if the prefetch failed.
@@ -205,7 +155,7 @@ public class NetworkService extends IntentService {
             if (manager.isCompatibleShaarli() && manager.login()) {
                 prefetchedLink = manager.prefetchLinkData(sharedLink);
             } else {
-                mError = new Exception("Could not connect to the shaarli. Possibles causes : unhandled shaarli, bad username or password");
+                mError = new Exception("Could not connect to shaarli. Possibles causes: unhandled shaarli, bad username or password");
                 Log.e("ERROR", mError.getMessage());
             }
         } catch (IOException | NullPointerException e) {
@@ -215,12 +165,33 @@ public class NetworkService extends IntentService {
         return prefetchedLink;
     }
 
+    /**
+     * Check if the given credentials are correct
+     *
+     * @param account The account with the credentials
+     * @return NO_ERROR if nothing is wrong
+     */
+    private int checkShaarli(ShaarliAccount account) {
+        NetworkManager manager = NetworkUtils.getNetworkManager(account);
+        try {
+            if (!manager.isCompatibleShaarli()) {
+                return TOKEN_ERROR;
+            }
+            if (!manager.login()) {
+                return LOGIN_ERROR;
+            }
+        } catch (IOException e) {
+            mError = e;
+            return NETWORK_ERROR;
+        }
+        return NO_ERROR;
+    }
 
     private void postLink(Link link) {
         boolean posted = true;  // Assume it is shared
         try {
             // Connect the user to the site :
-            NetworkManager manager = NetworkUtils.getNetworkManager(mShaarliAccount);
+            NetworkManager manager = NetworkUtils.getNetworkManager(link.getAccount());
             if (manager.isCompatibleShaarli() && manager.login()) {
                 manager.pushLink(link);
             } else {
@@ -242,12 +213,29 @@ public class NetworkService extends IntentService {
     }
 
     /**
+     * Display Toast in the main thread
+     * Thanks: http://stackoverflow.com/a/3955826
+     */
+    private class DisplayToast implements Runnable {
+        private final String mText;
+
+        public DisplayToast(String text) {
+            mText = text;
+        }
+
+        public void run() {
+            Toast.makeText(mContext, mText, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
      * Retrieve the title of a page
+     *
      * @param url the page to get the title
      * @return the title page, "" if there is an error
      */
     @NonNull
-    private String[] getPageTitleAndDescription(String url){
+    private String[] getPageTitleAndDescription(String url) {
         return NetworkUtils.loadTitleAndDescription(url);
     }
 
