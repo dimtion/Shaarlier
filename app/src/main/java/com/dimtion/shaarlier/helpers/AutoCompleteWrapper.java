@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.utils.FuzzyArrayAdapter;
 import com.dimtion.shaarlier.utils.ShaarliAccount;
 import com.dimtion.shaarlier.utils.Tag;
 
@@ -25,7 +25,7 @@ public class AutoCompleteWrapper {
 
     private final MultiAutoCompleteTextView a_textView;
     private final Context a_context;
-    private final ArrayAdapter<Tag> adapter;
+    private final FuzzyArrayAdapter<Tag> adapter;
 
     public AutoCompleteWrapper(final MultiAutoCompleteTextView textView, Context context) {
         this.a_textView = textView;
@@ -33,7 +33,7 @@ public class AutoCompleteWrapper {
 
         this.a_textView.setTokenizer(new AccountsSource.SpaceTokenizer());
 
-        this.adapter = new ArrayAdapter<>(a_context, R.layout.tags_list);
+        this.adapter = new FuzzyArrayAdapter<>(a_context, R.layout.tags_list);
         this.a_textView.setAdapter(this.adapter);
         this.a_textView.setThreshold(1);
         updateTagsView();
@@ -55,7 +55,7 @@ public class AutoCompleteWrapper {
 
             this.a_textView.setAdapter(this.adapter);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             sendReport(e);
         }
     }
