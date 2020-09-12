@@ -15,9 +15,7 @@
             android:name=".activities.ShareActivity"
             android:autoRemoveFromRecents="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:excludeFromRecents="true"
             android:label="@string/title_activity_share"
-            android:noHistory="true"
             android:taskAffinity="com.dimtion.Shaarlier.share"
             android:theme="@style/ProxyTheme">
             <intent-filter>
