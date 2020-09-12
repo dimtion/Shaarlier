@@ -61,10 +61,14 @@ public class ShareActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        userPrefs = UserPreferences.load(this);
+        if(userPrefs.isOpenDialog()) {
+            setTheme(R.style.AppTheme);
+        }
+
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        userPrefs = UserPreferences.load(this);
 
         loadAccounts();
         if (accounts.isEmpty()) {
