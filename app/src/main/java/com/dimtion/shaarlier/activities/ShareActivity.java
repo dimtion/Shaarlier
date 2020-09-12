@@ -68,7 +68,9 @@ public class ShareActivity extends AppCompatActivity {
 
         loadAccounts();
         if (accounts.isEmpty()) {
+            Log.i("ShareActivity", "No account configured, starting MainActivity");
             startActivity(new Intent(this, MainActivity.class));
+            return;
         } else if (!Intent.ACTION_SEND.equals(intent.getAction()) || !"text/plain".equals(intent.getType())) {
             Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
             finish();
