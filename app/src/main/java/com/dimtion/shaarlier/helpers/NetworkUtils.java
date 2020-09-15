@@ -105,14 +105,25 @@ public abstract class NetworkUtils {
      * Select the correct network manager based on the passed account
      */
     public static NetworkManager getNetworkManager(ShaarliAccount account) {
-        if (1 == 0) { // Enabled only for debugging purposes
-            return new MockNetworkManager();
-        }
+        switch (account.getAuthMethod()) {
+            case ShaarliAccount.AUTH_METHOD_MOCK:
+                return new MockNetworkManager();
+            case ShaarliAccount.AUTH_METHOD_PASSWORD:
+                return new PasswordNetworkManager(account);
+            case ShaarliAccount.AUTH_METHOD_RESTAPI:
+                return new RestAPINetworkManager(account);
+            case ShaarliAccount.AUTH_METHOD_AUTO:
+                if (1 == 0) { // Enabled only for debugging purposes
+                    return new MockNetworkManager();
+                }
 
-        if (account.getRestAPIKey() != null && account.getRestAPIKey().length() > 0) {
-            return new RestAPINetworkManager(account);
-        } else {
-            return new PasswordNetworkManager(account);
+                if (account.getRestAPIKey() != null && account.getRestAPIKey().length() > 0) {
+                    return new RestAPINetworkManager(account);
+                } else {
+                    return new PasswordNetworkManager(account);
+                }
+            default:
+                throw new RuntimeException("Invalid shaarli auth method");
         }
     }
 }

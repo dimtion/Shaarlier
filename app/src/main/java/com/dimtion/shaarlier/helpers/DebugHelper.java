@@ -17,7 +17,7 @@ import java.util.TimeZone;
 
 /**
  * Created by dimtion on 16/05/2015.
- * A class to help debugging, should not be in production
+ * A class to help debugging and error reporting
  */
 public class DebugHelper {
 
@@ -38,11 +38,27 @@ public class DebugHelper {
         return generateReport(errorMessage, activity, extra);
     }
 
-    public static String generateReport(String[] errorMessage, Activity activity, String extra){
-        String message = "Feel free to add a little message: \n\n";
+    public static String generateReport(String[] errorMessage, Activity activity, String extra) {
+        String message = "Feel free to add a message explaining the circumstances of the error below, I'll do my best to help you:\n\n\n\n";
+
+        message += "-------------\n";
+        message += "Also make sure that your Shaarli instance is correctly setup. Common causes for issues:\n";
+        message += " - RestAPI not enabled in Shaarli settings\n";
+        message += " - mod_rewrite not enabled on Apache\n";
+        message += " - Using password authentication with a custom theme\n";
+        message += " - Using a hosting provider that injects Javascript in webpage.\n\n";
+
+        message += "Thanks for the report, I'll try to answer as soon as possible!\n\n";
+
+        message += "Bugtracker: https://github.com/dimtion/Shaarlier/issues\n\n";
+
+        message += "-------------\n";
+
+        message += "Below this line is an automated report, if you don't feel comfortable sharing ";
+        message += "some of these fields please remove them. This data is  exclusively used for debugging.\n\n";
 
         message += "-----BEGIN REPORT-----\n";
-        message += "Report type: DEBUG \n";
+        message += "Report type: ERROR \n";
         message += "Android version: " + " " + Build.VERSION.RELEASE + "\n";
         try {
             message += "App version: " + activity.getPackageManager()
@@ -50,13 +66,13 @@ public class DebugHelper {
         } catch (PackageManager.NameNotFoundException e1) {
             e1.printStackTrace();
         }
-        message += "Activity: " + activity.toString();
+        message += "Activity: " + activity.toString() + "\n";
 
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         df.setTimeZone(tz);
 
-        message += df.format(new Date()) + "\n\n";
+        message += "Date: " + df.format(new Date()) + "\n\n";
 
         for (String m : errorMessage) {
             message += m + "\n\n";
@@ -65,8 +81,6 @@ public class DebugHelper {
         message += "-----EXTRA-----\n" + extra + "\n";
 
         message += "-----END REPORT-----\n\n";
-        message += "Thanks for the report, I'll try to answer as soon as possible !\n";
-
         return message;
     }
 }

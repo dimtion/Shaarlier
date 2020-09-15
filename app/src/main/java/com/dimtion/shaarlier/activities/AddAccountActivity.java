@@ -44,6 +44,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private ShaarliAccount account;
     private Boolean isDefaultAccount;
     private Boolean isValidateCert;
+    private int authMethod;
 
     private Boolean isEditing = false;
 
@@ -122,6 +123,11 @@ public class AddAccountActivity extends AppCompatActivity {
         this.username = ((EditText) findViewById(R.id.usernameView)).getText().toString();
         this.password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
         this.restAPIKey = ((EditText) findViewById(R.id.restapiView)).getText().toString();
+        if (((Switch) findViewById(R.id.passwordAuthCheckbox)).isChecked()) {
+            this.authMethod = ShaarliAccount.AUTH_METHOD_PASSWORD;
+        } else {
+            this.authMethod = ShaarliAccount.AUTH_METHOD_RESTAPI;
+        }
         if (((Switch) findViewById(R.id.basicAuthSwitch)).isChecked()) {
             this.basicAuthUsername = ((EditText) findViewById(R.id.basicUsernameView)).getText().toString();
             this.basicAuthPassword = ((EditText) findViewById(R.id.basicPasswordView)).getText().toString();
@@ -137,6 +143,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
         ((EditText) findViewById(R.id.urlShaarliView)).setText(this.urlShaarli);  // Update the view
 
+        // Depending on the
         // Create a fake account:
         ShaarliAccount accountToTest = new ShaarliAccount();
         accountToTest.setUrlShaarli(this.urlShaarli);
@@ -146,12 +153,13 @@ public class AddAccountActivity extends AppCompatActivity {
         accountToTest.setValidateCert(this.isValidateCert);
         accountToTest.setBasicAuthUsername(this.basicAuthUsername);
         accountToTest.setBasicAuthPassword(this.basicAuthPassword);
+        accountToTest.setAuthMethod(this.authMethod);
 
         // Try the configuration
         Intent i = new Intent(this, NetworkService.class);
         i.putExtra("action", NetworkService.INTENT_CHECK);
         i.putExtra("account", accountToTest);
-        i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this)));
+        i.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler(this, accountToTest)));
         startService(i);
     }
 
@@ -247,11 +255,72 @@ public class AddAccountActivity extends AppCompatActivity {
         findViewById(R.id.restapiView).setVisibility(!checked ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Save a new account into the database,
+     * should be called only if the account was verified.
+     */
+    private void saveAccount() {
+        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
+        accountsSource.wOpen();
+        // Since we do not yet save in the database the auth method, we rely on ShaarliAccount.AUTH_METHOD_AUTO
+        // for publishing.
+        // TODO: add to database saved auth method
+        switch (authMethod) {
+            case ShaarliAccount.AUTH_METHOD_PASSWORD:
+                this.restAPIKey = "";
+                break;
+            case ShaarliAccount.AUTH_METHOD_RESTAPI:
+                this.username = "";
+                this.password = "";
+                break;
+        }
+
+        try {
+            if (isEditing) {  // Only update the database
+                account.setUrlShaarli(this.urlShaarli);
+                account.setUsername(this.username);
+                account.setPassword(this.password);
+                account.setBasicAuthUsername(this.basicAuthUsername);
+                account.setBasicAuthPassword(this.basicAuthPassword);
+                account.setShortName(this.shortName);
+                account.setValidateCert(this.isValidateCert);
+                account.setRestAPIKey(this.restAPIKey);
+                accountsSource.editAccount(account);
+            } else {
+                this.account = accountsSource.createAccount(
+                        this.urlShaarli,
+                        this.username,
+                        this.password,
+                        this.basicAuthUsername,
+                        this.basicAuthPassword,
+                        this.shortName,
+                        this.isValidateCert,
+                        this.restAPIKey
+                );
+            }
+        } catch (Exception e) {
+            Log.e("ENCRYPTION ERROR", e.getMessage());
+        } finally {
+            accountsSource.close();
+        }
+
+        // Set the default account if needed
+        if (this.isDefaultAccount) {
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putLong(getString(R.string.p_default_account), this.account.getId());
+            editor.apply();
+        }
+    }
+
     private class networkHandler extends Handler {
         private final Activity mParent;
+        private final ShaarliAccount mAccount;
 
-        public networkHandler(Activity parent) {
+        public networkHandler(Activity parent, ShaarliAccount account) {
             this.mParent = parent;
+            this.mAccount = account;
         }
 
         /**
@@ -303,11 +372,19 @@ public class AddAccountActivity extends AppCompatActivity {
 
                     builder.setMessage(R.string.report_issue).setTitle("REPORT - Shaarlier");
 
-                    final String extra = "Url Shaarli: " + urlShaarli;
+                    String extra = "Url Shaarli: " + urlShaarli + "\n";
+                    extra += "Auth method id: " + mAccount.getAuthMethod() + "\n";
+                    extra += "Validate cert: " + mAccount.isValidateCert() + "\n";
+                    extra += "Basic auth: " + ((mAccount.getBasicAuthUsername().length() > 0) || (mAccount.getBasicAuthPassword().length() > 0)) + "\n";
 
+                    final String finalExtra = extra;
                     builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            DebugHelper.sendMailDev(mParent, "REPORT - Shaarlier", DebugHelper.generateReport(error, mParent, extra));
+                            DebugHelper.sendMailDev(
+                                    mParent,
+                                    "REPORT - Shaarlier",
+                                    DebugHelper.generateReport(error, mParent, finalExtra)
+                            );
                         }
                     });
                     builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -319,52 +396,6 @@ public class AddAccountActivity extends AppCompatActivity {
                     dialog.show();
                 }
             });
-        }
-    }
-
-    /**
-     * Save a new account into the database,
-     * should be called only if the account was verified.
-     */
-    private void saveAccount() {
-        AccountsSource accountsSource = new AccountsSource(getApplicationContext());
-        accountsSource.wOpen();
-        try {
-            if (isEditing) {  // Only update the database
-                account.setUrlShaarli(this.urlShaarli);
-                account.setUsername(this.username);
-                account.setPassword(this.password);
-                account.setBasicAuthUsername(this.basicAuthUsername);
-                account.setBasicAuthPassword(this.basicAuthPassword);
-                account.setShortName(this.shortName);
-                account.setValidateCert(this.isValidateCert);
-                account.setRestAPIKey(this.restAPIKey);
-                accountsSource.editAccount(account);
-            } else {
-                this.account = accountsSource.createAccount(
-                        this.urlShaarli,
-                        this.username,
-                        this.password,
-                        this.basicAuthUsername,
-                        this.basicAuthPassword,
-                        this.shortName,
-                        this.isValidateCert,
-                        this.restAPIKey
-                );
-            }
-        } catch (Exception e) {
-            Log.e("ENCRYPTION ERROR", e.getMessage());
-        } finally {
-            accountsSource.close();
-        }
-
-        // Set the default account if needed
-        if (this.isDefaultAccount) {
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.params), MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-
-            editor.putLong(getString(R.string.p_default_account), this.account.getId());
-            editor.apply();
         }
     }
 }

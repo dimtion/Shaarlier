@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 
 public class ShaarliAccount implements Serializable {
+    public static final int AUTH_METHOD_AUTO = 0;
+    public static final int AUTH_METHOD_PASSWORD = 1;
+    public static final int AUTH_METHOD_RESTAPI = 2;
+    public static final int AUTH_METHOD_MOCK = 3;
+
     private long id;
     private String urlShaarli;
     private String username;
@@ -20,6 +25,7 @@ public class ShaarliAccount implements Serializable {
     private String restAPIKey;
     private byte[] initialVector;
     private boolean validateCert;
+    private int authMethod = AUTH_METHOD_AUTO;
 
     @NonNull
     @Override
@@ -109,5 +115,13 @@ public class ShaarliAccount implements Serializable {
 
     public void setRestAPIKey(String restAPIKey) {
         this.restAPIKey = restAPIKey;
+    }
+
+    public int getAuthMethod() {
+        return authMethod;
+    }
+
+    public void setAuthMethod(int authMethod) {
+        this.authMethod = authMethod;
     }
 }
