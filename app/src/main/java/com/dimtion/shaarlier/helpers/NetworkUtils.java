@@ -107,19 +107,25 @@ public abstract class NetworkUtils {
     public static NetworkManager getNetworkManager(ShaarliAccount account) {
         switch (account.getAuthMethod()) {
             case ShaarliAccount.AUTH_METHOD_MOCK:
+                Log.i("NetworkManager", "Selected MockNetworkManager (forced)");
                 return new MockNetworkManager();
             case ShaarliAccount.AUTH_METHOD_PASSWORD:
+                Log.i("NetworkManager", "Selected PasswordNetworkManager (forced)");
                 return new PasswordNetworkManager(account);
             case ShaarliAccount.AUTH_METHOD_RESTAPI:
+                Log.i("NetworkManager", "Selected RestAPiNetworkManager (forced)");
                 return new RestAPINetworkManager(account);
             case ShaarliAccount.AUTH_METHOD_AUTO:
                 if (1 == 0) { // Enabled only for debugging purposes
+                    Log.i("NetworkManager", "Selected MockNetworkManager (auto)");
                     return new MockNetworkManager();
                 }
 
                 if (account.getRestAPIKey() != null && account.getRestAPIKey().length() > 0) {
+                    Log.i("NetworkManager", "Selected RestAPiNetworkManager (auto)");
                     return new RestAPINetworkManager(account);
                 } else {
+                    Log.i("NetworkManager", "Selected PasswordNetworkManager (auto)");
                     return new PasswordNetworkManager(account);
                 }
             default:

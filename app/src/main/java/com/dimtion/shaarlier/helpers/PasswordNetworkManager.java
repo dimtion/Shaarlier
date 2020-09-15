@@ -89,8 +89,10 @@ public class PasswordNetworkManager implements NetworkManager {
             this.mCookies = loginFormPage.cookies();
             this.mToken = loginFormPage.parse().body().select("input[name=token]").first().attr("value");
         } catch (NullPointerException | IllegalArgumentException e) {
+            Log.e("PasswordNetworkManager", "incompatible shaarli: " + e);
             return false;
         }
+        Log.i("PasswordNetworkManager", "Compatible shaarli: ");
         return true;
     }
 
@@ -112,6 +114,7 @@ public class PasswordNetworkManager implements NetworkManager {
                     .attr("href"); // If this fails, you're not connected
 
         } catch (NullPointerException e) {
+            Log.e("PasswordNetworkManager", "login error: " + e);
             return false;
         }
         return true;
