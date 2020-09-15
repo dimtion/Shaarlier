@@ -8,8 +8,8 @@ android {
         applicationId "com.dimtion.shaarlier"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 32
-        versionName "1.7.2"
+        versionCode 33
+        versionName "1.8.0"
 
         testApplicationId "com.dimtion.shaarliertest"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
