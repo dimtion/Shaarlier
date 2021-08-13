@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shaarlier</string>
+    <string name="action_settings">设置</string>
+    <string name="add_error">分享出错</string>
+    <string name="add_not_handle">未处理内容</string>
+    <string name="add_success">已分享您的链接</string>
+    <string name="default_private">新增链接默认私有</string>
+    <string name="description_hint">描述</string>
+    <string name="error_connecting">指定的网址（URL）似乎连不上</string>
+    <string name="error_internet_connection">无网络连接</string>
+    <string name="error_login">凭据有误</string>
+    <string name="error_parsing_token">指定的网址（URL）不是兼容的 Shaarli</string>
+    <string name="error_url">网址有误</string>
+    <string name="error_retrieving_tags">标签加载失败</string>
+    <string name="logo_description">Shaarli 徽标</string>
+    <string name="more">More to come…</string>
+    <string name="private_share">私有</string>
+    <string name="success_test">设置成功</string>
+    <string name="tags_hint">标签（空格分隔）</string>
+    <string name="test_connection">测试并保存</string>
+    <string name="text_behaviour">行为</string>
+    <string name="text_show_share_dialog">分享时显示对话框</string>
+    <string name="title_activity_add">添加到 Shaarli</string>
+    <string name="title_activity_share">添加到 Shaarli</string>
+    <string name="user_name">用户名</string>
+    <string name="user_password">密码</string>
+    <string name="basic_auth">HTTP 基本验证</string>
+    <string name="your_shaarli_url">您的 Shaarli 地址:</string>
+
+    <string name="params" translatable="false">com.dimtion.shaarliposter.parms</string>
+    <string name="p_url_shaarli" translatable="false">com.dimtion.shaarliposter.p_url_shaarli</string>
+    <string name="p_username" translatable="false">com.dimtion.shaarliposter.p_username</string>
+    <string name="p_password" translatable="false">com.dimtion.shaarliposter.p_password</string>
+    <string name="p_basic_username" translatable="false">com.dimtion.shaarliposter.p_basic_username</string>
+    <string name="p_basic_password" translatable="false">com.dimtion.shaarliposter.p_basic_password</string>
+    <string name="p_validated" translatable="false">com.dimtion.shaarliposter.p_validated</string>
+    <string name="p_default_private" translatable="false">com.dimtion.shaarlier.p_default_private</string>
+    <string name="p_show_share_dialog" translatable="false">com.dimtion.shaarlier.p_show_share_dialog</string>
+    <string name="p_protocol" translatable="false">com.dimtion.shaarlier.p_protocol</string>
+    <string name="p_user_url" translatable="false">com.dimtion.shaarlier.p_user_url</string>
+    <string name="p_auto_title" translatable="false">com.dimtion.shaarlier.auto_title</string>
+    <string name="p_auto_description" translatable="false">com.dimtion.shaarlier.auto_description</string>
+    <string name="p_version" translatable="false">com.dimtion.shaarlier.p_version</string>
+    <string name="p_default_account" translatable="false">com.dimtion.shaarlier.p_default_account</string>
+    <string name="saved_tags" translatable="false">com.dimtion.shaarlier.saved_tags</string>
+
+    <string name="share">分享链接</string>
+    <string name="text_about">关于</string>
+    <string name="text_about_details">本应用的使用需要搭配一个 <a href="https://github.com/shaarli/Shaarli">Shaarli</a> 实例。\n        Framasoft（曾）提供<a href="https://my.framasoft.org/">免费的托管实例</a>。\n        \n\n本应用由 dimtion 开发，欢迎造访<a href="https://dimtion.fr">我的网站</a>。</string>
+    <string-array name="select_protocol" translatable="false">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+    <string name="loading_title_hint">标题加载中…</string>
+    <string name="error_retrieving_title">标题加载失败</string>
+    <string name="error_retrieving_description">描述加载失败</string>
+    <string name="auto_load_title">自动加载页面标题</string>
+    <string name="username_hint">Batman</string>
+    <string name="url_hint">https://shaarli.myserver.org</string>
+    <string name="action_go_to_shaarli">打开我的 Shaarli</string>
+    <string name="developer_shaarli" translatable="false">https://shaarli.dimtion.fr</string>
+    <string name="developer_mail" translatable="false">zizou.xena@gmail.com</string>
+    <string name="action_share">分享一个链接</string>
+    <string name="text_version">版本未知</string>
+    <string name="hint_new_url">（留空则新增便签）</string>
+    <string name="text_new_url">要分享的链接:</string>
+    <string name="text_url">网址:</string>
+    <string name="text_url_hint">（留空则新增便签）</string>
+    <string name="title">标题:</string>
+    <string name="title_hint">标题</string>
+    <string name="text_description">描述:</string>
+    <string name="title_activity_accounts_management">账户</string>
+
+    <string name="text_add">添加</string>
+    <string name="text_validate">验证</string>
+    <string name="text_no_account">尚无账户</string>
+    <string name="button_manage_accounts">管理账户</string>
+    <string name="text_account_name">账户名</string>
+    <string name="check_default_account">默认账户</string>
+    <string name="button_delete_account">删除账户</string>
+    <string name="title_activity_add_account">新建账户</string>
+    <string name="text_confirm_deletion_account">确定删除此账户？</string>
+    <string name="dbKey" translatable="false">com.dimtion.shaarlier.database_key</string>
+    <string name="check_disable_cert_validation">禁用检查证书（不安全）</string>
+    <string name="error_unknown">发生未知错误</string>
+    <string name="add_account">新增账户</string>
+    <string name="loading_description_hint">描述加载中…</string>
+    <string name="auto_load_description">自动加载页面描述</string>
+    <string name="handle_http_scheme">将 Shaarlier 列入网页浏览器列表</string>
+    <string name="version">版本 %1$s</string>
+    <string name="p_shaarli2twitter" translatable="false">com.dimtion.shaarlier.shaarli2twitter</string>
+    <string name="p_shaarli2mastodon" translatable="false">com.dimtion.shaarlier.shaarli2mastodon</string>
+    <string name="tweet">发推文</string>
+    <string name="toot">Toot</string>
+    <string name="use_twitter">通过 shaarli2twitter 使用 Twitter（已不推荐）</string>
+    <string name="use_mastodon">通过 shaarli2mastodon 使用 mastodon（已不推荐）</string>
+    <string name="advanced">高级</string>
+    <string name="action_open_shaarli">打开 Shaarli</string>
+    <string name="is_not_new_link">编辑</string>
+    <string name="user_restAPIKey">重置 API 密钥</string>
+
+    <string name="notification_channel_error_name">分享出错</string>
+    <string name="notification_channel_error_description">分享信道出错</string>
+    <string name="send_report">会是一个软件 Bug 吗？</string>
+    <string name="use_username_password_deprecated">使用用户名/密码（不推荐）</string>
+    <string name="report_issue">您是否要提报该故障？</string>
+</resources>
