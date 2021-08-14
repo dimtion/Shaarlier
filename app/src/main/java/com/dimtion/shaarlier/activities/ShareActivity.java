@@ -562,6 +562,10 @@ public class ShareActivity extends AppCompatActivity {
                         if (isNotNewLink) {
                             defaults = prefetchedLink;
 
+                            // prefetch success: stop other loaders
+                            setLoading(LOADER_TITLE, false);
+                            setLoading(LOADER_DESCRIPTION, false);
+
                             // Update the interface
                             if (defaults.getTitle().length() > 0) {
                                 updateTitle(defaults.getTitle(), false);
@@ -581,9 +585,6 @@ public class ShareActivity extends AppCompatActivity {
                         } else {
                             isEditedIcon.setVisible(false);
                         }
-                        // prefetch success: stop other loaders
-                        setLoading(LOADER_TITLE, false);
-                        setLoading(LOADER_DESCRIPTION, false);
                         updateLoadersVisibility();
                     }
                     break;
