@@ -6,5 +6,6 @@
 .DS_Store
 /build
 *.apk
+*.aab
 *.log
 *Thumbs.db
