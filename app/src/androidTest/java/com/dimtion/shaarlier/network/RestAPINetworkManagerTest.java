@@ -1,6 +1,6 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.network;
 
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import java.io.IOException;
 

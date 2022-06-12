@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.utils;
+package com.dimtion.shaarlier.models;
 
 import android.support.annotation.NonNull;
 

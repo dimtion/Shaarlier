@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.network;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.webkit.URLUtil;
 
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,7 +14,8 @@ import android.text.TextUtils;
 import android.widget.MultiAutoCompleteTextView;
 
 import com.dimtion.shaarlier.R;
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.helper.EncryptionHelper;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import java.util.ArrayList;
 import java.util.List;

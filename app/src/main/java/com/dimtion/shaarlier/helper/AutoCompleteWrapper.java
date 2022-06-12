@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.helper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,9 +10,13 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.dao.AccountsSource;
+import com.dimtion.shaarlier.dao.TagsSource;
+import com.dimtion.shaarlier.network.NetworkManager;
+import com.dimtion.shaarlier.network.NetworkUtils;
 import com.dimtion.shaarlier.utils.FuzzyArrayAdapter;
-import com.dimtion.shaarlier.utils.ShaarliAccount;
-import com.dimtion.shaarlier.utils.Tag;
+import com.dimtion.shaarlier.models.ShaarliAccount;
+import com.dimtion.shaarlier.models.Tag;
 
 import java.util.List;
 

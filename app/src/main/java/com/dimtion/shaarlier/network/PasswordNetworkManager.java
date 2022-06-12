@@ -1,11 +1,11 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.network;
 
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
-import com.dimtion.shaarlier.utils.Link;
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.models.Link;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import org.json.JSONArray;
 import org.json.JSONException;

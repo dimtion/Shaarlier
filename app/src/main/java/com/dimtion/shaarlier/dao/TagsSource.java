@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
-import com.dimtion.shaarlier.utils.ShaarliAccount;
-import com.dimtion.shaarlier.utils.Tag;
+import com.dimtion.shaarlier.models.ShaarliAccount;
+import com.dimtion.shaarlier.models.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,30 +17,30 @@ import java.util.List;
  * Created by dimtion on 12/05/2015.
  * Interface between the table TAGS and the JAVA objects
  */
-class TagsSource {
+public class TagsSource {
     private final String[] allColumns = {MySQLiteHelper.TAGS_COLUMN_ID,
             MySQLiteHelper.TAGS_COLUMN_ID_ACCOUNT,
             MySQLiteHelper.TAGS_COLUMN_TAG};
     private final MySQLiteHelper dbHelper;
     private SQLiteDatabase db;
 
-    TagsSource(Context context) {
+    public TagsSource(final Context context) {
         dbHelper = new MySQLiteHelper(context);
     }
 
-    void rOpen() throws SQLException {
+    public void rOpen() throws SQLException {
         db = dbHelper.getReadableDatabase();
     }
 
-    void wOpen() throws SQLException {
+    public void wOpen() throws SQLException {
         db = dbHelper.getWritableDatabase();
     }
 
-    void close() {
+    public void close() {
         dbHelper.close();
     }
 
-    List<Tag> getAllTags() {
+    public List<Tag> getAllTags() {
         List<Tag> tags = new ArrayList<>();
 
         Cursor cursor = db.query(MySQLiteHelper.TABLE_TAGS, allColumns, null, null, null, null, null);
@@ -55,7 +55,7 @@ class TagsSource {
         return tags;
     }
 
-    Tag createTag(ShaarliAccount masterAccount, String value) {
+    public Tag createTag(final ShaarliAccount masterAccount, final String value) {
         Tag tag = new Tag();
         tag.setMasterAccount(masterAccount);
         tag.setValue(value.trim());

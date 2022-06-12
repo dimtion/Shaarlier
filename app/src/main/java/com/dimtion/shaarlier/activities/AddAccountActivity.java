@@ -23,11 +23,11 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
-import com.dimtion.shaarlier.helpers.AccountsSource;
-import com.dimtion.shaarlier.helpers.DebugHelper;
-import com.dimtion.shaarlier.helpers.NetworkUtils;
+import com.dimtion.shaarlier.dao.AccountsSource;
+import com.dimtion.shaarlier.helper.DebugHelper;
+import com.dimtion.shaarlier.network.NetworkUtils;
 import com.dimtion.shaarlier.services.NetworkService;
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import java.util.List;
 

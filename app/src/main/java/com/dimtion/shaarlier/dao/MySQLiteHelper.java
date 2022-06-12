@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.dimtion.shaarlier.R;
+import com.dimtion.shaarlier.helper.EncryptionHelper;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -17,7 +18,7 @@ import javax.crypto.SecretKey;
  * Created by dimtion on 11/05/2015.
  * This class update the db scheme when necessary
  */
-public class MySQLiteHelper extends SQLiteOpenHelper {
+class MySQLiteHelper extends SQLiteOpenHelper {
     // Table: accounts
     static final String TABLE_ACCOUNTS = "accounts";
     static final String ACCOUNTS_COLUMN_ID = "_id";

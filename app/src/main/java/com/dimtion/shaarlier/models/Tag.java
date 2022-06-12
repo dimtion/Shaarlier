@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.utils;
+package com.dimtion.shaarlier.models;
 
 /**
  * Created by dimtion on 12/05/2015.

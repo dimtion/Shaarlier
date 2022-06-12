@@ -1,6 +1,6 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.network;
 
-import com.dimtion.shaarlier.utils.Link;
+import com.dimtion.shaarlier.models.Link;
 
 import java.io.IOException;
 import java.util.ArrayList;

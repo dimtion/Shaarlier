@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.helper;
 
 import android.app.Activity;
 import android.content.Intent;

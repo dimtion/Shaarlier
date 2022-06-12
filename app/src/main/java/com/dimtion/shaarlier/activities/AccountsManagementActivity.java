@@ -13,8 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.dimtion.shaarlier.R;
-import com.dimtion.shaarlier.helpers.AccountsSource;
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.dao.AccountsSource;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import java.util.List;
 

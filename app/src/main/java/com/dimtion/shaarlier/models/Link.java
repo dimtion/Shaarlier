@@ -1,4 +1,4 @@
-package com.dimtion.shaarlier.utils;
+package com.dimtion.shaarlier.models;
 
 import java.io.Serializable;
 import java.util.Arrays;

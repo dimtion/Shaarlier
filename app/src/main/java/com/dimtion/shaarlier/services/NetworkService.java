@@ -19,10 +19,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
-import com.dimtion.shaarlier.helpers.NetworkManager;
-import com.dimtion.shaarlier.helpers.NetworkUtils;
-import com.dimtion.shaarlier.utils.Link;
-import com.dimtion.shaarlier.utils.ShaarliAccount;
+import com.dimtion.shaarlier.network.NetworkManager;
+import com.dimtion.shaarlier.network.NetworkUtils;
+import com.dimtion.shaarlier.models.Link;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import java.io.IOException;
 

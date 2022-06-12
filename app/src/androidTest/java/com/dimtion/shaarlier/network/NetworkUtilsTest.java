@@ -1,7 +1,9 @@
-package com.dimtion.shaarlier.helpers;
+package com.dimtion.shaarlier.network;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import com.dimtion.shaarlier.network.NetworkUtils;
 
 public class NetworkUtilsTest {
 
