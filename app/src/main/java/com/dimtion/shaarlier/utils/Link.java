@@ -83,7 +83,7 @@ public class Link implements Serializable {
     }
 
     public List<String> getTagList() {
-        return Arrays.asList(tags.split(", "));
+        return Arrays.asList(tags.split(" "));
     }
 
     public void setTags(String tags) {
