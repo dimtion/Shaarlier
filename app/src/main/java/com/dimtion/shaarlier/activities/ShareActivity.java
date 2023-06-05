@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,66 +24,75 @@ import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.dao.AccountsSource;
+import com.dimtion.shaarlier.exceptions.UnsupportedIntent;
 import com.dimtion.shaarlier.helper.AutoCompleteWrapper;
-import com.dimtion.shaarlier.network.NetworkUtils;
-import com.dimtion.shaarlier.services.NetworkService;
+import com.dimtion.shaarlier.helper.ShareIntentParser;
 import com.dimtion.shaarlier.models.Link;
 import com.dimtion.shaarlier.models.ShaarliAccount;
+import com.dimtion.shaarlier.network.NetworkUtils;
+import com.dimtion.shaarlier.services.NetworkService;
 import com.dimtion.shaarlier.utils.UserPreferences;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ShareActivity extends AppCompatActivity {
 
+    static final int LOADER_TITLE = 0;
+    static final int LOADER_DESCRIPTION = 1;
+    static final int LOADER_PREFETCH = 2;
+    private static final String LOGGER_NAME = ShareActivity.class.getSimpleName();
+    private Link defaults;
     private UserPreferences userPrefs;
     private List<ShaarliAccount> accounts;
-    private ShaarliAccount selectedAccount;
-    private Link defaults;
 
-    final int LOADER_PREFETCH = 2;
     private boolean isLoadingTitle = false;
     private boolean isLoadingDescription = false;
     private boolean isPrefetching = false;
 
-    final int LOADER_TITLE = 0;
-    final int LOADER_DESCRIPTION = 1;
     private boolean isNotNewLink = false;
     private Menu menu;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share, menu);
         this.menu = menu;
         return true;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         userPrefs = UserPreferences.load(this);
-        if(userPrefs.isOpenDialog()) {
+        if (userPrefs.isOpenDialog()) {
             setTheme(R.style.AppTheme);
         }
 
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-
-        loadAccounts();
-        if (accounts.isEmpty()) {
-            Log.i("ShareActivity", "No account configured, starting MainActivity");
+        final List<ShaarliAccount> loadedAccounts = loadAccounts();
+        if (loadedAccounts.isEmpty()) {
+            Log.w(LOGGER_NAME, "No account configured, starting MainActivity");
             startActivity(new Intent(this, MainActivity.class));
             return;
-        } else if (!Intent.ACTION_SEND.equals(intent.getAction()) || !"text/plain".equals(intent.getType())) {
+        }
+
+        this.accounts = loadedAccounts;
+        final ShaarliAccount selectedAccount = loadedAccounts.get(0);
+
+        final Intent intent = getIntent();
+        final ShareIntentParser intentParser = new ShareIntentParser(selectedAccount, userPrefs);
+        try {
+            defaults = intentParser.parse(this, intent);
+        } catch (final UnsupportedIntent e) {
             Toast.makeText(getApplicationContext(), R.string.add_not_handle, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        readIntent(intent);
-
         if (userPrefs.isOpenDialog()) {
-            openDialog();
+            openDialog(defaults, userPrefs);
         } else {
             autoLoadTitleAndDescription(defaults);
             sendLink(defaults);
@@ -93,70 +101,44 @@ public class ShareActivity extends AppCompatActivity {
     }
 
     /**
-     * Load data passed through the intent
-     */
-    private void readIntent(@NonNull Intent intent) {
-        ShareCompat.IntentReader reader = ShareCompat.IntentReader.from(this);
-        String defaultUrl = extractUrl(reader.getText().toString());
-        String defaultTitle = extractTitle(reader.getSubject());
-        String defaultDescription = intent.getStringExtra("description") != null ? intent.getStringExtra("description") : "";
-        String defaultTags = intent.getStringExtra("tags") != null ? intent.getStringExtra("tags") : "";
-
-        if (!userPrefs.isAutoTitle()) {
-            defaultTitle = "";
-        }
-        if (!userPrefs.isAutoDescription()) {
-            defaultDescription = "";
-        }
-        defaults = new Link(
-                defaultUrl,
-                defaultTitle,
-                defaultDescription,
-                defaultTags,
-                userPrefs.isPrivateShare(),
-                selectedAccount,
-                userPrefs.isTweet(),
-                userPrefs.isToot(),
-                null,
-                null
-        );
-    }
-
-    /**
      * Load user accounts and set the default one as the first of the list
      */
-    private void loadAccounts() {
-        AccountsSource accountsSource = new AccountsSource(this);
+    private List<ShaarliAccount> loadAccounts() {
+        final AccountsSource accountsSource = new AccountsSource(this);
+        ShaarliAccount defaultAccount = null;
+        List<ShaarliAccount> accounts = new ArrayList<>();
         accountsSource.rOpen();
         try {
             accounts = accountsSource.getAllAccounts();
-
-            // Set the default account as the selected one
-            selectedAccount = accountsSource.getDefaultAccount();
-        } catch (Exception e) {
+            defaultAccount = accountsSource.getDefaultAccount();
+        } catch (final Exception e) {
+            Log.e(LOGGER_NAME, "Error while loading account sources");
             e.printStackTrace();
-            selectedAccount = null;
         } finally {
             accountsSource.close();
         }
 
-        // Put the selected account first in the list
-        if (this.selectedAccount != null) {
-            int indexSelectedAccount = 0;
-            for (ShaarliAccount account : accounts) {
-                if (account.getId() == selectedAccount.getId()) {
-                    break;
-                }
-                indexSelectedAccount++;
-            }
-            Collections.swap(accounts, indexSelectedAccount, 0);
+        if (Objects.isNull(defaultAccount)) {
+            return accounts;
         }
+
+        // Put the default account first in the list
+        int indexSelectedAccount = 0;
+        for (final ShaarliAccount account : accounts) {
+            if (account.getId() == defaultAccount.getId()) {
+                break;
+            }
+            indexSelectedAccount++;
+        }
+        Collections.swap(accounts, indexSelectedAccount, 0);
+
+        return accounts;
     }
 
     /**
      * Open a dialog for the user to change the description of the share
      */
-    private void openDialog() {
+    private void openDialog(final Link defaults, final UserPreferences userPrefs) {
         setContentView(R.layout.activity_share);
 
         initAccountSpinner();
@@ -169,85 +151,23 @@ public class ShareActivity extends AppCompatActivity {
 
         ((EditText) findViewById(R.id.url)).setText(defaults.getUrl());
 
-
-        MultiAutoCompleteTextView textView = findViewById(R.id.tags);
+        final MultiAutoCompleteTextView textView = findViewById(R.id.tags);
         ((EditText) findViewById(R.id.tags)).setText(defaults.getTags());
         new AutoCompleteWrapper(textView, this);
 
         ((Checkable) findViewById(R.id.private_share)).setChecked(defaults.isPrivate());
 
-        // Init the tweet button if necessary:
-        Switch tweetCheckBox = findViewById(R.id.tweet);
-        tweetCheckBox.setChecked(userPrefs.isTweet());
-        if (!userPrefs.isTweet()) {
-            tweetCheckBox.setVisibility(View.GONE);
-        } else {
-            tweetCheckBox.setVisibility(View.VISIBLE);
+        { // Init tweet if necessary
+            final Switch tweetCheckBox = findViewById(R.id.tweet);
+            tweetCheckBox.setChecked(userPrefs.isTweet());
+            tweetCheckBox.setVisibility(userPrefs.isTweet() ? View.VISIBLE : View.GONE);
         }
 
-        // Init the toot button if necessary:
-        Switch tootCheckBox = findViewById(R.id.toot);
-        tootCheckBox.setChecked(userPrefs.isToot());
-        if (!userPrefs.isToot()) {
-            tootCheckBox.setVisibility(View.GONE);
-        } else {
-            tootCheckBox.setVisibility(View.VISIBLE);
+        { // Init toot if necessary
+            final Switch tootCheckBox = findViewById(R.id.toot);
+            tootCheckBox.setChecked(userPrefs.isToot());
+            tootCheckBox.setVisibility(userPrefs.isTweet() ? View.VISIBLE : View.GONE);
         }
-    }
-
-    /**
-     * Extract an url located in a text
-     *
-     * @param text: a text containing an url
-     * @return url present in the input text
-     */
-    private String extractUrl(String text) {
-        String finalUrl;
-
-        // Trim the url because for annoying apps that send to much data:
-        finalUrl = text.trim();
-
-        String[] possible_urls = finalUrl.split(" ");
-
-        for (String url : possible_urls){
-            if (NetworkUtils.isUrl(url)) {
-                finalUrl = url;
-                break;
-            }
-        }
-
-        finalUrl = finalUrl.substring(finalUrl.lastIndexOf(" ") + 1);
-        finalUrl = finalUrl.substring(finalUrl.lastIndexOf("\n") + 1);
-
-        // If the url is incomplete:
-        if (NetworkUtils.isUrl("http://" + finalUrl) && !NetworkUtils.isUrl(finalUrl)) {
-            finalUrl = "http://" + finalUrl;
-        }
-        // Delete trackers:
-        if (finalUrl.contains("&utm_source=")) {
-            finalUrl = finalUrl.substring(0, finalUrl.indexOf("&utm_source="));
-        }
-        if (finalUrl.contains("?utm_source=")) {
-            finalUrl = finalUrl.substring(0, finalUrl.indexOf("?utm_source="));
-        }
-        if (finalUrl.contains("#xtor=RSS-")) {
-            finalUrl = finalUrl.substring(0, finalUrl.indexOf("#xtor=RSS-"));
-        }
-
-        return finalUrl;
-    }
-
-    /**
-     * Extract the title from a subject line
-     * @param subject: intent subject
-     * @return Title
-     */
-    private String extractTitle(String subject) {
-        if (subject != null && !NetworkUtils.isUrl(subject)) {
-            return subject;
-        }
-
-        return "";
     }
 
     /**
@@ -262,7 +182,7 @@ public class ShareActivity extends AppCompatActivity {
         final Intent networkIntent = new Intent(this, NetworkService.class);
         networkIntent.putExtra("action", NetworkService.INTENT_PREFETCH);
         networkIntent.putExtra("link", defaults);
-        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler()));
+        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new NetworkHandler()));
 
         isPrefetching = true;
         startService(networkIntent);
@@ -298,7 +218,7 @@ public class ShareActivity extends AppCompatActivity {
         networkIntent.putExtra("url", defaults.getUrl());
         networkIntent.putExtra("autoTitle", userPrefs.isAutoTitle());
         networkIntent.putExtra("autoDescription", userPrefs.isAutoDescription());
-        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new networkHandler()));
+        networkIntent.putExtra(NetworkService.EXTRA_MESSENGER, new Messenger(new NetworkHandler()));
 
         isLoadingTitle = true;
         isLoadingDescription = true;
@@ -428,7 +348,7 @@ public class ShareActivity extends AppCompatActivity {
 
         if (isError) {
             // Display nothing
-            Log.e("ERROR", "error retrieving tags");
+            Log.e(LOGGER_NAME, "error retrieving tags");
         } else {
             tagsEdit.setText(tags);
         }
@@ -488,12 +408,10 @@ public class ShareActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case R.id.action_share:
-                saveAndShare();
-                break;
-            default:
-                return true;
+        if (id == R.id.action_share) {
+            saveAndShare();
+        } else {
+            return true;
         }
         return super.onOptionsItemSelected(item);
 
@@ -509,13 +427,13 @@ public class ShareActivity extends AppCompatActivity {
         networkIntent.putExtra("link", link);
         networkIntent.putExtra(
                 NetworkService.EXTRA_MESSENGER,
-                new Messenger(new networkHandler())
+                new Messenger(new NetworkHandler())
         );
 
         startService(networkIntent);
     }
 
-    private class networkHandler extends Handler {
+    private class NetworkHandler extends Handler {
         /**
          * Handle the arrival of a message coming from the network service.
          *
@@ -525,72 +443,74 @@ public class ShareActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.arg1) {
                 case NetworkService.RETRIEVE_TITLE_ID:
-                    Log.i("NETWORK_MSG", "Title or description retrieved");
-                    if (userPrefs.isOpenDialog()) {
-                        String title = ((String[]) msg.obj)[0];
-                        String description = ((String[]) msg.obj)[1];
-
-                        if (isLoadingTitle && userPrefs.isAutoTitle()) {
-                            if ("".equals(title)) {
-                                updateTitle(title, true);
-                            } else {
-                                updateTitle(title, false);
-                            }
-                        }
-                        if (isLoadingDescription && userPrefs.isAutoDescription()) {
-                            if ("".equals(description)) {
-                                updateDescription(description, true);
-                            } else {
-                                updateDescription(description, false);
-                            }
-                        }
-                        setLoading(LOADER_TITLE, false);
-                        setLoading(LOADER_DESCRIPTION, false);
-                        updateLoadersVisibility();
-                    }
+                    handleRetrieveTitleId(msg);
                     break;
                 case NetworkService.PREFETCH_LINK:
-                    Log.i("NETWORK_MSG", "Link prefetched");
-
-                    MenuItem isEditedIcon = menu.findItem(R.id.editing);
-                    setLoading(LOADER_PREFETCH, false);
-                    if (userPrefs.isOpenDialog()) {
-                        Link prefetchedLink = (Link) msg.obj;
-
-                        isNotNewLink = prefetchedLink.seemsNotNew();
-                        Log.i("PREFETCH_LINK", "SeemsNotNew? " + isNotNewLink);
-                        if (isNotNewLink) {
-                            defaults = prefetchedLink;
-
-                            // Update the interface
-                            if (defaults.getTitle().length() > 0) {
-                                updateTitle(defaults.getTitle(), false);
-                            }
-                            if (defaults.getDescription().length() > 0) {
-                                updateDescription(defaults.getDescription(), false);
-                            }
-                            if (defaults.getTagList().size() > 0) {
-                                updateTags(defaults.getTags(), false);
-                            }
-                            updatePrivate(defaults.isPrivate());
-                            updateTweet(defaults.isTweet());
-                            updateToot(defaults.isToot());
-
-                            // Show that we are editing an existing entry
-                            isEditedIcon.setVisible(true);
-                        } else {
-                            isEditedIcon.setVisible(false);
-                        }
-                        // prefetch success: stop other loaders
-                        setLoading(LOADER_TITLE, false);
-                        setLoading(LOADER_DESCRIPTION, false);
-                        updateLoadersVisibility();
-                    }
+                    handlePrefetchLink(msg);
                     break;
                 default:
                     Toast.makeText(getApplicationContext(), R.string.error_unknown, Toast.LENGTH_LONG).show();
                     Log.e("NETWORK_MSG", "Unknown network intent received: " + msg.arg1);
                     break;
+            }
+        }
+
+        private void handleRetrieveTitleId(final Message msg) {
+            Log.i("NETWORK_MSG", "Title or description retrieved");
+            if (userPrefs.isOpenDialog()) {
+                final String title = ((String[]) msg.obj)[0];
+                final String description = ((String[]) msg.obj)[1];
+
+                if (isLoadingTitle && userPrefs.isAutoTitle()) {
+                    updateTitle(title, "".equals(title));
+                }
+                if (isLoadingDescription && userPrefs.isAutoDescription()) {
+                    updateDescription(description, "".equals(description));
+                }
+                setLoading(LOADER_TITLE, false);
+                setLoading(LOADER_DESCRIPTION, false);
+                updateLoadersVisibility();
+            }
+        }
+
+        private void handlePrefetchLink(final Message msg) {
+            Log.i("NETWORK_MSG", "Link prefetched");
+
+            MenuItem isEditedIcon = menu.findItem(R.id.editing);
+            setLoading(LOADER_PREFETCH, false);
+            if (userPrefs.isOpenDialog()) {
+                Link prefetchedLink = (Link) msg.obj;
+
+                isNotNewLink = prefetchedLink.seemsNotNew();
+                Log.i("PREFETCH_LINK", "SeemsNotNew? " + isNotNewLink);
+                // Prefetching has priority over previously saved data since it
+                // coming from Shaarli directly
+                if (isNotNewLink) {
+                    defaults = prefetchedLink;
+
+                    // Update the interface
+                    if (defaults.getTitle().length() > 0) {
+                        updateTitle(defaults.getTitle(), false);
+                    }
+                    if (defaults.getDescription().length() > 0) {
+                        updateDescription(defaults.getDescription(), false);
+                    }
+                    if (defaults.getTagList().size() > 0) {
+                        updateTags(defaults.getTags(), false);
+                    }
+                    updatePrivate(defaults.isPrivate());
+                    updateTweet(defaults.isTweet());
+                    updateToot(defaults.isToot());
+
+                    // Show that we are editing an existing entry
+                    isEditedIcon.setVisible(true);
+                } else {
+                    isEditedIcon.setVisible(false);
+                }
+                // prefetch success: stop other loaders
+                setLoading(LOADER_TITLE, false);
+                setLoading(LOADER_DESCRIPTION, false);
+                updateLoadersVisibility();
             }
         }
     }

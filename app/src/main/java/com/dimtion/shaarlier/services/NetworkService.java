@@ -19,15 +19,17 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.dimtion.shaarlier.R;
-import com.dimtion.shaarlier.network.NetworkManager;
-import com.dimtion.shaarlier.network.NetworkUtils;
 import com.dimtion.shaarlier.models.Link;
 import com.dimtion.shaarlier.models.ShaarliAccount;
+import com.dimtion.shaarlier.network.NetworkManager;
+import com.dimtion.shaarlier.network.NetworkUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class NetworkService extends IntentService {
-    public static final String EXTRA_MESSENGER="com.dimtion.shaarlier.networkservice.EXTRA_MESSENGER";
+    public static final String EXTRA_MESSENGER = "com.dimtion.shaarlier.networkservice.EXTRA_MESSENGER";
+    private static final String LOGGER_NAME = NetworkService.class.getSimpleName();
     public static final int NO_ERROR = 0;
     public static final int NETWORK_ERROR = 1;
     public static final int TOKEN_ERROR = 2;
@@ -101,17 +103,18 @@ public class NetworkService extends IntentService {
                 this.loadedTitle = "";
                 this.loadedDescription = "";
 
-                String url = intent.getStringExtra("url");
+                final String url = intent.getStringExtra("url");
 
                 boolean autoTitle = intent.getBooleanExtra("autoTitle", true);
                 boolean autoDescription = intent.getBooleanExtra("autoDescription", false);
 
-                String[] pageTitleAndDescription = getPageTitleAndDescription(url);
+                final String[] pageTitleAndDescription = getPageTitleAndDescription(url);
+                Log.i(LOGGER_NAME, "Title and description: " + Arrays.toString(pageTitleAndDescription));
 
-                if (autoTitle){
+                if (autoTitle) {
                     this.loadedTitle = pageTitleAndDescription[0];
                 }
-                if (autoDescription){
+                if (autoDescription) {
                     this.loadedDescription = pageTitleAndDescription[1];
                 }
 
@@ -171,8 +174,9 @@ public class NetworkService extends IntentService {
      * @param account The account with the credentials
      * @return NO_ERROR if nothing is wrong
      */
-    private int checkShaarli(ShaarliAccount account) {
-        NetworkManager manager = NetworkUtils.getNetworkManager(account);
+    private int checkShaarli(final ShaarliAccount account) {
+        final NetworkManager manager = NetworkUtils.getNetworkManager(account);
+        Log.i(LOGGER_NAME, "Checking Shaarli account " + account);
         try {
             if (!manager.isCompatibleShaarli()) {
                 return TOKEN_ERROR;
@@ -180,7 +184,8 @@ public class NetworkService extends IntentService {
             if (!manager.login()) {
                 return LOGIN_ERROR;
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
+            Log.e(LOGGER_NAME, "Error checking Shaarli credentials: " + e.getMessage(), e);
             mError = e;
             return NETWORK_ERROR;
         }

@@ -16,7 +16,8 @@ import org.jsoup.nodes.Document;
 public abstract class NetworkUtils {
     protected static final int TIME_OUT = 60_000; // Better for mobile connections
 
-    private static final int LOAD_TITLE_MAX_BODY_SIZE = 50240;
+    private final static String LOGGER_NAME = NetworkUtils.class.getSimpleName();
+
     private static final String[] DESCRIPTION_SELECTORS = {
             "meta[property=og:description]",
             "meta[name=description]",
@@ -73,17 +74,17 @@ public abstract class NetworkUtils {
     public static String[] loadTitleAndDescription(@NonNull String url) {
         String title = "";
         String description = "";
-        Document pageResp;
+        final Document pageResp;
         try {
+            Log.i(LOGGER_NAME, "Loading url: " + url);
             pageResp = Jsoup.connect(url)
-                    .maxBodySize(NetworkUtils.LOAD_TITLE_MAX_BODY_SIZE) // Hopefully we won't need more data
                     .followRedirects(true)
                     .execute()
                     .parse();
             title = pageResp.title();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // Just abandon the task if there is a problem
-            Log.e("NetworkManager", e.toString());
+            Log.e(LOGGER_NAME, "Failed to load title: " + e);
             return new String[]{title, description};
         }
 
@@ -91,8 +92,8 @@ public abstract class NetworkUtils {
         for (String selector : NetworkUtils.DESCRIPTION_SELECTORS) {
             try {
                 description = pageResp.head().select(selector).first().attr("content");
-            } catch (Exception e) {
-                Log.i("NetworkManager", e.toString());
+            } catch (final Exception e) {
+                Log.e(LOGGER_NAME, "Failed to load description: " + e);
             }
             if (!"".equals(description)) {
                 break;
@@ -107,25 +108,25 @@ public abstract class NetworkUtils {
     public static NetworkManager getNetworkManager(ShaarliAccount account) {
         switch (account.getAuthMethod()) {
             case ShaarliAccount.AUTH_METHOD_MOCK:
-                Log.i("NetworkManager", "Selected MockNetworkManager (forced)");
+                Log.i(LOGGER_NAME, "Selected MockNetworkManager (forced)");
                 return new MockNetworkManager();
             case ShaarliAccount.AUTH_METHOD_PASSWORD:
-                Log.i("NetworkManager", "Selected PasswordNetworkManager (forced)");
+                Log.i(LOGGER_NAME, "Selected PasswordNetworkManager (forced)");
                 return new PasswordNetworkManager(account);
             case ShaarliAccount.AUTH_METHOD_RESTAPI:
-                Log.i("NetworkManager", "Selected RestAPiNetworkManager (forced)");
+                Log.i(LOGGER_NAME, "Selected RestAPiNetworkManager (forced)");
                 return new RestAPINetworkManager(account);
             case ShaarliAccount.AUTH_METHOD_AUTO:
                 if (1 == 0) { // Enabled only for debugging purposes
-                    Log.i("NetworkManager", "Selected MockNetworkManager (auto)");
+                    Log.i(LOGGER_NAME, "Selected MockNetworkManager (auto)");
                     return new MockNetworkManager();
                 }
 
                 if (account.getRestAPIKey() != null && account.getRestAPIKey().length() > 0) {
-                    Log.i("NetworkManager", "Selected RestAPiNetworkManager (auto)");
+                    Log.i(LOGGER_NAME, "Selected RestAPiNetworkManager (auto)");
                     return new RestAPINetworkManager(account);
                 } else {
-                    Log.i("NetworkManager", "Selected PasswordNetworkManager (auto)");
+                    Log.i(LOGGER_NAME, "Selected PasswordNetworkManager (auto)");
                     return new PasswordNetworkManager(account);
                 }
             default:

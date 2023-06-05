@@ -28,7 +28,9 @@ public class RestAPINetworkManager implements NetworkManager {
     private static final String INFO_URL = "api/v1/info";
     private static final String LINK_URL = "api/v1/links";
 
-    private ShaarliAccount mAccount;
+    private final static String LOGGER_NAME = NetworkUtils.class.getSimpleName();
+
+    private final ShaarliAccount mAccount;
 
     RestAPINetworkManager(@NonNull ShaarliAccount account) {
         this.mAccount = account;
@@ -37,33 +39,37 @@ public class RestAPINetworkManager implements NetworkManager {
     @Override
     public boolean isCompatibleShaarli() throws IOException {
         String url = new URL(this.mAccount.getUrlShaarli() + INFO_URL).toExternalForm();
+        Log.i(LOGGER_NAME, "Check Shaarli compatibility");
         try {
-            String body = this.newConnection(url, Connection.Method.GET)
+            final String body = this.newConnection(url, Connection.Method.GET)
                     .execute()
                     .body();
-            Log.i("RestAPINetworkManager", body);
-            JSONObject resp = new JSONObject(body);
+            Log.d(LOGGER_NAME, "JWT used: " + body);
+            final JSONObject resp = new JSONObject(body);
 
             // For example check that the settings var exists
             if (resp.getJSONObject("settings") == null) {
+                Log.i(LOGGER_NAME, "Settings var does not exists");
                 return false;
             }
-        } catch (HttpStatusException e) {
-            Log.w("RestAPINetworkManager", e.toString());
+        } catch (final HttpStatusException e) {
+            Log.w(LOGGER_NAME, "Exception while calling Shaarli: " + e.getMessage(), e);
             if (e.getStatusCode() == 404) {
+                Log.i(LOGGER_NAME, "API V1 not supported");
                 return false;  // API V1 not supported
             } else {
                 return e.getStatusCode() == 401;  // API V1 supported
             }
-        } catch (JSONException e) {
-            Log.e("RestAPINetworkManager", e.toString());
+        } catch (final JSONException e) {
+            Log.e(LOGGER_NAME, "JSONException while calling shaarli: " + e.getMessage(), e);
             return false;
-        } catch (IllegalArgumentException e) {
-            // This exception arises in a bug in JJWT module. I added that to help with the debugging
-            Log.e("RestAPINetworkManager", e.toString());
-            throw new IOException("isCompatibleShaarli: " + e.toString());
+        } catch (final IllegalArgumentException e) {
+            // This exception arises in a bug in JWT module. I added that to help with the debugging
+            Log.e(LOGGER_NAME, "Error generating JWT: " + e.getMessage(), e);
+            throw new IOException("isCompatibleShaarli: " + e, e);
         }
         // assume a 2XX or 3XX means API V1 supported
+        Log.i(LOGGER_NAME, "API V1 supported");
         return true;
     }
 
@@ -164,7 +170,7 @@ public class RestAPINetworkManager implements NetworkManager {
             try {
                 link.setId(new JSONObject(resp.body()).getInt("id"));
             } catch (JSONException e) {
-                throw new IOException("Invalid id sent by Shaarli: " + e.toString());
+                throw new IOException("Invalid id sent by Shaarli: " + e);
             }
         }
 
@@ -178,12 +184,12 @@ public class RestAPINetworkManager implements NetworkManager {
     /**
      * Helper method to a new connection to the shaarli instance
      *
-     * @param url
-     * @param method
-     * @return
+     * @param url    to connect to
+     * @param method HTTP method
+     * @return a new opened connection
      */
     private Connection newConnection(String url, Connection.Method method) {
-        Log.i("RestAPI", "Creating new connection " + url + " : " + method);
+        Log.i(LOGGER_NAME, "Creating new connection " + url + " : " + method);
         return Jsoup.connect(url)
                 .header("Authorization", "Bearer " + this.getJwt())
                 .header("Content-Type", "application/json")
@@ -209,7 +215,7 @@ public class RestAPINetworkManager implements NetworkManager {
     }
 
     /**
-     * Inspired by https://gitlab.com/snippets/1665808
+     * Inspired by <a href="https://gitlab.com/snippets/1665808">gitlab</a>
      * License: MIT
      * Copyright 2017 braincoke
      *
