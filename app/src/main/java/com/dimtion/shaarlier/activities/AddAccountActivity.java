@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,12 +21,14 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.dao.AccountsSource;
 import com.dimtion.shaarlier.helper.DebugHelper;
+import com.dimtion.shaarlier.models.ShaarliAccount;
 import com.dimtion.shaarlier.network.NetworkUtils;
 import com.dimtion.shaarlier.services.NetworkService;
-import com.dimtion.shaarlier.models.ShaarliAccount;
 
 import java.util.List;
 

@@ -5,7 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.dimtion.shaarlier.models.ShaarliAccount;
 import com.dimtion.shaarlier.models.Tag;

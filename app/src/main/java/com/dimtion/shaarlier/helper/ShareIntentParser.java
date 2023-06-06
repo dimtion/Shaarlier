@@ -2,8 +2,9 @@ package com.dimtion.shaarlier.helper;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.app.ShareCompat;
 import android.util.Log;
+
+import androidx.core.app.ShareCompat;
 
 import com.dimtion.shaarlier.exceptions.UnsupportedIntent;
 import com.dimtion.shaarlier.models.Link;

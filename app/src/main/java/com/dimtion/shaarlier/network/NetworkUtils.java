@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.webkit.URLUtil;
+
+import androidx.annotation.NonNull;
 
 import com.dimtion.shaarlier.models.ShaarliAccount;
 

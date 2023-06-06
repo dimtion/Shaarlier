@@ -11,12 +11,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.models.Link;
@@ -269,7 +270,11 @@ public class NetworkService extends IntentService {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = PendingIntent.getService(this, 0, resultIntent, 0);
+        PendingIntent resultPendingIntent = PendingIntent.getService(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_IMMUTABLE);
 
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =

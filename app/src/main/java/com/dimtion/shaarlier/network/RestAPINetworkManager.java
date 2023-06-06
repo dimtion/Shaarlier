@@ -1,7 +1,8 @@
 package com.dimtion.shaarlier.network;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.dimtion.shaarlier.models.Link;
 import com.dimtion.shaarlier.models.ShaarliAccount;

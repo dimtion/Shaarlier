@@ -6,12 +6,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.widget.MultiAutoCompleteTextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.helper.EncryptionHelper;

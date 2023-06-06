@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
@@ -21,6 +20,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.dimtion.shaarlier.R;
 import com.dimtion.shaarlier.dao.AccountsSource;
