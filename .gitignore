@@ -9,3 +9,4 @@
 *.aab
 *.log
 *Thumbs.db
+app/src/main/gen/*

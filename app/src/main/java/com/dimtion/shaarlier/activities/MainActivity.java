@@ -160,15 +160,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id) {
-            case R.id.action_share:
-                shareDialog();
-                break;
-            case R.id.action_open_shaarli:
-                openShaarliDialog();
-                break;
-            default:
-                return true;
+        if (id == R.id.action_share) {
+            shareDialog();
+        } else if (id == R.id.action_open_shaarli) {
+            openShaarliDialog();
+        } else {
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

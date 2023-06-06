@@ -16,6 +16,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_share"
             android:taskAffinity="com.dimtion.Shaarlier.share"
+            android:exported="true"
             android:theme="@style/ProxyTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -26,6 +27,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
+            android:exported="true"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +41,7 @@
             android:enabled="false"
             android:excludeFromRecents="true"
             android:noHistory="true"
+            android:exported="true"
             android:theme="@style/ProxyTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
