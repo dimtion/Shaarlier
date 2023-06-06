@@ -12,7 +12,6 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.StringUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -123,7 +122,7 @@ public class RestAPINetworkManager implements NetworkManager {
                 for (int i = 0; i < jsonTags.length(); i++) {
                     tags.add(jsonTags.getString(i));
                 }
-                updatedLink.setTags(StringUtil.join(tags, ", "));
+                updatedLink.setTags(String.join(", ", tags));
             }
         } catch (JSONException e) {
             Log.e("RestAPI:prefetch", e.toString());
